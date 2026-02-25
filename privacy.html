@@ -2,225 +2,228 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Privacy Policy for SnappiQ by Bluefin Tuna LLC." />
-  <title>Privacy Policy — SnappiQ</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy — SnappiQ (Bluefin Tuna LLC)</title>
+  <meta name="description" content="Privacy Policy for SnappiQ, a product of Bluefin Tuna LLC." />
   <style>
     :root{
-      --bg:#0b0b0c;
-      --card:rgba(255,255,255,0.06);
-      --card-border:rgba(255,255,255,0.10);
-      --text:rgba(255,255,255,0.92);
-      --muted:rgba(255,255,255,0.68);
-      --subtle:rgba(255,255,255,0.42);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
-      --radius:22px;
+      --bg:#0b0c0f;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.04);
+      --border:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.68);
+      --muted2:rgba(255,255,255,.55);
+      --shadow:0 30px 80px rgba(0,0,0,.55);
+      --radius:28px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans:-apple-system, BlinkMacSystemFont, "SF Pro Display","SF Pro Text", Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
+      font-family:var(--sans);
       color:var(--text);
       background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.09), transparent 60%),
-        radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
-        radial-gradient(900px 700px at 50% 90%, rgba(255,255,255,0.05), transparent 60%),
+        radial-gradient(1200px 700px at 18% 18%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,.07), transparent 60%),
+        radial-gradient(1100px 900px at 50% 120%, rgba(255,255,255,.06), transparent 55%),
         var(--bg);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      display:grid;
+      place-items:center;
+      padding:24px;
     }
-
-    a{ color:var(--text); text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-
-    .wrap{
-      min-height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:32px 18px;
-    }
-
+    .wrap{width:min(980px, 100%)}
     .card{
-      width:min(920px,100%);
-      padding:44px 42px;
+      background:linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid var(--border);
       border-radius:var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-      border:1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      position:relative;
+      box-shadow:var(--shadow);
       overflow:hidden;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
-
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: radial-gradient(900px 260px at 25% 0%, rgba(255,255,255,0.10), transparent 55%);
-      pointer-events:none;
-    }
-
     header{
+      padding:26px 28px 18px;
       display:flex;
-      justify-content:space-between;
       align-items:flex-start;
-      gap:16px;
-      flex-wrap:wrap;
-      position:relative;
-      z-index:1;
+      justify-content:space-between;
+      gap:14px;
     }
-
-    h1{
+    .brand{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .title{
+      font-size:28px;
+      letter-spacing:-0.02em;
       margin:0;
-      font-size: clamp(26px, 2.6vw, 34px);
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
+      line-height:1.1;
     }
-
-    .sub{
-      margin:10px 0 0;
+    .subtitle{
+      margin:0;
       color:var(--muted);
-      line-height:1.6;
-      max-width: 70ch;
-    }
-
-    .back{
-      display:inline-flex;
-      align-items:center;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-      white-space:nowrap;
-    }
-    .back:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.07);
-      text-decoration:none;
-    }
-
-    .divider{
-      margin:22px 0 18px;
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
-      border:0;
-      position:relative;
-      z-index:1;
-    }
-
-    h2{
-      margin:18px 0 8px;
-      font-size:12px;
-      letter-spacing:0.14em;
+      font-size:13px;
+      letter-spacing:.14em;
       text-transform:uppercase;
-      color:var(--subtle);
-      font-weight:600;
-      position:relative;
-      z-index:1;
     }
-
-    p, li{
-      margin:0 0 12px;
+    .pill{
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.20);
+      padding:9px 12px;
+      border-radius:999px;
       color:var(--muted);
-      line-height:1.75;
-      font-size:16px;
-      position:relative;
-      z-index:1;
+      font-size:12px;
+      white-space:nowrap;
+      display:flex;
+      align-items:center;
+      gap:8px;
     }
-
-    ul{ margin: 8px 0 12px 18px; position:relative; z-index:1; }
-
+    .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55)}
+    .divider{height:1px;background:rgba(255,255,255,.08)}
+    main{padding:22px 28px 10px}
+    h2{
+      font-size:15px;
+      margin:20px 0 8px;
+      letter-spacing:-0.01em;
+    }
+    p, li{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14px;
+    }
+    ul{margin:10px 0 0; padding-left:18px}
+    .note{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      border-radius:18px;
+      padding:14px 14px;
+      margin:14px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:10px 14px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      border-radius:20px;
+      margin-top:14px;
+    }
+    .k{color:var(--muted2); font-size:12px; letter-spacing:.08em; text-transform:uppercase}
+    .v{color:var(--text); font-size:13px}
+    a{color:var(--text); text-decoration:none; border-bottom:1px solid rgba(255,255,255,.25)}
+    a:hover{border-bottom-color:rgba(255,255,255,.55)}
     footer{
-      margin-top:18px;
       display:flex;
       justify-content:space-between;
       gap:14px;
-      flex-wrap:wrap;
-      color:var(--subtle);
+      padding:16px 28px 22px;
+      color:rgba(255,255,255,.45);
       font-size:12px;
-      position:relative;
-      z-index:1;
+      flex-wrap:wrap;
     }
-
-    @media (max-width:780px){
-      .card{ padding:34px 22px; }
+    .links{display:flex; gap:14px; flex-wrap:wrap}
+    .links a{color:rgba(255,255,255,.60); border-bottom-color:rgba(255,255,255,.18)}
+    .links a:hover{color:rgba(255,255,255,.85); border-bottom-color:rgba(255,255,255,.40)}
+    code{font-family:var(--mono); font-size:12.5px; color:rgba(255,255,255,.86)}
+    @media (max-width:700px){
+      header{flex-direction:column; align-items:flex-start}
+      .kv{grid-template-columns:1fr}
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <section class="card" role="region" aria-label="Privacy Policy">
+    <div class="card" role="document" aria-label="Privacy Policy">
       <header>
-        <div>
-          <h1>Privacy Policy — SnappiQ</h1>
-          <p class="sub">Bluefin Tuna LLC is committed to protecting user privacy.</p>
+        <div class="brand">
+          <p class="subtitle">Bluefin Tuna LLC</p>
+          <h1 class="title">Privacy Policy — SnappiQ</h1>
+          <p class="subtitle" style="letter-spacing:.08em; text-transform:none; color:rgba(255,255,255,.70); margin-top:2px;">
+            SnappiQ is a product/brand of <strong>Bluefin Tuna LLC</strong>.
+          </p>
         </div>
-
-        <!-- ✅ Home'a dönüş -->
-        <a class="back" href="index.html">← Back to Home</a>
+        <div class="pill" aria-label="Policy status">
+          <span class="dot" aria-hidden="true"></span>
+          Effective: <span id="effectiveDate">2026-02-25</span>
+        </div>
       </header>
 
-      <hr class="divider" />
+      <div class="divider" aria-hidden="true"></div>
 
-      <h2>Overview</h2>
-      <p>
-        SnappiQ does not collect, store, or share any personal data from users.
-        The app works fully offline and does not require account creation.
-      </p>
+      <main>
+        <p>
+          This Privacy Policy explains how <strong>Bluefin Tuna LLC</strong> (“Bluefin”, “we”, “us”) handles information in connection with
+          <strong>SnappiQ</strong> (the “App”). SnappiQ is developed and published by Bluefin Tuna LLC.
+        </p>
 
-      <h2>What We Collect</h2>
-      <p>We do not collect:</p>
-      <ul>
-        <li>Personal identifiers (name, email, phone number)</li>
-        <li>Device identifiers, location data, contacts, photos, or files</li>
-        <li>Usage analytics or behavioral data</li>
-      </ul>
+        <h2>1) Data We Collect</h2>
+        <p><strong>We do not collect, store, or share any personal data from users.</strong></p>
 
-      <h2>Tracking & Advertising</h2>
-      <p>
-        No analytics, tracking, profiling, or third-party advertising services are used.
-        No data is transmitted to external servers as part of normal app functionality.
-      </p>
+        <h2>2) Offline Use & Accounts</h2>
+        <p>
+          SnappiQ works fully offline and does not require account creation.
+          The App does not require sign-in, phone number, email, or any profile information.
+        </p>
 
-      <h2>Children’s Privacy</h2>
-      <p>
-        SnappiQ is intended for a young audience. We do not knowingly collect personal data from children or any users.
-      </p>
+        <h2>3) Analytics, Tracking, Advertising</h2>
+        <ul>
+          <li>No analytics SDKs</li>
+          <li>No tracking technologies</li>
+          <li>No third-party advertising services</li>
+          <li>No sale of data (because we don’t collect any)</li>
+        </ul>
 
-      <h2>Policy Updates</h2>
-      <p>
-        This policy may be updated in future versions. If future features require data processing,
-        this page will be updated and changes will be clearly disclosed.
-      </p>
+        <div class="note">
+          <strong>Summary:</strong> SnappiQ is designed to be simple and privacy-first. If you can use the App, you can use it without sharing personal data.
+        </div>
 
-      <h2>Contact</h2>
-      <p>
-        For privacy-related inquiries, contact:
-        <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
-      </p>
+        <h2>4) Children’s Privacy</h2>
+        <p>
+          SnappiQ is designed to be suitable for a broad audience, including children.
+          Because the App does not collect personal data and does not require an account, we do not knowingly collect data from children (or anyone).
+        </p>
+
+        <h2>5) Changes to This Policy</h2>
+        <p>
+          This policy may be updated in future versions to reflect product changes or legal requirements.
+          If we make material changes, we will update the “Effective” date above and publish the new version on this page.
+        </p>
+
+        <h2>6) Contact</h2>
+        <p>
+          If you have questions about SnappiQ or this Privacy Policy, contact us:
+          <br />
+          <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
+        </p>
+
+        <div class="kv" aria-label="Product and publisher details">
+          <div class="k">Publisher</div><div class="v">Bluefin Tuna LLC</div>
+          <div class="k">Product / Brand</div><div class="v">SnappiQ</div>
+          <div class="k">Website</div><div class="v"><a href="https://bluefintuna.life">bluefintuna.life</a></div>
+          <div class="k">Email</div><div class="v"><a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a></div>
+        </div>
+      </main>
 
       <footer>
-        <div>© <span id="y"></span> Bluefin Tuna LLC. All rights reserved.</div>
-        <div>Last updated: <span id="d"></span></div>
+        <div>© <span id="year">2026</span> Bluefin Tuna LLC. All rights reserved.</div>
+        <div class="links">
+          <a href="index.html">Home</a>
+          <a href="privacy.html" aria-current="page">Privacy</a>
+        </div>
       </footer>
-    </section>
+    </div>
   </div>
 
   <script>
-    const now = new Date();
-    document.getElementById("y").textContent = now.getFullYear();
-    document.getElementById("d").textContent = now.toISOString().slice(0,10);
+    // Optional: keep dates consistent automatically
+    const y = new Date().getFullYear();
+    document.getElementById('year').textContent = String(y);
+    // You can hardcode effective date above, or uncomment to auto-set today:
+    // document.getElementById('effectiveDate').textContent = new Date().toISOString().slice(0,10);
   </script>
 </body>
 </html>
