@@ -2,28 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="description" content="Bluefin Tuna LLC — U.S.-based software company developing thoughtfully engineered digital products." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Bluefin Tuna LLC — U.S.-based technology company building intelligent digital products." />
 <title>Bluefin Tuna LLC</title>
 
 <style>
 :root{
 --bg:#0b0b0c;
 --card:rgba(255,255,255,0.06);
---card-border:rgba(255,255,255,0.10);
+--border:rgba(255,255,255,0.10);
 --text:rgba(255,255,255,0.92);
 --muted:rgba(255,255,255,0.68);
 --subtle:rgba(255,255,255,0.42);
 --radius:22px;
 }
+
 *{box-sizing:border-box}
+
 body{
 margin:0;
-background:var(--bg);
+min-height:100vh;
 color:var(--text);
+background:
+radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
+radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.05), transparent 55%),
+radial-gradient(900px 700px at 50% 90%, rgba(255,255,255,0.04), transparent 60%),
+var(--bg);
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 -webkit-font-smoothing:antialiased;
 }
+
+a{
+color:var(--text);
+text-decoration:none;
+}
+
+a:hover{
+text-decoration:underline;
+}
+
 .wrap{
 min-height:100vh;
 display:flex;
@@ -31,110 +48,198 @@ align-items:center;
 justify-content:center;
 padding:40px 20px;
 }
+
 .card{
 width:min(1000px,100%);
 padding:50px;
 border-radius:var(--radius);
-background:var(--card);
-border:1px solid var(--card-border);
+background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+border:1px solid var(--border);
+backdrop-filter:blur(16px);
 }
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+flex-wrap:wrap;
+gap:20px;
+}
+
 h1{
 margin:0;
-font-size:40px;
+font-size:42px;
 font-weight:600;
 letter-spacing:-1px;
 }
+
 .tagline{
 margin-top:10px;
-font-size:14px;
-letter-spacing:2px;
+font-size:13px;
+letter-spacing:3px;
 text-transform:uppercase;
 color:var(--muted);
 }
+
+.badge{
+padding:10px 16px;
+border-radius:999px;
+border:1px solid rgba(255,255,255,0.15);
+background:rgba(0,0,0,0.25);
+font-size:13px;
+color:var(--muted);
+}
+
 .divider{
 margin:40px 0;
 height:1px;
 background:rgba(255,255,255,0.1);
 border:0;
 }
+
+.content{
+display:grid;
+grid-template-columns:1.3fr 0.7fr;
+gap:40px;
+}
+
 p{
 line-height:1.7;
 color:var(--muted);
-font-size:16px;
+font-size:17px;
 }
-.section-title{
-margin-top:60px;
-font-size:22px;
-font-weight:600;
-color:var(--text);
+
+.contact-box{
+padding:20px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,0.12);
+background:rgba(255,255,255,0.05);
 }
-footer{
-margin-top:60px;
+
+.contact-box h3{
+margin-top:0;
 font-size:12px;
+letter-spacing:2px;
+text-transform:uppercase;
 color:var(--subtle);
 }
-a{color:var(--text);text-decoration:none}
-a:hover{text-decoration:underline}
+
+.contact-item{
+margin-bottom:15px;
+}
+
+.label{
+font-size:12px;
+letter-spacing:1px;
+text-transform:uppercase;
+color:var(--subtle);
+margin-bottom:4px;
+}
+
+.value{
+font-size:15px;
+color:var(--text);
+}
+
+footer{
+margin-top:50px;
+display:flex;
+justify-content:space-between;
+flex-wrap:wrap;
+gap:20px;
+font-size:13px;
+color:var(--subtle);
+}
+
+.links{
+display:flex;
+gap:20px;
+}
+
+@media(max-width:850px){
+.content{
+grid-template-columns:1fr;
+}
+}
 </style>
 </head>
 
 <body>
+
 <div class="wrap">
 <div class="card">
 
+<header>
+<div>
 <h1>Bluefin Tuna LLC</h1>
 <div class="tagline">Technology. Design. Intelligence.</div>
+</div>
+
+<div class="badge">
+U.S.-based software company
+</div>
+</header>
 
 <hr class="divider"/>
 
+<div class="content">
+
+<div>
 <p>
 Bluefin Tuna LLC is a U.S.-based software company developing thoughtfully engineered digital products for global markets.
+</p>
+
+<p>
 We build scalable mobile applications and intelligent systems with a strong emphasis on design clarity, performance, and long-term innovation.
 </p>
 
 <p>
-Contact: <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a><br/>
-United States
+For business or support inquiries, feel free to contact us.
 </p>
+</div>
 
-<div class="section-title">Privacy Policy — SnappiQ</div>
+<div class="contact-box">
+<h3>Contact</h3>
 
-<p>
-SnappiQ is designed with user privacy as a core principle.
-</p>
+<div class="contact-item">
+<div class="label">Email</div>
+<div class="value">
+<a href="mailto:support@bluefintuna.life">
+support@bluefintuna.life
+</a>
+</div>
+</div>
 
-<p>
-SnappiQ does not collect, store, process, or share any personal data from users.
-The application functions fully offline and does not require account creation, registration, or user identification.
-</p>
+<div class="contact-item">
+<div class="label">Location</div>
+<div class="value">United States</div>
+</div>
 
-<p>
-No analytics services, tracking technologies, behavioral monitoring systems, or third-party advertising networks are integrated into the app.
-No data is transmitted to external servers.
-</p>
+<div class="contact-item">
+<div class="label">Business</div>
+<div class="value">Bluefin Tuna LLC</div>
+</div>
 
-<p>
-All app functionality operates locally on the user's device.
-</p>
+</div>
 
-<p>
-If future versions introduce features that require data processing, this policy will be updated accordingly and clearly disclosed prior to implementation.
-</p>
-
-<p>
-For privacy-related inquiries, please contact:
-<a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
-</p>
+</div>
 
 <footer>
+<div>
 © <span id="year"></span> Bluefin Tuna LLC. All rights reserved.
+</div>
+
+<div class="links">
+<a href="/privacy.html">Privacy Policy</a>
+<a href="#">Terms (Coming Soon)</a>
+</div>
 </footer>
 
 </div>
 </div>
 
 <script>
-document.getElementById("year").textContent=new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
 </body>
