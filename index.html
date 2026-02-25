@@ -1,300 +1,269 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Bluefin Tuna LLC — U.S.-based software company building innovative digital products." />
-  <title>Bluefin Tuna LLC</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Bluefin Tuna LLC — U.S.-based software company building innovative digital products." />
+<title>Bluefin Tuna LLC</title>
 
-  <style>
-    :root{
-      --bg:#0b0b0c;
-      --card:rgba(255,255,255,0.06);
-      --card-border:rgba(255,255,255,0.10);
-      --text:rgba(255,255,255,0.92);
-      --muted:rgba(255,255,255,0.68);
-      --subtle:rgba(255,255,255,0.42);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
-      --radius:22px;
-    }
+<style>
+:root{
+  --bg:#0b0c0f;
+  --card:rgba(255,255,255,.06);
+  --card2:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.10);
+  --text:rgba(255,255,255,.92);
+  --muted:rgba(255,255,255,.68);
+  --subtle:rgba(255,255,255,.50);
+  --shadow:0 30px 80px rgba(0,0,0,.55);
+  --radius:28px;
+}
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+*{box-sizing:border-box}
+html,body{height:100%}
 
-    body{
-      margin:0;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.09), transparent 60%),
-        radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
-        radial-gradient(900px 700px at 50% 90%, rgba(255,255,255,0.05), transparent 60%),
-        var(--bg);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",
+  Segoe UI,Roboto,Helvetica,Arial;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 18% 18%, rgba(255,255,255,.10), transparent 60%),
+    radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,.07), transparent 60%),
+    radial-gradient(1100px 900px at 50% 120%, rgba(255,255,255,.06), transparent 55%),
+    var(--bg);
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
 
-    a{ color:var(--text); text-decoration:none; }
-    a:hover{ text-decoration:underline; }
+.wrap{width:min(980px,100%)}
 
-    .wrap{
-      min-height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:32px 18px;
-    }
+.card{
+  background:linear-gradient(180deg,var(--card),var(--card2));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  overflow:hidden;
+}
 
-    .card{
-      width:min(920px,100%);
-      padding:44px 42px;
-      border-radius:var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-      border:1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      position:relative;
-      overflow:hidden;
-    }
+header{
+  padding:32px 36px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  flex-wrap:wrap;
+}
 
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: radial-gradient(900px 260px at 25% 0%, rgba(255,255,255,0.10), transparent 55%);
-      pointer-events:none;
-    }
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
 
-    header{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:18px;
-      flex-wrap:wrap;
-      position:relative;
-      z-index:1;
-    }
+h1{
+  margin:0;
+  font-size:34px;
+  letter-spacing:-0.02em;
+}
 
-    .brand{ display:grid; gap:8px; }
-    .name{
-      font-size: clamp(30px, 3.2vw, 44px);
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin:0;
-    }
-    .tagline{
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin:0;
-    }
+.tagline{
+  font-size:13px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.22);
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-      position:relative;
-      z-index:1;
-    }
-    .dot{
-      width:8px;height:8px;border-radius:999px;
-      background: rgba(255,255,255,0.55);
-      box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
-    }
+.established{
+  font-size:12px;
+  color:var(--subtle);
+  letter-spacing:.08em;
+}
 
-    .divider{
-      margin:26px 0 22px;
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
-      border:0;
-      position:relative;
-      z-index:1;
-    }
+.pill{
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.20);
+  padding:9px 12px;
+  border-radius:999px;
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
 
-    main{
-      display:grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap:28px;
-      align-items:start;
-      position:relative;
-      z-index:1;
-    }
+.dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.55);
+}
 
-    .copy{ display:grid; gap:14px; }
-    .lead{
-      font-size: clamp(16px, 1.35vw, 18px);
-      line-height: 1.65;
-      color: var(--text);
-      margin:0;
-      max-width: 62ch;
-    }
-    .muted{ color: var(--muted); }
+.divider{
+  height:1px;
+  background:rgba(255,255,255,.08);
+}
 
-    .mailto{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.05);
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-      width: fit-content;
-    }
-    .mailto:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.07);
-      text-decoration:none;
-    }
-    .icon{ width:16px;height:16px;opacity:0.75;flex:0 0 auto; }
+main{
+  padding:26px 36px;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:32px;
+}
 
-    .panel{
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      padding:18px;
-    }
-    .panel h2{
-      margin:0 0 10px;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:0.14em;
-      color:var(--subtle);
-      font-weight:600;
-    }
-    .kv{ display:grid; gap:12px; }
-    .row{
-      display:grid;
-      gap:6px;
-      padding:10px 10px;
-      border-radius:14px;
-      background: rgba(0,0,0,0.18);
-      border:1px solid rgba(255,255,255,0.08);
-    }
-    .label{
-      font-size:12px;
-      color:var(--subtle);
-      letter-spacing:0.08em;
-      text-transform:uppercase;
-    }
-    .value{
-      font-size:14px;
-      color:var(--text);
-      line-height:1.4;
-    }
+.copy p{
+  line-height:1.7;
+  color:var(--muted);
+  margin:0 0 14px;
+}
 
-    footer{
-      margin-top:22px;
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
-      color:var(--subtle);
-      font-size:12px;
-      position:relative;
-      z-index:1;
-    }
-    .links{
-      display:inline-flex;
-      gap:14px;
-      flex-wrap:wrap;
-    }
-    .links a{ color:var(--subtle); }
-    .links a:hover{ color:var(--muted); }
+.mail{
+  display:inline-block;
+  margin-top:12px;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  text-decoration:none;
+  transition:.2s ease;
+}
 
-    @media (max-width:780px){
-      .card{ padding:34px 22px; }
-      main{ grid-template-columns:1fr; }
-    }
+.mail:hover{
+  background:rgba(255,255,255,.08);
+}
 
-    @media (prefers-reduced-motion: no-preference){
-      .card{ animation: in 520ms ease-out both; }
-      @keyframes in{
-        from{ opacity:0; transform: translateY(10px); }
-        to{ opacity:1; transform: translateY(0); }
-      }
-    }
-  </style>
+.panel{
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:18px;
+  background:rgba(0,0,0,.15);
+}
+
+.panel h2{
+  margin:0 0 14px;
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--subtle);
+}
+
+.row{
+  margin-bottom:14px;
+}
+
+.label{
+  font-size:12px;
+  color:var(--subtle);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.value{
+  font-size:14px;
+}
+
+footer{
+  padding:18px 36px 24px;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  font-size:12px;
+  color:var(--subtle);
+}
+
+footer a{
+  color:var(--subtle);
+  text-decoration:none;
+}
+
+footer a:hover{
+  color:var(--text);
+}
+
+@media(max-width:760px){
+  main{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <section class="card" role="region" aria-label="Bluefin Tuna LLC">
-      <header>
-        <div class="brand">
-          <h1 class="name">Bluefin Tuna LLC</h1>
-          <p class="tagline">Technology. Design. Intelligence.</p>
-        </div>
 
-        <div class="pill" aria-label="Company">
-          <span class="dot" aria-hidden="true"></span>
-          U.S.-based software company
-        </div>
-      </header>
+<div class="wrap">
+<div class="card">
 
-      <hr class="divider" />
-
-      <main>
-        <div class="copy">
-          <p class="lead">
-            Bluefin Tuna LLC is a U.S.-based software company developing thoughtfully engineered digital products for global markets.
-          </p>
-          <p class="lead muted">
-            We build scalable mobile applications and intelligent systems with a strong emphasis on design clarity, performance, and long-term innovation.
-          </p>
-
-          <a class="mailto" href="mailto:support@bluefintuna.life" aria-label="Email support@bluefintuna.life">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25V6.75Z" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M6.5 7.5 12 12l5.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            support@bluefintuna.life
-          </a>
-        </div>
-
-        <aside class="panel" aria-label="Contact details">
-          <h2>Contact</h2>
-          <div class="kv">
-            <div class="row">
-              <div class="label">Email</div>
-              <div class="value"><a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a></div>
-            </div>
-            <div class="row">
-              <div class="label">Location</div>
-              <div class="value">United States</div>
-            </div>
-            <div class="row">
-              <div class="label">Business</div>
-              <div class="value">Bluefin Tuna LLC</div>
-            </div>
-          </div>
-        </aside>
-      </main>
-
-      <footer>
-        <div>© <span id="y"></span> Bluefin Tuna LLC. All rights reserved.</div>
-        <div class="links">
-          <!-- ✅ RELATIVE LINK: aynı klasördeki privacy.html -->
-          <a href="privacy.html">Privacy Policy</a>
-          <a href="#" onclick="return false;" aria-disabled="true">Terms (Coming Soon)</a>
-        </div>
-      </footer>
-    </section>
+<header>
+  <div class="brand">
+    <h1>Bluefin Tuna LLC</h1>
+    <div class="tagline">Technology. Design. Intelligence.</div>
+    <div class="established">Established 2025</div>
   </div>
 
-  <script>
-    document.getElementById("y").textContent = new Date().getFullYear();
-  </script>
+  <div class="pill">
+    <span class="dot"></span>
+    U.S.-based software company
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<main>
+
+<div class="copy">
+  <p>
+    Bluefin Tuna LLC is a U.S.-based software company developing thoughtfully engineered digital products for global markets.
+  </p>
+  <p>
+    We build scalable mobile applications and intelligent systems with a strong emphasis on design clarity, performance, and long-term innovation.
+  </p>
+
+  <a class="mail" href="mailto:support@bluefintuna.life">
+    support@bluefintuna.life
+  </a>
+</div>
+
+<aside class="panel">
+  <h2>Company Details</h2>
+
+  <div class="row">
+    <div class="label">Location</div>
+    <div class="value">United States</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Brand</div>
+    <div class="value">SnappiQ</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Publisher</div>
+    <div class="value">Bluefin Tuna LLC</div>
+  </div>
+</aside>
+
+</main>
+
+<footer>
+  <div>© <span id="yearRange"></span> Bluefin Tuna LLC. All rights reserved.</div>
+
+  <div>
+    <a href="privacy.html">Privacy Policy</a>
+  </div>
+</footer>
+
+</div>
+</div>
+
+<script>
+const startYear = 2025;
+const currentYear = new Date().getFullYear();
+document.getElementById("yearRange").textContent =
+  currentYear > startYear
+    ? `${startYear}–${currentYear}`
+    : `${startYear}`;
+</script>
+
 </body>
 </html>
