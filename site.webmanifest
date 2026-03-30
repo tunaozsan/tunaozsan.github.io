@@ -3,8 +3,8 @@
   "short_name": "Bluefin Tuna",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#06131b",
-  "theme_color": "#0b2230",
+  "background_color": "#eef8fb",
+  "theme_color": "#eaf6fb",
   "icons": [
     {
       "src": "/assets/company-logo.png",

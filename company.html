@@ -8,11 +8,12 @@
   content="Public company information for Bluefin Tuna LLC, including official domain and business contact details."
 />
 <meta name="robots" content="index,follow" />
-<meta name="theme-color" content="#0b2230" />
+<meta name="theme-color" content="#eaf6fb" />
 <link rel="canonical" href="https://bluefintuna.life/company.html" />
 <link rel="manifest" href="site.webmanifest" />
 <link rel="icon" type="image/png" href="assets/company-logo.png" />
 <link rel="apple-touch-icon" href="assets/company-logo.png" />
+<link rel="stylesheet" href="assets/site.css" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Company Information | Bluefin Tuna LLC" />
 <meta
@@ -23,202 +24,9 @@
 <meta property="og:image" content="https://bluefintuna.life/assets/company-logo.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <title>Company Information | Bluefin Tuna LLC</title>
-<style>
-:root{
-  --bg:#07141c;
-  --bg-2:#0b2230;
-  --surface:rgba(8, 26, 38, 0.82);
-  --surface-2:rgba(9, 31, 45, 0.72);
-  --border:rgba(138, 223, 255, 0.14);
-  --text:#ebf9ff;
-  --muted:rgba(235, 249, 255, 0.78);
-  --subtle:rgba(235, 249, 255, 0.58);
-  --accent:#86f0ff;
-  --shadow:0 30px 80px rgba(0, 0, 0, 0.32);
-  --radius-lg:28px;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:"Avenir Next","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(760px 420px at 10% 0%, rgba(88, 214, 255, 0.18), transparent 60%),
-    radial-gradient(760px 480px at 100% 18%, rgba(30, 169, 255, 0.14), transparent 58%),
-    linear-gradient(180deg, var(--bg-2), var(--bg));
-}
-
-a{color:inherit}
-
-.shell{
-  width:min(980px, calc(100% - 28px));
-  margin:0 auto;
-  padding:28px 0 44px;
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-  flex-wrap:wrap;
-  margin-bottom:18px;
-}
-
-.links{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.back{
-  text-decoration:none;
-  border:1px solid var(--border);
-  border-radius:999px;
-  padding:10px 14px;
-  color:var(--muted);
-  background:rgba(6, 20, 30, 0.55);
-}
-
-.card{
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  padding:30px;
-  background:linear-gradient(180deg, var(--surface), rgba(5, 19, 28, 0.9));
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
-
-h1{
-  margin:0 0 8px;
-  font-size:clamp(32px, 5vw, 48px);
-  letter-spacing:-0.04em;
-}
-
-.intro{
-  margin:0 0 18px;
-  color:var(--muted);
-  line-height:1.8;
-}
-
-.meta{
-  margin-bottom:24px;
-  color:var(--subtle);
-  font-size:14px;
-}
-
-.summary{
-  display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
-  gap:14px;
-  margin-bottom:24px;
-}
-
-.summary-item{
-  padding:18px;
-  border:1px solid var(--border);
-  border-radius:20px;
-  background:linear-gradient(180deg, rgba(9, 31, 45, 0.72), rgba(6, 20, 30, 0.76));
-}
-
-.summary-label{
-  display:block;
-  margin-bottom:8px;
-  font-size:12px;
-  letter-spacing:0.1em;
-  text-transform:uppercase;
-  color:var(--subtle);
-}
-
-.summary-value{
-  font-size:15px;
-  line-height:1.6;
-}
-
-section{
-  padding:18px 0;
-  border-top:1px solid rgba(138, 223, 255, 0.10);
-}
-
-section:first-of-type{
-  border-top:0;
-  padding-top:0;
-}
-
-h2{
-  margin:0 0 10px;
-  font-size:14px;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:var(--accent);
-}
-
-p{
-  margin:0 0 14px;
-  color:var(--muted);
-  line-height:1.8;
-}
-
-.details{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:14px;
-}
-
-.detail{
-  border:1px solid rgba(138, 223, 255, 0.12);
-  border-radius:18px;
-  padding:16px;
-  background:rgba(8, 28, 40, 0.54);
-}
-
-.detail-label{
-  display:block;
-  margin-bottom:6px;
-  font-size:12px;
-  letter-spacing:0.1em;
-  text-transform:uppercase;
-  color:var(--subtle);
-}
-
-.detail-value{
-  line-height:1.7;
-}
-
-.note{
-  margin-top:16px;
-  padding:16px 18px;
-  border:1px solid rgba(138, 223, 255, 0.14);
-  border-radius:18px;
-  background:rgba(88, 214, 255, 0.06);
-  color:var(--muted);
-  line-height:1.7;
-}
-
-footer{
-  padding-top:18px;
-  color:var(--subtle);
-  font-size:13px;
-}
-
-@media (max-width:800px){
-  .summary,
-  .details{
-    grid-template-columns:1fr;
-  }
-}
-
-@media (max-width:640px){
-  .card{
-    padding:22px;
-  }
-}
-</style>
 </head>
-<body>
-  <div class="shell">
+<body class="page-inner">
+  <div class="shell shell-narrow">
     <div class="top">
       <div class="links">
         <a class="back" href="index.html">Home</a>
@@ -227,7 +35,7 @@ footer{
       <a class="back" href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
     </div>
 
-    <main class="card">
+    <main class="card page-card">
       <h1>Company Information</h1>
       <p class="intro">
         This page provides public company information for Bluefin Tuna LLC,
@@ -248,7 +56,7 @@ footer{
         <div class="summary-item">
           <span class="summary-label">Business Contact</span>
           <span class="summary-value">
-            <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
+            <a class="contact-link" href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
           </span>
         </div>
       </div>
@@ -268,23 +76,23 @@ footer{
 
       <section>
         <h2>Public Company Details</h2>
-        <div class="details">
-          <div class="detail">
+        <div class="page-details">
+          <div class="page-detail">
             <span class="detail-label">Official Legal Name</span>
             <div class="detail-value">Bluefin Tuna LLC</div>
           </div>
-          <div class="detail">
+          <div class="page-detail">
             <span class="detail-label">Entity Type</span>
             <div class="detail-value">Limited Liability Company</div>
           </div>
-          <div class="detail">
+          <div class="page-detail">
             <span class="detail-label">Primary Business Activity</span>
             <div class="detail-value">
               Software development, digital product publishing, and software
               operations
             </div>
           </div>
-          <div class="detail">
+          <div class="page-detail">
             <span class="detail-label">Established</span>
             <div class="detail-value">2025</div>
           </div>
@@ -313,7 +121,7 @@ footer{
           Tuna LLC using the company email below.
         </p>
         <p>
-          <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
+          <a class="contact-link" href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
         </p>
         <p>
           Additional non-public records may be shared directly with authorized
