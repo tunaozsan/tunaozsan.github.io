@@ -1,0 +1,16 @@
+{
+  "name": "Bluefin Tuna LLC",
+  "short_name": "Bluefin Tuna",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06131b",
+  "theme_color": "#0b2230",
+  "icons": [
+    {
+      "src": "/assets/company-logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

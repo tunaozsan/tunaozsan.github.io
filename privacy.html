@@ -1,229 +1,275 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy — SnappiQ (Bluefin Tuna LLC)</title>
-  <meta name="description" content="Privacy Policy for SnappiQ, a product of Bluefin Tuna LLC." />
-  <style>
-    :root{
-      --bg:#0b0c0f;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.04);
-      --border:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.68);
-      --muted2:rgba(255,255,255,.55);
-      --shadow:0 30px 80px rgba(0,0,0,.55);
-      --radius:28px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      --sans:-apple-system, BlinkMacSystemFont, "SF Pro Display","SF Pro Text", Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--sans);
-      color:var(--text);
-      background:
-        radial-gradient(1200px 700px at 18% 18%, rgba(255,255,255,.10), transparent 60%),
-        radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,.07), transparent 60%),
-        radial-gradient(1100px 900px at 50% 120%, rgba(255,255,255,.06), transparent 55%),
-        var(--bg);
-      display:grid;
-      place-items:center;
-      padding:24px;
-    }
-    .wrap{width:min(980px, 100%)}
-    .card{
-      background:linear-gradient(180deg, var(--card), var(--card2));
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    header{
-      padding:26px 28px 18px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-    }
-    .brand{
-      display:flex; flex-direction:column; gap:6px;
-    }
-    .title{
-      font-size:28px;
-      letter-spacing:-0.02em;
-      margin:0;
-      line-height:1.1;
-    }
-    .subtitle{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-    }
-    .pill{
-      border:1px solid var(--border);
-      background:rgba(0,0,0,.20);
-      padding:9px 12px;
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55)}
-    .divider{height:1px;background:rgba(255,255,255,.08)}
-    main{padding:22px 28px 10px}
-    h2{
-      font-size:15px;
-      margin:20px 0 8px;
-      letter-spacing:-0.01em;
-    }
-    p, li{
-      color:var(--muted);
-      line-height:1.65;
-      font-size:14px;
-    }
-    ul{margin:10px 0 0; padding-left:18px}
-    .note{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      border-radius:18px;
-      padding:14px 14px;
-      margin:14px 0 0;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .kv{
-      display:grid;
-      grid-template-columns: 160px 1fr;
-      gap:10px 14px;
-      padding:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      border-radius:20px;
-      margin-top:14px;
-    }
-    .k{color:var(--muted2); font-size:12px; letter-spacing:.08em; text-transform:uppercase}
-    .v{color:var(--text); font-size:13px}
-    a{color:var(--text); text-decoration:none; border-bottom:1px solid rgba(255,255,255,.25)}
-    a:hover{border-bottom-color:rgba(255,255,255,.55)}
-    footer{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      padding:16px 28px 22px;
-      color:rgba(255,255,255,.45);
-      font-size:12px;
-      flex-wrap:wrap;
-    }
-    .links{display:flex; gap:14px; flex-wrap:wrap}
-    .links a{color:rgba(255,255,255,.60); border-bottom-color:rgba(255,255,255,.18)}
-    .links a:hover{color:rgba(255,255,255,.85); border-bottom-color:rgba(255,255,255,.40)}
-    code{font-family:var(--mono); font-size:12.5px; color:rgba(255,255,255,.86)}
-    @media (max-width:700px){
-      header{flex-direction:column; align-items:flex-start}
-      .kv{grid-template-columns:1fr}
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta
+  name="description"
+  content="Privacy Policy for Bluefin Tuna LLC and the bluefintuna.life website."
+/>
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#0b2230" />
+<link rel="canonical" href="https://bluefintuna.life/privacy.html" />
+<link rel="manifest" href="site.webmanifest" />
+<link rel="icon" type="image/png" href="assets/company-logo.png" />
+<link rel="apple-touch-icon" href="assets/company-logo.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Privacy Policy | Bluefin Tuna LLC" />
+<meta
+  property="og:description"
+  content="Privacy information for the official Bluefin Tuna LLC website and general business communications."
+/>
+<meta property="og:url" content="https://bluefintuna.life/privacy.html" />
+<meta property="og:image" content="https://bluefintuna.life/assets/company-logo.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<title>Privacy Policy | Bluefin Tuna LLC</title>
+<style>
+:root{
+  --bg:#07141c;
+  --bg-2:#0b2230;
+  --surface:rgba(8, 26, 38, 0.82);
+  --border:rgba(138, 223, 255, 0.14);
+  --text:#ebf9ff;
+  --muted:rgba(235, 249, 255, 0.78);
+  --subtle:rgba(235, 249, 255, 0.58);
+  --accent:#86f0ff;
+  --shadow:0 30px 80px rgba(0, 0, 0, 0.32);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Avenir Next","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(760px 420px at 10% 0%, rgba(88, 214, 255, 0.18), transparent 60%),
+    radial-gradient(760px 480px at 100% 18%, rgba(30, 169, 255, 0.14), transparent 58%),
+    linear-gradient(180deg, var(--bg-2), var(--bg));
+}
+
+a{color:inherit}
+
+.shell{
+  width:min(920px, calc(100% - 28px));
+  margin:0 auto;
+  padding:28px 0 44px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.links{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.back{
+  text-decoration:none;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:10px 14px;
+  color:var(--muted);
+  background:rgba(6, 20, 30, 0.55);
+}
+
+.card{
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:30px;
+  background:linear-gradient(180deg, var(--surface), rgba(5, 19, 28, 0.9));
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+h1{
+  margin:0 0 8px;
+  font-size:clamp(32px, 5vw, 48px);
+  letter-spacing:-0.04em;
+}
+
+.intro{
+  color:var(--muted);
+  line-height:1.8;
+  margin:0 0 22px;
+}
+
+.meta{
+  margin-bottom:26px;
+  color:var(--subtle);
+  font-size:14px;
+}
+
+section{
+  padding:18px 0;
+  border-top:1px solid rgba(138, 223, 255, 0.10);
+}
+
+section:first-of-type{
+  border-top:0;
+  padding-top:0;
+}
+
+h2{
+  margin:0 0 10px;
+  font-size:14px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+
+p{
+  margin:0 0 14px;
+  color:var(--muted);
+  line-height:1.8;
+}
+
+ul{
+  margin:0;
+  padding-left:18px;
+  color:var(--muted);
+  line-height:1.8;
+}
+
+li + li{
+  margin-top:8px;
+}
+
+footer{
+  padding-top:18px;
+  color:var(--subtle);
+  font-size:13px;
+}
+
+@media (max-width:640px){
+  .card{
+    padding:22px;
+  }
+}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card" role="document" aria-label="Privacy Policy">
-      <header>
-        <div class="brand">
-          <p class="subtitle">Bluefin Tuna LLC</p>
-          <h1 class="title">Privacy Policy — SnappiQ</h1>
-          <p class="subtitle" style="letter-spacing:.08em; text-transform:none; color:rgba(255,255,255,.70); margin-top:2px;">
-            SnappiQ is a product/brand of <strong>Bluefin Tuna LLC</strong>.
-          </p>
-        </div>
-        <div class="pill" aria-label="Policy status">
-          <span class="dot" aria-hidden="true"></span>
-          Effective: <span id="effectiveDate">2026-02-25</span>
-        </div>
-      </header>
-
-      <div class="divider" aria-hidden="true"></div>
-
-      <main>
-        <p>
-          This Privacy Policy explains how <strong>Bluefin Tuna LLC</strong> (“Bluefin”, “we”, “us”) handles information in connection with
-          <strong>SnappiQ</strong> (the “App”). SnappiQ is developed and published by Bluefin Tuna LLC.
-        </p>
-
-        <h2>1) Data We Collect</h2>
-        <p><strong>We do not collect, store, or share any personal data from users.</strong></p>
-
-        <h2>2) Offline Use & Accounts</h2>
-        <p>
-          SnappiQ works fully offline and does not require account creation.
-          The App does not require sign-in, phone number, email, or any profile information.
-        </p>
-
-        <h2>3) Analytics, Tracking, Advertising</h2>
-        <ul>
-          <li>No analytics SDKs</li>
-          <li>No tracking technologies</li>
-          <li>No third-party advertising services</li>
-          <li>No sale of data (because we don’t collect any)</li>
-        </ul>
-
-        <div class="note">
-          <strong>Summary:</strong> SnappiQ is designed to be simple and privacy-first. If you can use the App, you can use it without sharing personal data.
-        </div>
-
-        <h2>4) Children’s Privacy</h2>
-        <p>
-          SnappiQ is designed to be suitable for a broad audience, including children.
-          Because the App does not collect personal data and does not require an account, we do not knowingly collect data from children (or anyone).
-        </p>
-
-        <h2>5) Changes to This Policy</h2>
-        <p>
-          This policy may be updated in future versions to reflect product changes or legal requirements.
-          If we make material changes, we will update the “Effective” date above and publish the new version on this page.
-        </p>
-
-        <h2>6) Contact</h2>
-        <p>
-          If you have questions about SnappiQ or this Privacy Policy, contact us:
-          <br />
-          <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
-        </p>
-
-        <div class="kv" aria-label="Product and publisher details">
-          <div class="k">Publisher</div><div class="v">Bluefin Tuna LLC</div>
-          <div class="k">Product / Brand</div><div class="v">SnappiQ</div>
-          <div class="k">Website</div><div class="v"><a href="https://bluefintuna.life">bluefintuna.life</a></div>
-          <div class="k">Email</div><div class="v"><a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a></div>
-        </div>
-      </main>
-
-      <footer>
-        <div>© <span id="year">2026</span> Bluefin Tuna LLC. All rights reserved.</div>
-        <div class="links">
-          <a href="index.html">Home</a>
-          <a href="privacy.html" aria-current="page">Privacy</a>
-        </div>
-      </footer>
+  <div class="shell">
+    <div class="top">
+      <div class="links">
+        <a class="back" href="index.html">Home</a>
+        <a class="back" href="company.html">Company Information</a>
+      </div>
+      <a class="back" href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
     </div>
+
+    <main class="card">
+      <h1>Privacy Policy</h1>
+      <p class="intro">
+        This Privacy Policy explains how Bluefin Tuna LLC handles information in
+        connection with the official bluefintuna.life website and general
+        business communications.
+      </p>
+      <div class="meta">Effective date: March 30, 2026</div>
+
+      <section>
+        <h2>Overview</h2>
+        <p>
+          Bluefin Tuna LLC operates the <strong>bluefintuna.life</strong>
+          website as its public company website. We aim to collect only the
+          information reasonably necessary to operate the site, respond to
+          inquiries, and support legitimate business communication.
+        </p>
+      </section>
+
+      <section>
+        <h2>Information We May Receive</h2>
+        <ul>
+          <li>Contact information you provide when you email us.</li>
+          <li>Basic technical information that may be generated by normal website hosting and server logs.</li>
+          <li>Information needed to respond to business, support, or organization verification inquiries.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Website Access And Technical Logs</h2>
+        <p>
+          Like most websites, basic technical data may be generated through web
+          hosting and server operations, such as IP address, browser type,
+          request timestamps, and related diagnostic information.
+        </p>
+        <p>
+          This website does not currently provide public user account
+          registration, public comment tools, or public submission forms beyond
+          standard email contact.
+        </p>
+      </section>
+
+      <section>
+        <h2>How We Use Information</h2>
+        <ul>
+          <li>To respond to messages, requests, and business communications.</li>
+          <li>To maintain, secure, and improve our website and digital services.</li>
+          <li>To support company, product, publishing, or platform-related operations when applicable.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Information Sharing</h2>
+        <p>
+          We do not sell personal information. We may share limited information
+          with service providers, hosting providers, professional advisers, or
+          platform operators when reasonably necessary for business operations,
+          legal compliance, security, or verification.
+        </p>
+      </section>
+
+      <section>
+        <h2>Retention</h2>
+        <p>
+          We retain information for as long as reasonably necessary to fulfill
+          the purpose for which it was collected, maintain business records,
+          resolve disputes, or comply with legal obligations.
+        </p>
+      </section>
+
+      <section>
+        <h2>Third-Party Infrastructure</h2>
+        <p>
+          Our website may rely on third-party hosting or technical
+          infrastructure. Those providers may process information under their
+          own terms, privacy notices, and security practices.
+        </p>
+      </section>
+
+      <section>
+        <h2>Your Choices</h2>
+        <p>
+          If you prefer not to share information with us, please do not send it
+          by email. If you contact Bluefin Tuna LLC, avoid sending sensitive
+          personal information unless it is necessary for your inquiry.
+        </p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>
+          For privacy-related questions, please contact Bluefin Tuna LLC at
+          <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>.
+        </p>
+      </section>
+
+      <footer>&copy; <span id="yearRange"></span> Bluefin Tuna LLC. All rights reserved.</footer>
+    </main>
   </div>
 
   <script>
-    // Optional: keep dates consistent automatically
-    const y = new Date().getFullYear();
-    document.getElementById('year').textContent = String(y);
-    // You can hardcode effective date above, or uncomment to auto-set today:
-    // document.getElementById('effectiveDate').textContent = new Date().toISOString().slice(0,10);
+    const startYear = 2025;
+    const currentYear = new Date().getFullYear();
+    document.getElementById("yearRange").textContent =
+      currentYear > startYear ? `${startYear}-${currentYear}` : `${startYear}`;
   </script>
 </body>
 </html>

@@ -3,179 +3,374 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Bluefin Tuna LLC — U.S.-based software company building innovative digital products." />
-<title>Bluefin Tuna LLC</title>
-
+<meta
+  name="description"
+  content="Official website of Bluefin Tuna LLC, a U.S.-based software company focused on software development, digital products, and long-term product operations."
+/>
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#0b2230" />
+<link rel="canonical" href="https://bluefintuna.life/" />
+<link rel="manifest" href="site.webmanifest" />
+<link rel="icon" type="image/png" href="assets/company-logo.png" />
+<link rel="apple-touch-icon" href="assets/company-logo.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Bluefin Tuna LLC | Official Company Website" />
+<meta
+  property="og:description"
+  content="Public company website of Bluefin Tuna LLC with company information, official contact details, and privacy information."
+/>
+<meta property="og:url" content="https://bluefintuna.life/" />
+<meta property="og:image" content="https://bluefintuna.life/assets/company-logo.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<title>Bluefin Tuna LLC | Official Company Website</title>
 <style>
 :root{
-  --bg:#0b0c0f;
-  --card:rgba(255,255,255,.06);
-  --card2:rgba(255,255,255,.04);
-  --border:rgba(255,255,255,.10);
-  --text:rgba(255,255,255,.92);
-  --muted:rgba(255,255,255,.68);
-  --subtle:rgba(255,255,255,.50);
-  --shadow:0 30px 80px rgba(0,0,0,.55);
-  --radius:28px;
+  --bg:#06131b;
+  --bg-2:#0b2230;
+  --surface:rgba(7, 24, 35, 0.78);
+  --surface-2:rgba(11, 34, 48, 0.72);
+  --border:rgba(138, 223, 255, 0.16);
+  --text:#ebf9ff;
+  --muted:rgba(235, 249, 255, 0.78);
+  --subtle:rgba(235, 249, 255, 0.58);
+  --accent:#58d6ff;
+  --accent-2:#86f0ff;
+  --accent-3:#1ea9ff;
+  --shadow:0 32px 90px rgba(0, 0, 0, 0.36);
+  --radius-xl:34px;
+  --radius-lg:24px;
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
-
+html{scroll-behavior:smooth}
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",
-  Segoe UI,Roboto,Helvetica,Arial;
+  font-family:"Avenir Next","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
   color:var(--text);
   background:
-    radial-gradient(1200px 700px at 18% 18%, rgba(255,255,255,.10), transparent 60%),
-    radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,.07), transparent 60%),
-    radial-gradient(1100px 900px at 50% 120%, rgba(255,255,255,.06), transparent 55%),
-    var(--bg);
-  display:grid;
-  place-items:center;
-  padding:24px;
+    radial-gradient(900px 540px at 8% 10%, rgba(88, 214, 255, 0.20), transparent 60%),
+    radial-gradient(900px 620px at 88% 16%, rgba(30, 169, 255, 0.16), transparent 58%),
+    radial-gradient(900px 680px at 52% 110%, rgba(134, 240, 255, 0.12), transparent 55%),
+    linear-gradient(180deg, var(--bg-2), var(--bg));
+  min-height:100vh;
 }
 
-.wrap{width:min(980px,100%)}
+a{color:inherit}
+img{max-width:100%;display:block}
+main{display:block}
 
-.card{
-  background:linear-gradient(180deg,var(--card),var(--card2));
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  overflow:hidden;
+.shell{
+  width:min(1180px, calc(100% - 32px));
+  margin:0 auto;
+  padding:28px 0 40px;
 }
 
-header{
-  padding:32px 36px 20px;
+.topbar{
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  align-items:flex-start;
-  gap:20px;
+  gap:16px;
+  margin-bottom:18px;
   flex-wrap:wrap;
 }
 
-.brand{
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:rgba(5, 17, 25, 0.56);
+  color:var(--muted);
+  font-size:13px;
+  letter-spacing:0.05em;
+}
+
+.eyebrow-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:linear-gradient(180deg, var(--accent-2), var(--accent-3));
+  box-shadow:0 0 18px rgba(88, 214, 255, 0.7);
+}
+
+.top-links{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.top-links a,
+.cta,
+.secondary{
+  text-decoration:none;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:11px 16px;
+  font-size:14px;
+  transition:transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.top-links a,
+.secondary{
+  background:rgba(5, 17, 25, 0.48);
+  color:var(--muted);
+}
+
+.cta{
+  background:linear-gradient(135deg, rgba(88, 214, 255, 0.16), rgba(30, 169, 255, 0.18));
+  color:var(--text);
+}
+
+.top-links a:hover,
+.cta:hover,
+.secondary:hover{
+  transform:translateY(-1px);
+  border-color:rgba(138, 223, 255, 0.34);
+}
+
+.card{
+  background:linear-gradient(180deg, var(--surface), rgba(4, 18, 28, 0.9));
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius-xl);
+  overflow:hidden;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:0.96fr 1.04fr;
+  gap:28px;
+  padding:34px;
+  position:relative;
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(135deg, rgba(88, 214, 255, 0.06), transparent 40%),
+    linear-gradient(315deg, rgba(30, 169, 255, 0.05), transparent 42%);
+  pointer-events:none;
+}
+
+.visual,
+.hero-copy{
+  position:relative;
+  z-index:1;
+}
+
+.visual{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:420px;
+  border:1px solid rgba(138, 223, 255, 0.12);
+  border-radius:30px;
+  background:
+    radial-gradient(420px 280px at 50% 38%, rgba(88, 214, 255, 0.30), transparent 60%),
+    radial-gradient(320px 260px at 50% 68%, rgba(30, 169, 255, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(10, 34, 49, 0.96), rgba(4, 19, 29, 0.96));
+  overflow:hidden;
+}
+
+.visual img{
+  width:min(460px, 84%);
+  filter:drop-shadow(0 24px 45px rgba(50, 221, 255, 0.18));
+}
+
+.hero-copy{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  justify-content:center;
+  gap:18px;
+}
+
+.tag{
+  display:inline-flex;
+  width:max-content;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:rgba(88, 214, 255, 0.08);
+  color:var(--accent-2);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
 }
 
 h1{
   margin:0;
-  font-size:34px;
-  letter-spacing:-0.02em;
+  font-size:clamp(38px, 6vw, 66px);
+  line-height:0.96;
+  letter-spacing:-0.05em;
 }
 
-.tagline{
-  font-size:13px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
+.hero-copy h1 span{
+  display:block;
+  color:rgba(235, 249, 255, 0.78);
+}
+
+.lead{
+  margin:0;
+  max-width:58ch;
+  font-size:18px;
+  line-height:1.75;
   color:var(--muted);
 }
 
-.established{
+.quick-facts{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+
+.fact{
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px 15px;
+  background:rgba(10, 29, 41, 0.72);
+}
+
+.fact-label{
+  display:block;
+  margin-bottom:8px;
   font-size:12px;
   color:var(--subtle);
-  letter-spacing:.08em;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
 }
 
-.pill{
-  border:1px solid var(--border);
-  background:rgba(0,0,0,.20);
-  padding:9px 12px;
-  border-radius:999px;
-  font-size:12px;
-  color:var(--muted);
+.fact-value{
+  font-size:15px;
+  line-height:1.45;
+}
+
+.hero-actions{
   display:flex;
-  align-items:center;
-  gap:8px;
+  gap:12px;
+  flex-wrap:wrap;
 }
 
-.dot{
-  width:7px;height:7px;border-radius:50%;
-  background:rgba(255,255,255,.55);
-}
-
-.divider{
-  height:1px;
-  background:rgba(255,255,255,.08);
-}
-
-main{
-  padding:26px 36px;
+.section-grid{
   display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:32px;
-}
-
-.copy p{
-  line-height:1.7;
-  color:var(--muted);
-  margin:0 0 14px;
-}
-
-.mail{
-  display:inline-block;
-  margin-top:12px;
-  padding:10px 14px;
-  border:1px solid var(--border);
-  border-radius:14px;
-  background:rgba(255,255,255,.05);
-  color:var(--text);
-  text-decoration:none;
-  transition:.2s ease;
-}
-
-.mail:hover{
-  background:rgba(255,255,255,.08);
+  grid-template-columns:1.08fr 0.92fr;
+  gap:22px;
+  margin-top:22px;
 }
 
 .panel{
+  background:linear-gradient(180deg, var(--surface-2), rgba(5, 19, 28, 0.84));
   border:1px solid var(--border);
-  border-radius:20px;
-  padding:18px;
-  background:rgba(0,0,0,.15);
+  border-radius:var(--radius-lg);
+  padding:26px;
+  box-shadow:var(--shadow);
 }
 
 .panel h2{
   margin:0 0 14px;
-  font-size:12px;
-  letter-spacing:.14em;
+  font-size:15px;
+  letter-spacing:0.14em;
   text-transform:uppercase;
-  color:var(--subtle);
+  color:var(--accent-2);
 }
 
-.row{
-  margin-bottom:14px;
+.panel p{
+  margin:0 0 14px;
+  line-height:1.8;
+  color:var(--muted);
 }
 
-.label{
-  font-size:12px;
-  color:var(--subtle);
-  text-transform:uppercase;
-  letter-spacing:.08em;
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:16px;
+  margin-top:18px;
 }
 
-.value{
+.mini{
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:18px;
+  background:linear-gradient(180deg, rgba(14, 46, 63, 0.58), rgba(6, 22, 32, 0.76));
+}
+
+.mini strong{
+  display:block;
+  margin-bottom:8px;
+  font-size:16px;
+}
+
+.mini p{
+  margin:0;
+  color:var(--muted);
   font-size:14px;
+  line-height:1.7;
+}
+
+.details{
+  display:grid;
+  gap:14px;
+  margin-top:10px;
+}
+
+.detail{
+  display:grid;
+  gap:6px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(138, 223, 255, 0.10);
+}
+
+.detail:last-child{
+  padding-bottom:0;
+  border-bottom:0;
+}
+
+.detail-label{
+  font-size:12px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--subtle);
+}
+
+.detail-value{
+  font-size:15px;
+  line-height:1.65;
+}
+
+.note{
+  margin-top:16px;
+  padding:16px 18px;
+  border:1px solid rgba(138, 223, 255, 0.14);
+  border-radius:18px;
+  background:rgba(88, 214, 255, 0.06);
+  color:var(--muted);
+  line-height:1.7;
 }
 
 footer{
-  padding:18px 36px 24px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  gap:14px;
   flex-wrap:wrap;
-  gap:12px;
-  font-size:12px;
+  padding:22px 4px 0;
   color:var(--subtle);
+  font-size:13px;
+}
+
+footer nav{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
 }
 
 footer a{
-  color:var(--subtle);
   text-decoration:none;
 }
 
@@ -183,87 +378,271 @@ footer a:hover{
   color:var(--text);
 }
 
-@media(max-width:760px){
-  main{grid-template-columns:1fr}
+@media (max-width:940px){
+  .hero,
+  .section-grid,
+  .cards,
+  .quick-facts{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    padding:24px;
+  }
+
+  .visual{
+    min-height:300px;
+  }
+}
+
+@media (max-width:640px){
+  .shell{
+    width:min(100% - 20px, 1180px);
+    padding:20px 0 30px;
+  }
+
+  .topbar{
+    margin-bottom:14px;
+  }
+
+  .hero,
+  .panel{
+    padding:20px;
+  }
+
+  h1{
+    font-size:38px;
+  }
+
+  .lead{
+    font-size:16px;
+  }
 }
 </style>
-</head>
-
-<body>
-
-<div class="wrap">
-<div class="card">
-
-<header>
-  <div class="brand">
-    <h1>Bluefin Tuna LLC</h1>
-    <div class="tagline">Technology. Design. Intelligence.</div>
-    <div class="established">Established 2025</div>
-  </div>
-
-  <div class="pill">
-    <span class="dot"></span>
-    U.S.-based software company
-  </div>
-</header>
-
-<div class="divider"></div>
-
-<main>
-
-<div class="copy">
-  <p>
-    Bluefin Tuna LLC is a U.S.-based software company developing thoughtfully engineered digital products for global markets.
-  </p>
-  <p>
-    We build scalable mobile applications and intelligent systems with a strong emphasis on design clarity, performance, and long-term innovation.
-  </p>
-
-  <a class="mail" href="mailto:support@bluefintuna.life">
-    support@bluefintuna.life
-  </a>
-</div>
-
-<aside class="panel">
-  <h2>Company Details</h2>
-
-  <div class="row">
-    <div class="label">Location</div>
-    <div class="value">United States</div>
-  </div>
-
-  <div class="row">
-    <div class="label">Brand</div>
-    <div class="value">SnappiQ</div>
-  </div>
-
-  <div class="row">
-    <div class="label">Publisher</div>
-    <div class="value">Bluefin Tuna LLC</div>
-  </div>
-</aside>
-
-</main>
-
-<footer>
-  <div>© <span id="yearRange"></span> Bluefin Tuna LLC. All rights reserved.</div>
-
-  <div>
-    <a href="privacy.html">Privacy Policy</a>
-  </div>
-</footer>
-
-</div>
-</div>
-
-<script>
-const startYear = 2025;
-const currentYear = new Date().getFullYear();
-document.getElementById("yearRange").textContent =
-  currentYear > startYear
-    ? `${startYear}–${currentYear}`
-    : `${startYear}`;
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bluefin Tuna LLC",
+  "legalName": "Bluefin Tuna LLC",
+  "url": "https://bluefintuna.life/",
+  "logo": "https://bluefintuna.life/assets/company-logo.png",
+  "email": "support@bluefintuna.life",
+  "foundingDate": "2025",
+  "description": "Bluefin Tuna LLC is a U.S.-based software company focused on software development, digital products, and long-term product operations.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "US"
+  },
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "business inquiries",
+      "email": "support@bluefintuna.life",
+      "url": "https://bluefintuna.life/"
+    }
+  ]
+}
 </script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        Official website of Bluefin Tuna LLC
+      </div>
+      <nav class="top-links" aria-label="Primary">
+        <a href="company.html">Company Information</a>
+        <a href="#contact">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </nav>
+    </header>
 
+    <main>
+      <section class="card">
+        <div class="hero">
+          <div class="visual">
+            <img src="assets/company-logo.png" alt="Bluefin Tuna LLC logo" />
+          </div>
+
+          <div class="hero-copy">
+            <div class="tag">Official Public Company Website</div>
+
+            <h1>
+              Bluefin Tuna
+              <span>LLC</span>
+            </h1>
+
+            <p class="lead">
+              Bluefin Tuna LLC is a U.S.-based software company focused on
+              software development, mobile applications, digital products, and
+              long-term product operations.
+            </p>
+
+            <p class="lead">
+              The domain <strong>bluefintuna.life</strong> is the official public
+              website of Bluefin Tuna LLC and is used for company information,
+              privacy disclosures, and business communication through the
+              company domain.
+            </p>
+
+            <div class="quick-facts">
+              <div class="fact">
+                <span class="fact-label">Legal Entity</span>
+                <span class="fact-value">Bluefin Tuna LLC</span>
+              </div>
+              <div class="fact">
+                <span class="fact-label">Official Domain</span>
+                <span class="fact-value">bluefintuna.life</span>
+              </div>
+              <div class="fact">
+                <span class="fact-label">Business Contact</span>
+                <span class="fact-value">
+                  <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
+                </span>
+              </div>
+            </div>
+
+            <div class="hero-actions">
+              <a class="cta" href="company.html">View Company Information</a>
+              <a class="secondary" href="mailto:support@bluefintuna.life">Contact Bluefin Tuna LLC</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-grid" aria-label="Company overview">
+        <article class="panel">
+          <h2>About Bluefin Tuna LLC</h2>
+          <p>
+            Bluefin Tuna LLC develops, publishes, and operates software products
+            with an emphasis on usability, reliable engineering, and sustainable
+            product maintenance.
+          </p>
+          <p>
+            Our work includes mobile application development, digital product
+            design, software publishing, and the ongoing operation of
+            user-facing digital services.
+          </p>
+
+          <div class="cards">
+            <div class="mini">
+              <strong>Software Development</strong>
+              <p>
+                Planning, building, and maintaining software products and modern
+                application experiences.
+              </p>
+            </div>
+            <div class="mini">
+              <strong>Product Operations</strong>
+              <p>
+                Ongoing release management, support workflows, and long-term
+                stewardship of digital products.
+              </p>
+            </div>
+            <div class="mini">
+              <strong>Business Communication</strong>
+              <p>
+                Official company contact point for business, platform, and
+                organization-related inquiries through the company domain.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="panel" id="company-details">
+          <h2>Public Company Details</h2>
+
+          <div class="details">
+            <div class="detail">
+              <div class="detail-label">Official Legal Name</div>
+              <div class="detail-value">Bluefin Tuna LLC</div>
+            </div>
+            <div class="detail">
+              <div class="detail-label">Entity Type</div>
+              <div class="detail-value">Limited Liability Company</div>
+            </div>
+            <div class="detail">
+              <div class="detail-label">Primary Business Activity</div>
+              <div class="detail-value">
+                Software development, digital product publishing, and product
+                operations
+              </div>
+            </div>
+            <div class="detail">
+              <div class="detail-label">Official Website Domain</div>
+              <div class="detail-value">bluefintuna.life</div>
+            </div>
+            <div class="detail">
+              <div class="detail-label">Public Business Contact</div>
+              <div class="detail-value">
+                <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
+              </div>
+            </div>
+            <div class="detail">
+              <div class="detail-label">Website Status</div>
+              <div class="detail-value">Publicly available and active</div>
+            </div>
+          </div>
+
+          <div class="note">
+            The domain bluefintuna.life is operated by Bluefin Tuna LLC as its
+            public-facing company website. Additional non-public company records
+            are provided directly to authorized partners or platform operators
+            when required.
+          </div>
+        </aside>
+      </section>
+
+      <section class="section-grid" aria-label="Website purpose and contact">
+        <article class="panel">
+          <h2>Official Website Purpose</h2>
+          <p>
+            This website provides public information about Bluefin Tuna LLC, its
+            official domain, its software activities, and its business contact
+            channels.
+          </p>
+          <p>
+            It is intended to remain publicly accessible and functional as the
+            company's public website, including company information, privacy
+            information, and contact details for relevant inquiries.
+          </p>
+        </article>
+
+        <article class="panel" id="contact">
+          <h2>Contact</h2>
+          <p>
+            For business inquiries, partnership requests, product matters, or
+            organization verification requests, please contact Bluefin Tuna LLC
+            using the official company email below.
+          </p>
+          <p>
+            <a href="mailto:support@bluefintuna.life">support@bluefintuna.life</a>
+          </p>
+          <p>
+            Messages sent to the company domain are reviewed through the
+            official business contact channel.
+          </p>
+        </article>
+      </section>
+
+      <footer>
+        <div>&copy; <span id="yearRange"></span> Bluefin Tuna LLC. All rights reserved.</div>
+        <nav aria-label="Footer">
+          <a href="company.html">Company Information</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="mailto:support@bluefintuna.life">Contact</a>
+        </nav>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const startYear = 2025;
+    const currentYear = new Date().getFullYear();
+    document.getElementById("yearRange").textContent =
+      currentYear > startYear ? `${startYear}-${currentYear}` : `${startYear}`;
+  </script>
 </body>
 </html>
