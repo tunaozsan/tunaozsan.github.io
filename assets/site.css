@@ -202,7 +202,7 @@ main{display:block}
 }
 
 .visual img{
-  width:min(430px, 82%);
+  width:min(360px, 70%);
   filter:drop-shadow(0 30px 60px rgba(15, 124, 154, 0.18));
 }
 
@@ -249,7 +249,7 @@ h1{
 
 .quick-facts{
   display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
+  grid-template-columns:repeat(12, minmax(0, 1fr));
   gap:14px;
 }
 
@@ -265,7 +265,12 @@ h1{
 }
 
 .fact{
+  grid-column:span 3;
   padding:18px;
+}
+
+.fact-contact{
+  grid-column:span 6;
 }
 
 .fact-label,
@@ -305,6 +310,21 @@ h1{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
+}
+
+.contact-list{
+  display:grid;
+  gap:12px;
+  margin:2px 0 16px;
+}
+
+.contact-item{
+  min-width:0;
+  padding:16px 18px;
+  border:1px solid rgba(125, 189, 213, 0.48);
+  border-radius:20px;
+  background:rgba(255, 255, 255, 0.72);
+  box-shadow:var(--shadow-soft);
 }
 
 .section-grid{
@@ -461,13 +481,18 @@ footer a:hover{
 
 .summary{
   display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
+  grid-template-columns:repeat(12, minmax(0, 1fr));
   gap:16px;
   margin-bottom:24px;
 }
 
 .summary-item{
+  grid-column:span 3;
   padding:18px;
+}
+
+.summary-contact{
+  grid-column:span 6;
 }
 
 .page-details{
@@ -496,6 +521,21 @@ footer a:hover{
     grid-template-columns:1fr;
   }
 
+  .quick-facts,
+  .summary{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  .fact,
+  .summary-item{
+    grid-column:auto;
+  }
+
+  .fact-contact,
+  .summary-contact{
+    grid-column:1 / -1;
+  }
+
   .visual{
     min-height:360px;
   }
@@ -515,6 +555,13 @@ footer a:hover{
   .summary,
   .page-details{
     grid-template-columns:1fr;
+  }
+
+  .fact,
+  .fact-contact,
+  .summary-item,
+  .summary-contact{
+    grid-column:auto;
   }
 
   .hero,
