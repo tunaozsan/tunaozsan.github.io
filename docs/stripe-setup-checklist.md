@@ -1,10 +1,10 @@
 # Stripe configuration handoff
 
-Prepared 28 October 2026. This is an operational checklist, not a record of completed Stripe Dashboard changes. No Stripe account, bank information, API secret, live checkout or invoice configuration was accessed or changed for this implementation.
+Prepared 28 October 2026. This is an operational checklist, not a record of completed Stripe Dashboard changes. Public payment pages were inspected on 28 October 2026. No Stripe Dashboard, bank information, API secret or invoice configuration was changed.
 
 ## Current site behavior
 
-All seven entries in `data/payment-links.json` are `null`. Each card opens an editable email addressed to `support@bluefintuna.life`, identifying its exact SKU and price. No customer is sent to an invented checkout or asked to enter card data on the website. Each CTA has service terms, refund and privacy links alongside it.
+All seven user-supplied Payment Links are now configured in `data/payment-links.json`. Each package card opens its own Stripe-hosted checkout. Product names and USD amounts were matched against the public checkout pages: Audit $199; Basic without resources $499; Basic with resources $799; Detailed without resources $999; Detailed with resources $1,499; Update without resources $399; Update with resources $649. Each displayed a single matching product for Bluefin Tuna LLC. Local-currency pricing was also visible. No payment was submitted; post-payment receipts and dashboard-only settings remain unverified. Each CTA retains service terms, refund and privacy links.
 
 Keep the old combined multi-package checkout deactivated and excluded from the website. Each core SKU needs its own verified, single-product, one-time link. No material add-on should silently change a core checkout.
 
