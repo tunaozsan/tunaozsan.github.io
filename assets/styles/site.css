@@ -21,3 +21,14 @@
 @media(max-width:767px){.brand-mark{width:54px;height:54px;padding:6px}.brand-mark img{position:static;width:100%;height:100%}.hero-art{height:570px}.brand-surface{width:84%;max-width:365px;top:20px;right:5%}.schedule-float{width:96%}}
 @media(max-width:374px){.brand-mark{width:46px;height:46px;padding:5px}.brand-mark img{position:static;width:100%;height:100%}.hero-art{height:510px}}
 @media(min-width:1100px){.hero-art{height:660px}.brand-surface{top:24px}}
+/* Icon-only dark branding and readable navigation. */
+.site-header{background:#081221}
+.brand-mark{background:#081221;width:72px;height:72px;padding:3px;border-radius:0}
+.brand-wordmark{font-size:22px;color:#fff;letter-spacing:.07em}
+.brand-wordmark small{font-size:9px;line-height:1.5;letter-spacing:.04em;color:#d6e4ef;max-width:240px;white-space:normal}
+.primary-nav{gap:22px}.primary-nav>a{font-size:15px;font-weight:500;color:#f3f7fc}.primary-nav>a:hover,.primary-nav>a[aria-current]{color:#7fdbf1}
+.menu-toggle{font-size:14px;color:#fff;border-color:#66778b}
+@media(min-width:1100px) and (max-width:1250px){.primary-nav{gap:14px}.primary-nav>a{font-size:14px}.nav-layout{gap:18px}.brand-wordmark{font-size:20px}.brand-wordmark small{max-width:210px}}
+@media(max-width:1099px){.primary-nav>a{font-size:16px}.brand-wordmark{font-size:21px}.brand-mark{width:64px;height:64px}}
+@media(max-width:767px){.brand{gap:8px}.brand-mark{width:56px;height:56px;padding:2px}.brand-wordmark{font-size:18px}.brand-wordmark small{font-size:8px;max-width:170px;line-height:1.4}.menu-toggle{padding-inline:10px;gap:8px}}
+@media(max-width:374px){.brand-mark{width:46px;height:46px}.brand-wordmark{font-size:16px}.brand-wordmark small{font-size:8px;max-width:145px}.menu-toggle{font-size:12px;padding-inline:8px}}
