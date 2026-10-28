@@ -1,9 +1,9 @@
 {
-  "AUDIT-150": null,
-  "BASE-BASIC-NR-75": null,
-  "BASE-BASIC-R-75": null,
-  "BASE-DETAIL-NR-200": null,
-  "BASE-DETAIL-R-200": null,
-  "UPDATE-NR-200": null,
-  "UPDATE-R-200": null
+  "AUDIT-150": "https://buy.stripe.com/00weVcbpf19k0BUbJ82Nq00",
+  "BASE-BASIC-NR-75": "https://buy.stripe.com/cNi4gy50R6tE0BU3cC2Nq02",
+  "BASE-BASIC-R-75": "https://buy.stripe.com/cNidR8fFv4lwbgybJ82Nq04",
+  "BASE-DETAIL-NR-200": "https://buy.stripe.com/cNi6oGbpff0a98q7sS2Nq03",
+  "BASE-DETAIL-R-200": "https://buy.stripe.com/5kQeVcctj8BMckC6oO2Nq05",
+  "UPDATE-NR-200": "https://buy.stripe.com/aFaaEW3WN6tE2K2fZo2Nq06",
+  "UPDATE-R-200": "https://buy.stripe.com/5kQ28q3WN7xI4Sa3cC2Nq07"
 }

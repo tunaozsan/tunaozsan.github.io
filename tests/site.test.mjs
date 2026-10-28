@@ -18,8 +18,9 @@ for(const p of baseline.matchAll(/<(?:p|li)\b[^>]*>([\s\S]*?)<\/(?:p|li)>/g))che
 check(read('index.html').match(/id="contact"[\s\S]*mailto:support@bluefintuna.life/),'Homepage contact without JS');check(read('company.html').includes('+90 543 675 40 31'),'Public phone preserved');check(read('CNAME').trim()==='bluefintuna.life','Custom domain preserved');
 const approved=[[199,150,5],[499,75,5],[799,75,7],[999,200,10],[1499,200,12],[399,200,4],[649,200,5]];
 const catalog=JSON.parse(read('data/services.json'));const links=JSON.parse(read('data/payment-links.json'));check(catalog.services.length===7,'Seven independent packages');
-catalog.services.forEach((s,i)=>{assert.deepEqual([s.price,s.maxActivities,s.businessDays],approved[i],s.sku);checks++;check(links[s.sku]===null,'Unverified payment links disabled');check(read('planning/services/index.html').includes(`id="${s.sku}"`),'Service anchor');});
+catalog.services.forEach((s,i)=>{assert.deepEqual([s.price,s.maxActivities,s.businessDays],approved[i],s.sku);checks++;check(/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/.test(links[s.sku]),'Valid Stripe payment URL'); const card=read('planning/services/index.html').split(`id="${s.sku}"`)[1].split('</article>')[0];check(card.includes(`href="${links[s.sku]}"`),`${s.sku}: correct checkout in its card`);check(read('planning/services/index.html').includes(`id="${s.sku}"`),'Service anchor');});
 for(const p of ['service-terms.html','refund-policy.html']){check(read(p).includes('content="noindex,follow"'),`${p} draft not indexed`);check(!read('sitemap.xml').includes('/'+p),`${p} not in sitemap`);}
-check(!pages.some(p=>/buy\.stripe\.com/.test(read(p))),'No invented checkout links');
+check(new Set(Object.values(links)).size===7,'Seven distinct checkouts');
+for(const p of pages) for(const m of read(p).matchAll(/href="(https:\/\/buy\.stripe\.com\/[^"]+)"/g)) check(Object.values(links).includes(m[1]),'Only configured checkout links');
 check(read('assets/styles/site.css').includes('prefers-reduced-motion'),'Reduced motion support');
 console.log(`PASS: ${checks} assertions across ${pages.length} pages. Legacy company-logo remote blob must remain unchanged at deployment.`);
