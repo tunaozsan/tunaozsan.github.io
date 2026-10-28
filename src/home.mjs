@@ -12,7 +12,7 @@ export function home(serviceCards, faqHtml) { return `
   <div class="hero-art" aria-label="Bluefin Tuna brand with an illustrative project schedule">
     <div class="orbital orbital-one"></div><div class="orbital orbital-two"></div>
     <div class="art-coordinate coordinate-top">BLUEFIN TUNA / SYSTEM 01</div>
-    <div class="brand-surface"><img class="hero-logo" src="/assets/brand/bluefin-tuna-1000.webp" width="1000" height="1000" alt="Bluefin Tuna LLC — Project Planning & Software Solutions" fetchpriority="high"><div class="surface-label"><span>PRECISION, BY DESIGN.</span><span>↗</span></div></div>
+    <div class="brand-surface"><img class="hero-logo" src="/assets/brand/bluefin-tuna-premium-1000.webp" width="1000" height="1000" alt="Bluefin Tuna LLC — Project Planning & Software Solutions" fetchpriority="high"><div class="surface-label"><span>PRECISION, BY DESIGN.</span><span>↗</span></div></div>
     <div class="schedule-float" aria-hidden="true">
       <div class="schedule-title"><span><i class="status-dot"></i> PROJECT OVERVIEW</span><span class="mono">P6 / CPM</span></div>
       <div class="schedule-months"><span>W01</span><span>W02</span><span>W03</span><span>W04</span></div>
