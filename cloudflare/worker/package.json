@@ -1,0 +1,37 @@
+{
+  "name": "bluefin-project-portal-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json",
+    "test": "tsx --test test/*.test.ts",
+    "dev": "wrangler dev --test-scheduled",
+    "migrate:local": "wrangler d1 migrations apply bluefin-project-db --local",
+    "bundle": "esbuild src/index.ts --bundle --format=esm --outfile=.build/worker.js --platform=browser",
+    "format": "prettier --write src test ../../src/portal-client.ts",
+    "format:check": "prettier --check src test ../../src/portal-client.ts"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "jose": "6.2.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261028.1",
+    "@types/node": "26.6.5",
+    "esbuild": "0.28.2",
+    "miniflare": "4.20260730.0",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "wrangler": "4.154.0"
+  },
+  "overrides": {
+    "miniflare": {
+      "sharp": "0.35.5",
+      "undici": "7.30.1"
+    }
+  }
+}
