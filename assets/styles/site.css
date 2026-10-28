@@ -13,3 +13,11 @@
 .hero-art{overflow:hidden}.hero-logo{transform:translateY(-20%)}
 .schedule-float{left:0;bottom:0;backdrop-filter:none}.coordinate-bottom{display:none}
 @media(min-width:768px){.hero-art{height:570px}}
+/* Logo refresh: retain the entire lockup and a real clear-space area. */
+.brand-mark{width:66px;height:66px;padding:7px;display:grid;place-items:center;flex-shrink:0;background:#fff;border-radius:6px;overflow:visible}
+.brand-mark img{position:static;width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center;transform:none}
+.hero-logo{transform:none}.hero-art{height:640px}.brand-surface{width:75%;max-width:390px;top:8px;right:7%;transform:rotate(-4deg);background:#fff}.surface-label{display:none}.schedule-float{bottom:0}
+@media(max-width:1099px){.brand-mark{width:58px;height:58px;padding:6px}.hero-art{height:590px}}
+@media(max-width:767px){.brand-mark{width:54px;height:54px;padding:6px}.brand-mark img{position:static;width:100%;height:100%}.hero-art{height:570px}.brand-surface{width:84%;max-width:365px;top:20px;right:5%}.schedule-float{width:96%}}
+@media(max-width:374px){.brand-mark{width:46px;height:46px;padding:5px}.brand-mark img{position:static;width:100%;height:100%}.hero-art{height:510px}}
+@media(min-width:1100px){.hero-art{height:660px}.brand-surface{top:24px}}
