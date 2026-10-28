@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /src/
+Disallow: /scripts/
+Disallow: /tests/
+Disallow: /docs/
 
 Sitemap: https://bluefintuna.life/sitemap.xml

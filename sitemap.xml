@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://bluefintuna.life/</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://bluefintuna.life/company.html</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://bluefintuna.life/privacy.html</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
+  <url><loc>https://bluefintuna.life/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/services/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/schedule-audit/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/baseline-schedule/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/schedule-update/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/resource-loading/</loc></url>
+  <url><loc>https://bluefintuna.life/planning/request-quote/</loc></url>
+  <url><loc>https://bluefintuna.life/software/</loc></url>
+  <url><loc>https://bluefintuna.life/about/</loc></url>
+  <url><loc>https://bluefintuna.life/contact/</loc></url>
+  <url><loc>https://bluefintuna.life/support/</loc></url>
+  <url><loc>https://bluefintuna.life/privacy.html</loc></url>
+  <url><loc>https://bluefintuna.life/company.html</loc></url>
 </urlset>
