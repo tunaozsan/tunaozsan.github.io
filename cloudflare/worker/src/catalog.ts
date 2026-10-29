@@ -8,7 +8,7 @@ export class Problem extends Error {
 }
 export const TTL = 43200,
   MAX_FILE = 20 * 1024 * 1024;
-export const TERMS = "portal-draft-2026-10-28";
+export const TERMS = "portal-draft-2026-10-29";
 export const packages = [
   ["p6_audit", "Primavera P6 Schedule Audit", 19900, 150, 5, 0, false],
   [

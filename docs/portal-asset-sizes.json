@@ -1,14 +1,14 @@
 {
   "assets/scripts/portal.js": {
-    "bytes": 22823,
-    "gzipBytes": 7059
+    "bytes": 24412,
+    "gzipBytes": 7526
   },
   "assets/styles/portal.css": {
     "bytes": 3202,
     "gzipBytes": 1148
   },
   "project-portal/index.html": {
-    "bytes": 10669,
-    "gzipBytes": 4074
+    "bytes": 10955,
+    "gzipBytes": 4180
   }
 }

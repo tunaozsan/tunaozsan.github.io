@@ -1,6 +1,6 @@
 import { test, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { Miniflare } from "miniflare";
 import { app } from "../src/index";
 import { quote, packages, TTL, TERMS, MAX_FILE } from "../src/catalog";
@@ -190,11 +190,15 @@ before(async () => {
     TAX_MODE: "owner_reviewed_manual",
     INVOICE_CREATION: "false",
   };
-  const sql = readFileSync(
-    new URL("../migrations/0001_init.sql", import.meta.url),
-    "utf8",
-  );
-  await e.DB.exec(sql.replace(/\n/g, " "));
+  for (const name of readdirSync(new URL("../migrations/", import.meta.url))
+    .filter((x) => x.endsWith(".sql"))
+    .sort()) {
+    const sql = readFileSync(
+      new URL("../migrations/" + name, import.meta.url),
+      "utf8",
+    );
+    await e.DB.exec(sql.replace(/^--.*$/gm, "").replace(/\n/g, " "));
+  }
 });
 after(async () => {
   await mf.dispose();
@@ -216,6 +220,9 @@ beforeEach(async () => {
     await e.DB.prepare(`DELETE FROM ${table}`).run();
   const list = await e.UPLOADS.list();
   for (const o of list.objects) await e.UPLOADS.delete(o.key);
+  e.INVOICE_CREATION = "false";
+  e.TAX_MODE = "owner_reviewed_manual";
+  d.fetch = fakeFetch;
   delete e.TELEGRAM_BOT_TOKEN;
   delete e.TELEGRAM_CHAT_ID;
 });
@@ -364,11 +371,19 @@ test("concurrent reservations enforce cumulative byte and count quota", async ()
   const results = await Promise.allSettled(
     Array.from({ length: 8 }, (_, i) => reserve(i)),
   );
-  assert.equal(results.filter((x) => x.status === "fulfilled").length, 5);
+  assert.equal(results.filter((x) => x.status === "fulfilled").length, 2);
+  await e.DB.prepare("DELETE FROM order_files").run();
+  for (let i = 0; i < 5; i++) {
+    await reserve(i);
+    await e.DB.prepare("UPDATE order_files SET state='READY' WHERE id=?")
+      .bind("f" + i)
+      .run();
+  }
+  await assert.rejects(() => reserve(6));
   await e.DB.prepare("DELETE FROM order_files").run();
   for (let i = 0; i < 20; i++)
     await reserve(i).then(() =>
-      e.DB.prepare("UPDATE order_files SET bytes=1 WHERE id=?")
+      e.DB.prepare("UPDATE order_files SET bytes=1,state='READY' WHERE id=?")
         .bind("f" + i)
         .run(),
     );
@@ -735,6 +750,10 @@ test("authenticated admin downloads only paid live files and issues one no-charg
     livemode: false,
     data: { object: s },
   });
+  assert.equal(
+    (await admin(`/${o.orderId}/actions`, "mark-retrieved")).status,
+    409,
+  );
   const download = await admin(`/${o.orderId}/files/${f.id}`);
   assert.equal(download.status, 200);
   assert.match(download.headers.get("Content-Disposition")!, /^attachment/);
@@ -749,6 +768,10 @@ test("authenticated admin downloads only paid live files and issues one no-charg
     await admin(`/${o.orderId}/actions`, "issue-reupload")
   ).json()) as any;
   assert.ok(child.token);
+  assert.equal(
+    (await admin(`/${child.orderId}/actions`, "mark-retrieved")).status,
+    409,
+  );
   assert.equal(
     (await admin(`/${o.orderId}/actions`, "issue-reupload")).status,
     409,
@@ -777,5 +800,465 @@ test("authenticated admin downloads only paid live files and issues one no-charg
         .first()
     ).status,
     "PAID",
+  );
+});
+
+test("all package activity boundaries, delivery days and material prices", () => {
+  assert.deepEqual(
+    packages.map((p) => [p.cents, p.activities, p.days]),
+    [
+      [19900, 150, 5],
+      [49900, 75, 5],
+      [79900, 75, 7],
+      [99900, 200, 10],
+      [149900, 200, 12],
+      [39900, 200, 4],
+      [64900, 200, 5],
+    ],
+  );
+  for (const p of packages) {
+    const c = (n: number) => cart(p.sku, n, { existingResources: true });
+    const unit = p.resources
+      ? p.sku.startsWith("update")
+        ? 15000
+        : 17500
+      : 10000;
+    assert.equal(quote(c(p.activities)).total, p.cents);
+    for (const delta of [1, 49, 50, 51]) {
+      const q = quote(c(p.activities + delta));
+      assert.equal(q.total, p.cents + Math.ceil(delta / 50) * unit);
+      assert.equal(
+        q.scopeReview.length > 0,
+        Math.ceil(delta / 50) > p.maxBlocks,
+      );
+    }
+    assert.equal(
+      quote(c(p.activities + p.maxBlocks * 50)).scopeReview.length,
+      0,
+    );
+    assert.ok(quote(c(p.activities + p.maxBlocks * 50 + 1)).scopeReview.length);
+  }
+  for (const code of [
+    "concrete",
+    "rebar",
+    "formwork",
+    "structural_steel",
+    "piping",
+  ]) {
+    for (const rows of [1, 50]) {
+      assert.equal(
+        quote(
+          cart("baseline_basic_withres", 75, { materials: [{ code, rows }] }),
+        ).total,
+        104800,
+      );
+      const q = quote(
+        cart("update_withres", 200, {
+          existingResources: true,
+          materials: [{ code, rows }],
+        }),
+      );
+      assert.equal(q.total, 76800);
+      assert.ok(q.scopeReview.length);
+    }
+    assert.ok(
+      quote(
+        cart("baseline_basic_withres", 75, { materials: [{ code, rows: 51 }] }),
+      ).scopeReview.length,
+    );
+  }
+  for (const activities of [0, -1, 1.5, Infinity, NaN, 10001])
+    assert.throws(() => quote(cart("p6_audit", activities)));
+  assert.throws(() => quote({ ...cart(), sku: ["p6_audit", "update_nores"] }));
+  assert.throws(() =>
+    quote(
+      cart("baseline_basic_withres", 75, {
+        materials: [{ code: "concrete", rows: 0 }],
+      }),
+    ),
+  );
+});
+
+test("invoice flag is explicit, billing details collected and no production enabling", async () => {
+  const a = await create();
+  await pay(a);
+  assert.equal(stripeCalls[0].get("invoice_creation[enabled]"), "false");
+  assert.equal(
+    stripeCalls[0].has("invoice_creation[invoice_data][metadata][order_id]"),
+    false,
+  );
+  e.INVOICE_CREATION = "true";
+  e.TAX_MODE = "automatic";
+  const b = await create();
+  await pay(b);
+  const params = stripeCalls[1];
+  assert.equal(params.get("invoice_creation[enabled]"), "true");
+  assert.equal(params.get("customer_creation"), "always");
+  assert.equal(params.get("billing_address_collection"), "required");
+  assert.equal(params.get("customer_email"), "test@example.com");
+  assert.equal(params.get("automatic_tax[enabled]"), "true");
+  assert.equal(
+    params.get("invoice_creation[invoice_data][metadata][order_id]"),
+    b.orderId,
+  );
+  assert.match(
+    params.get("invoice_creation[invoice_data][description]")!,
+    /^Bluefin Tuna LLC/,
+  );
+  assert.equal(ready({ ...e, APP_ENV: "production" }), false);
+  assert.equal(ready({ ...e, TAX_MODE: "unconfigured" }), false);
+});
+
+test("verified tax-inclusive amount and invoice reference persist; negative tax rejected", async () => {
+  const o = await create(),
+    s = await pay(o);
+  s.status = "complete";
+  s.payment_status = "paid";
+  s.invoice = "in_test_reference";
+  s.total_details.amount_tax = 1990;
+  s.amount_total = 21890;
+  const ev = {
+    id: "evt_invoice",
+    type: "checkout.session.completed",
+    livemode: false,
+    data: { object: s },
+  };
+  s.total_details.amount_tax = -100;
+  s.amount_total = 19800;
+  assert.equal((await signed(ev)).status, 400);
+  s.total_details.amount_tax = 1990;
+  s.amount_total = 21890;
+  assert.equal((await signed(ev)).status, 200);
+  const row = await e.DB.prepare(
+    "SELECT paid_total,paid_tax,stripe_invoice_id FROM orders WHERE id=?",
+  )
+    .bind(o.orderId)
+    .first();
+  assert.deepEqual(
+    { ...row },
+    {
+      paid_total: 21890,
+      paid_tax: 1990,
+      stripe_invoice_id: "in_test_reference",
+    },
+  );
+});
+
+test("wrong merchant account, webhook account and metadata are rejected", async () => {
+  const o = await create();
+  d.fetch = async (url: any, opt: any) =>
+    String(url).endsWith("/account")
+      ? Response.json({ id: "acct_other" })
+      : fakeFetch(url, opt);
+  await file(o);
+  let q = (await (
+    await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+  ).json()) as any;
+  assert.equal(
+    (
+      await api(
+        `/api/v1/orders/${o.orderId}/checkout`,
+        "POST",
+        { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+        o.token,
+      )
+    ).status,
+    503,
+  );
+  assert.equal(stripeCalls.length, 0);
+  d.fetch = fakeFetch;
+  const s = await pay(o);
+  s.status = "complete";
+  s.payment_status = "paid";
+  const ev = {
+    id: "evt_account",
+    type: "checkout.session.completed",
+    livemode: false,
+    data: { object: s },
+  };
+  assert.equal((await signed({ ...ev, account: "acct_other" })).status, 400);
+  s.metadata.order_id = "other";
+  assert.equal((await signed(ev)).status, 409);
+  s.metadata.order_id = o.orderId;
+  s.metadata.quote_hash = "changed";
+  assert.equal((await signed(ev)).status, 400);
+});
+
+test("consent/version/hash and client total cannot be bypassed; cancel-return retry reuses session", async () => {
+  const o = await create();
+  await file(o);
+  const q = (await (
+    await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+  ).json()) as any;
+  const path = `/api/v1/orders/${o.orderId}/checkout`,
+    b = { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash };
+  for (const body of [
+    { ...b, consent: false },
+    { ...b, termsVersion: "old" },
+    { ...b, quoteHash: "fake" },
+    { ...b, total: 1 },
+  ])
+    assert.ok((await api(path, "POST", body, o.token)).status >= 400);
+  const first = (await (await api(path, "POST", b, o.token)).json()) as any;
+  const again = (await (await api(path, "POST", b, o.token)).json()) as any;
+  assert.equal(first.url, again.url);
+  assert.equal(stripeCalls.length, 1);
+  assert.equal(
+    (await api(path, "POST", { ...b, consent: false }, o.token)).status,
+    400,
+  );
+  const s = sessions["cs_test_" + o.orderId];
+  s.status = "expired";
+  assert.equal((await api(path, "POST", b, o.token)).status, 409);
+  assert.equal(
+    (
+      await signed({
+        id: "evt_expired",
+        type: "checkout.session.expired",
+        livemode: false,
+        data: { object: s },
+      })
+    ).status,
+    200,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT paid_at,status FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).status,
+    "EXPIRED_UNPAID",
+  );
+});
+
+test("async failure then verified success is reconciled without paid downgrade", async () => {
+  const o = await create(),
+    s = await pay(o);
+  s.status = "complete";
+  const event = (id: string, type: string) => ({
+    id,
+    type,
+    livemode: false,
+    data: { object: s },
+  });
+  assert.equal(
+    (await signed(event("evt_fail", "checkout.session.async_payment_failed")))
+      .status,
+    200,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).status,
+    "CANCELLED",
+  );
+  s.payment_status = "paid";
+  const ev = event("evt_paid", "checkout.session.async_payment_succeeded");
+  const responses = await Promise.all([signed(ev), signed(ev)]);
+  assert.ok(responses.every((r) => r.status === 200));
+  assert.equal(
+    (await e.DB.prepare("SELECT COUNT(*) n FROM notifications").first()).n,
+    1,
+  );
+  s.payment_status = "unpaid";
+  await signed(
+    event("evt_older_fail", "checkout.session.async_payment_failed"),
+  );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).status,
+    "PAID",
+  );
+});
+
+test("upload rejects forged lengths, MIME, category mismatch, Office archives and aborted streams", async () => {
+  const o = await create();
+  for (const [name, mime, body] of [
+    [
+      "table.xlsx",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "PK\x03\x04",
+    ],
+    [
+      "text.docx",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "PK\x03\x04",
+    ],
+    ["table.xls", "application/vnd.ms-excel", "\u00d0\u00cf\u0011\u00e0"],
+    [
+      "macro.xlsm",
+      "application/vnd.ms-excel.sheet.macroEnabled.12",
+      "PK\x03\x04",
+    ],
+    ["archive.zip", "application/zip", "PK\x03\x04"],
+    ["text.pdf", "text/plain", "%PDF-1.7"],
+  ])
+    assert.equal((await file(o, "boq", name, body, mime)).status, 415);
+  assert.equal(
+    (await file(o, "xer", "fake.pdf", "%PDF-1.7", "application/pdf")).status,
+    415,
+  );
+  const upload = (body: any, length: string) =>
+    app(d).fetch(
+      new Request(`https://api.example/api/v1/orders/${o.orderId}/files`, {
+        method: "POST",
+        headers: {
+          origin: site,
+          authorization: "Bearer " + o.token,
+          "content-type": "text/plain",
+          "x-file-name": "test.xer",
+          "x-file-category": "xer",
+          "content-length": length,
+        },
+        body,
+        duplex: "half",
+      } as any),
+      e,
+    );
+  assert.equal((await upload("ERMHDR", String(MAX_FILE + 1))).status, 413);
+  assert.equal(
+    (await upload("ERMHDR" + "x".repeat(MAX_FILE), "1")).status,
+    413,
+  );
+  const aborted = new ReadableStream({
+    start(c) {
+      c.enqueue(new TextEncoder().encode("ERMHDR"));
+      c.error(Error("simulated client disconnect"));
+    },
+  });
+  assert.equal((await upload(aborted, "6")).status, 400);
+  assert.equal((await e.UPLOADS.list()).objects.length, 0);
+  assert.equal(
+    (await file(o, "boq", "data.csv", "activity,quantity\nA,2", "text/csv"))
+      .status,
+    201,
+  );
+  assert.equal(
+    (
+      await file(
+        o,
+        "drawings",
+        "drawing.pdf",
+        "%PDF-1.7\nsynthetic only",
+        "application/pdf",
+      )
+    ).status,
+    201,
+  );
+  assert.equal((await file(o)).status, 201);
+});
+
+test("forged capabilities cannot read, upload or delete another order", async () => {
+  const a = await create(),
+    b = await create();
+  const f = (await (await file(a)).json()) as any;
+  for (const token of [b.token, "0".repeat(64)]) {
+    assert.equal(
+      (await api(`/api/v1/orders/${a.orderId}/files`, "GET", undefined, token))
+        .status,
+      404,
+    );
+    assert.equal(
+      (
+        await api(
+          `/api/v1/orders/${a.orderId}/files/${f.id}`,
+          "DELETE",
+          undefined,
+          token,
+        )
+      ).status,
+      404,
+    );
+    assert.equal((await file({ ...a, token })).status, 404);
+  }
+  // A genuinely stolen bearer credential grants its scoped permissions: never claim token hashing prevents theft.
+  assert.equal(
+    (await api(`/api/v1/orders/${a.orderId}/files`, "GET", undefined, a.token))
+      .status,
+    200,
+  );
+  clock += TTL;
+  assert.equal(
+    (await api(`/api/v1/orders/${a.orderId}/files`, "GET", undefined, a.token))
+      .status,
+    410,
+  );
+});
+
+test("operational monitor detects cleanup backlog, missing heartbeat and exhausted notifications without PII", async () => {
+  const { operations } = await import("../src/operations");
+  const o = await create(),
+    s = await pay(o);
+  s.status = "complete";
+  s.payment_status = "paid";
+  await signed({
+    id: "evt_ops",
+    type: "checkout.session.completed",
+    livemode: false,
+    data: { object: s },
+  });
+  assert.equal((await api("/api/v1/admin/operations")).status, 401);
+  let m = await operations(e, d);
+  assert.ok(m.alerts.includes("cleanup_heartbeat_missing_or_stale"));
+  assert.equal(m.notifications.enabled, false);
+  e.TELEGRAM_BOT_TOKEN = "fake";
+  e.TELEGRAM_CHAT_ID = "fake";
+  await e.DB.prepare("UPDATE notifications SET attempts=8,state='RETRY'").run();
+  clock += TTL;
+  m = await operations(e, d);
+  assert.ok(m.alerts.includes("notification_delivery_delayed"));
+  assert.ok(m.alerts.includes("file_deletion_backlog"));
+  await cleanup(e, d);
+  m = await operations(e, d);
+  assert.equal(m.cleanup.completedAt, clock);
+  assert.equal(m.files.overdue, 0);
+  assert.equal(m.notifications.exhausted, 1);
+  assert.ok(!JSON.stringify(m).includes(o.token));
+  assert.ok(!JSON.stringify(m).includes("test@example.com"));
+  assert.ok(!JSON.stringify(m).includes("test.xer"));
+});
+
+test("checkout rejects stale price-policy hashes until a new server quote is reviewed", async () => {
+  const o = await create();
+  await file(o);
+  await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token);
+  await e.DB.prepare(
+    "UPDATE orders SET subtotal=1,quote_hash='old-policy' WHERE id=?",
+  )
+    .bind(o.orderId)
+    .run();
+  const b = { consent: true, termsVersion: TERMS, quoteHash: "old-policy" };
+  assert.equal(
+    (await api(`/api/v1/orders/${o.orderId}/checkout`, "POST", b, o.token))
+      .status,
+    409,
+  );
+  assert.equal(stripeCalls.length, 0);
+  const q = (await (
+    await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+  ).json()) as any;
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT subtotal FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).subtotal,
+    q.total,
+  );
+  assert.equal(
+    (
+      await api(
+        `/api/v1/orders/${o.orderId}/checkout`,
+        "POST",
+        { ...b, quoteHash: q.quoteHash },
+        o.token,
+      )
+    ).status,
+    200,
   );
 });

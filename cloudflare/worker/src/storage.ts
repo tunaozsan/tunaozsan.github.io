@@ -39,6 +39,8 @@ export async function upload(req: Request, e: Env, order: any, d: Deps) {
     ].includes(category)
   )
     throw new Problem(400, "invalid_document_category");
+  if (category === "xer" && ext !== "xer")
+    throw new Problem(415, "xer_document_required");
   const length = req.headers.get("content-length");
   if (length && (!/^\d+$/.test(length) || Number(length) > MAX_FILE))
     throw new Problem(413, "file_too_large");

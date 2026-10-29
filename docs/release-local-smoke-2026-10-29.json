@@ -1,0 +1,26 @@
+[
+  {
+    "path": "/health",
+    "method": "GET",
+    "status": 200,
+    "body": "{\"service\":\"bluefin-project-portal\",\"version\":\"0.1.0\",\"mode\":\"development\",\"enabled\":false}"
+  },
+  {
+    "path": "/api/v1/orders",
+    "method": "POST",
+    "status": 503,
+    "body": "{\"error\":\"portal_not_enabled\",\"requestId\":\"6fed6a66-535a-4aef-bc6c-8e4b32731d3c\"}"
+  },
+  {
+    "path": "/api/v1/admin/operations",
+    "method": "GET",
+    "status": 503,
+    "body": "{\"error\":\"admin_not_configured\",\"requestId\":\"cab25a17-2547-4d2d-ac70-0b095a687cb7\"}"
+  },
+  {
+    "path": "/__scheduled?cron=*/15+*+*+*+*",
+    "method": "GET",
+    "status": 200,
+    "body": "Ran scheduled event"
+  }
+]

@@ -24,6 +24,7 @@ import {
 } from "./security";
 import { upload, removeFile } from "./storage";
 import { checkout, webhook, quoteOrder } from "./payments";
+import { operations } from "./operations";
 import { cleanup } from "./cleanup";
 const json = (data: unknown, status = 200) => Response.json(data, { status });
 function metadata(raw: unknown) {
@@ -255,6 +256,8 @@ async function route(
             : "EXPIRED_UNPAID"
           : o.status,
       paid: !!o.paid_at,
+      paidTotal: o.paid_total,
+      paidTax: o.paid_tax,
       required: now < o.expires_at ? quote(JSON.parse(o.cart)).required : [],
       expiresAt: o.expires_at,
       serverTime: now,
@@ -322,12 +325,14 @@ async function route(
 async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
   const actor = await admin(req, e, d);
   const now = d.now();
+  if (url.pathname === "/api/v1/admin/operations" && req.method === "GET")
+    return json(await operations(e, d));
   if (url.pathname === "/api/v1/admin/orders" && req.method === "GET") {
     const before = Number(url.searchParams.get("before") || now + 1);
     if (!Number.isSafeInteger(before)) throw new Problem(400, "invalid_cursor");
     const cursorId = url.searchParams.get("cursorId") || "~";
     const list = await e.DB.prepare(
-      "SELECT id,sku,subtotal,currency,status,created_at,expires_at,paid_at,retrieved_at FROM orders WHERE created_at<? OR (created_at=? AND id<?) ORDER BY created_at DESC,id DESC LIMIT 50",
+      "SELECT id,sku,subtotal,paid_total,paid_tax,currency,status,created_at,expires_at,paid_at,retrieved_at FROM orders WHERE created_at<? OR (created_at=? AND id<?) ORDER BY created_at DESC,id DESC LIMIT 50",
     )
       .bind(before, before, cursorId)
       .all();
@@ -353,6 +358,12 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
     return json({
       id: o.id,
       sku: o.sku,
+      subtotal: o.subtotal,
+      paidTotal: o.paid_total,
+      paidTax: o.paid_tax,
+      invoiceId: o.stripe_invoice_id,
+      retrievedAt: o.retrieved_at,
+      parentId: o.parent_id,
       customer: JSON.parse(o.customer),
       cart: JSON.parse(o.cart),
       status:
@@ -378,7 +389,7 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
     const obj = await e.UPLOADS.get(f.r2_key);
     if (!obj) throw new Problem(404, "file_not_found");
     alive(o, d.now());
-    await audit(e, o.id, actor, "download", now);
+    await audit(e, o.id, actor, "download:" + f.id, now);
     return new Response(obj.body, {
       headers: {
         "Content-Type": "application/octet-stream",
@@ -393,6 +404,15 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
     if (b.action === "mark-retrieved") {
       alive(o, now);
       if (!o.paid_at) throw new Problem(409, "payment_required");
+      if (o.status !== "PAID")
+        throw new Problem(409, "files_not_ready_for_retrieval");
+      const outstanding = await e.DB.prepare(
+        "SELECT COUNT(*) n FROM order_files f WHERE f.order_id=? AND f.state='READY' AND NOT EXISTS(SELECT 1 FROM audit_events a WHERE a.order_id=f.order_id AND a.action='download:' || f.id)",
+      )
+        .bind(o.id)
+        .first<{ n: number }>();
+      if (outstanding?.n)
+        throw new Problem(409, "download_all_files_before_confirming");
       await e.DB.prepare("UPDATE orders SET retrieved_at=? WHERE id=?")
         .bind(now, o.id)
         .run();
@@ -409,7 +429,7 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
         cap = token();
       try {
         await e.DB.prepare(
-          "INSERT INTO orders(id,token_hash,sku,cart,customer,subtotal,status,created_at,expires_at,updated_at,paid_at,parent_id) VALUES (?,?,?,?,?,?,'DRAFT',?,?,?,?,?)",
+          "INSERT INTO orders(id,token_hash,sku,cart,customer,subtotal,status,created_at,expires_at,updated_at,paid_at,parent_id,paid_total,paid_tax,stripe_invoice_id) VALUES (?,?,?,?,?,?,'DRAFT',?,?,?,?,?,?,?,?)",
         )
           .bind(
             child,
@@ -423,6 +443,9 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
             now,
             o.paid_at,
             o.id,
+            o.paid_total,
+            o.paid_tax,
+            o.stripe_invoice_id,
           )
           .run();
       } catch {

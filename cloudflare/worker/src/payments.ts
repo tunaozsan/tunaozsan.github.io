@@ -24,9 +24,18 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   if (o.paid_at) throw new Problem(409, "already_paid");
   if (o.expires_at - d.now() < 1860)
     throw new Problem(409, "too_late_for_checkout");
-  if (o.stripe_session_id && o.checkout_url) return { url: o.checkout_url };
   if (body.consent !== true || body.termsVersion !== TERMS)
     throw new Problem(400, "consent_required");
+  if (o.stripe_session_id && o.checkout_url) {
+    const existing = await stripe(
+      e,
+      d,
+      "checkout/sessions/" + encodeURIComponent(o.stripe_session_id),
+    );
+    if (existing.status !== "open" || existing.payment_status !== "unpaid")
+      throw new Problem(409, "checkout_no_longer_open");
+    return { url: o.checkout_url };
+  }
   if (
     !o.quote_hash ||
     body.quoteHash !== o.quote_hash ||
@@ -34,6 +43,11 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   )
     throw new Problem(409, "quote_expired");
   const q = quote(JSON.parse(o.cart));
+  const currentHash = await digest(
+    JSON.stringify({ cart: q.cart, total: q.total, terms: TERMS }),
+  );
+  if (q.total !== o.subtotal || currentHash !== o.quote_hash)
+    throw new Problem(409, "quote_changed_review_again");
   if (q.scopeReview.length) throw new Problem(409, "scope_review_required");
   const files = await e.DB.prepare(
     "SELECT category FROM order_files WHERE order_id=? AND state='READY' AND expires_at>?",
@@ -98,6 +112,14 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     "invoice_creation[enabled]": String(e.INVOICE_CREATION === "true"),
     "consent_collection[terms_of_service]": "required",
   });
+  if (e.INVOICE_CREATION === "true") {
+    b.set("customer_creation", "always");
+    b.set("invoice_creation[invoice_data][metadata][order_id]", o.id);
+    b.set(
+      "invoice_creation[invoice_data][description]",
+      "Bluefin Tuna LLC · " + q.lines[0].name,
+    );
+  }
   q.lines.forEach((l, i) => {
     b.set(`line_items[${i}][price_data][currency]`, "usd");
     b.set(`line_items[${i}][price_data][unit_amount]`, String(l.unit));
@@ -177,6 +199,10 @@ export async function webhook(req: Request, e: Env, d: Deps) {
     s.livemode !== (e.APP_ENV === "production") ||
     s.client_reference_id !== o.id ||
     s.metadata?.quote_hash !== o.quote_hash ||
+    s.metadata?.order_id !== o.id ||
+    !Number.isSafeInteger(s.amount_total) ||
+    !Number.isSafeInteger(s.total_details?.amount_tax ?? 0) ||
+    (s.total_details?.amount_tax ?? 0) < 0 ||
     s.currency !== "usd" ||
     s.amount_subtotal !== o.subtotal ||
     s.amount_total !== s.amount_subtotal + (s.total_details?.amount_tax ?? 0) ||
@@ -201,8 +227,20 @@ export async function webhook(req: Request, e: Env, d: Deps) {
       "INSERT OR IGNORE INTO payment_events(id,event_type,order_id,created_at,status) VALUES (?,?,?,?,'PROCESSED')",
     ).bind(event.id, event.type, o.id, d.now()),
     e.DB.prepare(
-      "UPDATE orders SET status=?,paid_at=CASE WHEN ?=1 THEN COALESCE(paid_at,?) ELSE paid_at END,updated_at=? WHERE id=? AND (paid_at IS NULL OR ?=1)",
-    ).bind(state, paid ? 1 : 0, d.now(), d.now(), o.id, paid ? 1 : 0),
+      "UPDATE orders SET status=?,paid_at=CASE WHEN ?=1 THEN COALESCE(paid_at,?) ELSE paid_at END,paid_total=CASE WHEN ?=1 THEN ? ELSE paid_total END,paid_tax=CASE WHEN ?=1 THEN ? ELSE paid_tax END,stripe_invoice_id=COALESCE(?,stripe_invoice_id),updated_at=? WHERE id=? AND (paid_at IS NULL OR ?=1)",
+    ).bind(
+      state,
+      paid ? 1 : 0,
+      d.now(),
+      paid ? 1 : 0,
+      s.amount_total,
+      paid ? 1 : 0,
+      s.total_details?.amount_tax ?? 0,
+      paid && typeof s.invoice === "string" ? s.invoice : null,
+      d.now(),
+      o.id,
+      paid ? 1 : 0,
+    ),
     e.DB.prepare(
       "INSERT OR IGNORE INTO notifications(order_id,next_at) SELECT id,? FROM orders WHERE id=? AND paid_at IS NOT NULL",
     ).bind(d.now(), o.id),
@@ -223,9 +261,15 @@ export async function quoteOrder(e: Env, d: Deps, o: any) {
     JSON.stringify({ cart: q.cart, total: q.total, terms: TERMS }),
   );
   await e.DB.prepare(
-    "UPDATE orders SET quote_hash=?,quote_until=?,status=CASE WHEN paid_at IS NOT NULL AND ?=0 THEN 'PAID' ELSE status END WHERE id=? AND status='DRAFT'",
+    "UPDATE orders SET subtotal=?,quote_hash=?,quote_until=?,status=CASE WHEN paid_at IS NOT NULL AND ?=0 THEN 'PAID' ELSE status END WHERE id=? AND status='DRAFT'",
   )
-    .bind(hash, Math.min(o.expires_at, d.now() + 900), missing.length, o.id)
+    .bind(
+      q.total,
+      hash,
+      Math.min(o.expires_at, d.now() + 900),
+      missing.length,
+      o.id,
+    )
     .run();
   return {
     ...q,

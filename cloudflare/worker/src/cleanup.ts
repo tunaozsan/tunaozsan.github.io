@@ -3,6 +3,9 @@ import { removeFile } from "./storage";
 import { stripe } from "./payments";
 export async function cleanup(e: Env, d: Deps) {
   const now = d.now();
+  let deleteFailures = 0,
+    orphanDeleteFailures = 0,
+    sessionFailures = 0;
   const files = await e.DB.prepare(
     "SELECT * FROM order_files WHERE deleted_at IS NULL AND (expires_at<=? OR state='FAILED' OR (state='UPLOADING' AND created_at<?)) ORDER BY expires_at LIMIT 100",
   )
@@ -12,6 +15,7 @@ export async function cleanup(e: Env, d: Deps) {
     try {
       await removeFile(e, f, now);
     } catch {
+      deleteFailures++;
       await e.DB.prepare("UPDATE order_files SET retries=retries+1 WHERE id=?")
         .bind(f.id)
         .run();
@@ -47,6 +51,7 @@ export async function cleanup(e: Env, d: Deps) {
           .bind(o.id)
           .run();
       } catch {
+        sessionFailures++;
         /* A late verified webhook remains authoritative. Retry next sweep. */
       }
     }
@@ -72,6 +77,7 @@ export async function cleanup(e: Env, d: Deps) {
       try {
         await e.UPLOADS.delete(obj.key);
       } catch {
+        orphanDeleteFailures++;
         /* retained for next sweep */
       }
     }
@@ -85,12 +91,24 @@ export async function cleanup(e: Env, d: Deps) {
     .bind(now)
     .run();
   await notify(e, d);
-  return { scanned: files.results.length };
+  const summary = {
+    completedAt: d.now(),
+    scanned: files.results.length,
+    deleteFailures,
+    orphanDeleteFailures,
+    sessionFailures,
+  };
+  await e.DB.prepare(
+    "INSERT INTO housekeeping(key,value) VALUES ('cleanup_completed',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+  )
+    .bind(JSON.stringify(summary))
+    .run();
+  return summary;
 }
 export async function notify(e: Env, d: Deps) {
   if (!e.TELEGRAM_BOT_TOKEN || !e.TELEGRAM_CHAT_ID) return;
   const rows = await e.DB.prepare(
-    "SELECT n.*,o.sku,o.subtotal,o.expires_at FROM notifications n JOIN orders o ON n.order_id=o.id WHERE n.state!='SENT' AND n.next_at<=? AND (n.lease_until IS NULL OR n.lease_until<?) AND n.attempts<8 LIMIT 10",
+    "SELECT n.*,o.sku,o.subtotal,o.paid_total,o.expires_at FROM notifications n JOIN orders o ON n.order_id=o.id WHERE n.state!='SENT' AND n.next_at<=? AND (n.lease_until IS NULL OR n.lease_until<?) AND n.attempts<8 LIMIT 10",
   )
     .bind(d.now(), d.now())
     .all<any>();
@@ -109,7 +127,7 @@ export async function notify(e: Env, d: Deps) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: e.TELEGRAM_CHAT_ID,
-            text: `Paid order ${n.order_id}\n${n.sku}\nUSD ${(n.subtotal / 100).toFixed(2)} before tax\nFiles inaccessible after ${new Date(n.expires_at * 1000).toISOString()}\nOpen the protected admin dashboard.`,
+            text: `Paid order ${n.order_id}\n${n.sku}\nUSD ${((n.paid_total ?? n.subtotal) / 100).toFixed(2)} ${n.paid_total === null ? "subtotal (legacy total unavailable)" : "verified paid total"}\nFiles inaccessible after ${new Date(n.expires_at * 1000).toISOString()}\nOpen the protected admin dashboard.`,
           }),
           signal: AbortSignal.timeout(10000),
         },

@@ -25,4 +25,9 @@ check(!pages.some(p=>read(p).includes('https://buy.stripe.com/')),'No live stati
 check(read('assets/scripts/portal-config.js').includes("API_ORIGIN = ''"),'Frontend activation gate closed');
 for(const p of pages) for(const m of read(p).matchAll(/href="(https:\/\/buy\.stripe\.com\/[^"]+)"/g)) check(Object.values(links).includes(m[1]),'Only configured checkout links');
 check(read('assets/styles/site.css').includes('prefers-reduced-motion'),'Reduced motion support');
+
+
+for(const path of pages)check(!/incoming email.{0,40}(repair|unavailable)|mailbox.{0,30}(repair|unresolved|broken)|recipient unrecognized|550 bounce/i.test(read(path)),`${path}: no obsolete incoming-mail outage`);
+for(const path of ['privacy.html','company.html','support/index.html','support.html','index.html'])check(read(path).includes('mailto:support@bluefintuna.life'),`${path}: existing support contact`);
+
 console.log(`PASS: ${checks} assertions across ${pages.length} pages. Legacy company-logo remote blob must remain unchanged at deployment.`);

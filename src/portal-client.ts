@@ -200,7 +200,7 @@ async function status() {
   session.expiresAt = s.expiresAt;
   save(session);
   notice(
-    `${s.paid ? "Payment verified. " : "Payment not yet verified. "}${s.status.replaceAll("_", " ")} · ${s.orderId}`,
+    `${s.paid ? "Payment verified. " + (s.paidTotal == null ? "" : money(s.paidTotal) + " paid including " + money(s.paidTax ?? 0) + " tax. ") : "Payment not yet verified. "}${s.status.replaceAll("_", " ")} · ${s.orderId}`,
   );
   $("request-reupload").hidden = !s.canRequestReupload;
   tick();
@@ -338,10 +338,15 @@ async function start() {
           : 0;
       };
       x.onload = async () => {
+        let reason =
+          "Service unavailable or access denied. Retry after checking your workspace.";
+        try {
+          reason = JSON.parse(x.responseText).error || reason;
+        } catch {}
         notice(
-          x.status < 300
+          x.status >= 200 && x.status < 300
             ? "Upload completed."
-            : "Upload rejected. " + (JSON.parse(x.responseText).error || ""),
+            : "Upload rejected. " + reason,
         );
         await files().catch((e) => notice(e.message));
       };
@@ -366,7 +371,7 @@ async function start() {
         serverQuote = await api(route("quote"), "POST", {});
         $("review-panel").hidden = false;
         $("server-summary").textContent =
-          `Server subtotal: ${money(serverQuote.total)}. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`;
+          `Policy version: ${serverQuote.termsVersion}. Server subtotal: ${money(serverQuote.total)}. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`;
         $("checkout").hidden = !!session.paid;
         $("consent").closest("label").hidden = !!session.paid;
         if (session.paid && !serverQuote.missing.length) {
@@ -475,7 +480,7 @@ function adminUI() {
         .map((o) => {
           const b = el(
             "button",
-            `${o.sku} · ${money(o.subtotal)} · ${o.status} · ${o.id}`,
+            `${o.sku} · ${money(o.paid_total ?? o.subtotal)} ${o.paid_total == null ? "subtotal" : "paid"} · ${o.status} · ${o.id}`,
           );
           b.className = "portal-panel";
           b.addEventListener("click", () =>
@@ -504,7 +509,18 @@ function adminUI() {
       cursorId = r.orders.at(-1)?.id;
       $("more-admin").hidden = r.orders.length < 50;
       draw();
-      notice("Protected order data loaded.");
+      const health = await api(
+        "/api/v1/admin/operations",
+        "GET",
+        undefined,
+        true,
+      );
+      $("admin-operations").textContent = health.alerts.length
+        ? "Operator attention: " + health.alerts.join(", ").replaceAll("_", " ")
+        : "Cleanup and notification checks are healthy.";
+      notice(
+        "Protected order data loaded. Mark retrieved only after verifying all copies in approved working storage.",
+      );
     } catch (e) {
       notice(
         "Cloudflare Access sign-in is required on the API domain. " +
@@ -519,6 +535,29 @@ function adminUI() {
     panel.replaceChildren(
       el("h2", o.sku),
       el("p", o.id + " · " + o.status),
+      el(
+        "p",
+        o.parentId
+          ? "Re-upload for " + o.parentId + ". Existing payment; no new charge."
+          : "Original order",
+      ),
+      el(
+        "p",
+        `${o.cart.activities} activities · ${o.paidTotal == null ? "Subtotal " + money(o.subtotal) : "Verified paid total " + money(o.paidTotal) + " (tax " + money(o.paidTax ?? 0) + ")"}`,
+      ),
+      el(
+        "p",
+        o.invoiceId
+          ? "Stripe invoice reference: " + o.invoiceId
+          : "No verified invoice reference recorded. Check Stripe before promising a PDF invoice.",
+      ),
+      el(
+        "p",
+        o.retrievedAt
+          ? "Operator confirmed retrieval: " +
+              new Date(o.retrievedAt * 1000).toISOString()
+          : "Retrieval not confirmed. Download and scan every file, verify working copies, then mark retrieved.",
+      ),
       el(
         "p",
         "Files inaccessible after " +
