@@ -1,0 +1,38 @@
+[
+  {
+    "background": "rgb(244, 251, 255)",
+    "color": "rgb(23, 44, 66)",
+    "selector": ".portal-intro h1",
+    "ratio": 13.62
+  },
+  {
+    "background": "rgb(244, 251, 255)",
+    "color": "rgb(8, 85, 197)",
+    "selector": ".portal-intro > p",
+    "ratio": 6.45
+  },
+  {
+    "background": "rgb(228, 241, 252)",
+    "color": "rgb(23, 44, 66)",
+    "selector": ".portal-notice",
+    "ratio": 12.39
+  },
+  {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(23, 44, 66)",
+    "selector": "#configure-form label",
+    "ratio": 14.23
+  },
+  {
+    "background": "rgb(7, 26, 53)",
+    "color": "rgb(114, 216, 237)",
+    "selector": ".portal-summary p",
+    "ratio": 10.56
+  },
+  {
+    "background": "rgb(7, 26, 53)",
+    "color": "rgb(169, 233, 255)",
+    "selector": ".portal-summary a",
+    "ratio": 13.07
+  }
+]

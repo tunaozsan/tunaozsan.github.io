@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync, readdirSync, existsSync} from 'node:fs';
 import {resolve, dirname, join} from 'node:path';
 const root=process.cwd(); const read=p=>readFileSync(p,'utf8');
-const excluded=new Set(['.git','.qa','src','scripts','tests','docs','node_modules']);
+const excluded=new Set(['.git','.qa','src','scripts','tests','docs','node_modules','cloudflare']);
 const walk=(dir='.')=>readdirSync(dir,{withFileTypes:true}).flatMap(d=>excluded.has(d.name)?[]:d.isDirectory()?walk(join(dir,d.name)):[join(dir,d.name)]);
 const pages=walk().filter(p=>p.endsWith('.html'));
 let checks=0;const check=(condition,label)=>{assert.ok(condition,label);checks++;};
@@ -18,9 +18,16 @@ for(const p of baseline.matchAll(/<(?:p|li)\b[^>]*>([\s\S]*?)<\/(?:p|li)>/g))che
 check(read('index.html').match(/id="contact"[\s\S]*mailto:support@bluefintuna.life/),'Homepage contact without JS');check(read('company.html').includes('+90 543 675 40 31'),'Public phone preserved');check(read('CNAME').trim()==='bluefintuna.life','Custom domain preserved');
 const approved=[[199,150,5],[499,75,5],[799,75,7],[999,200,10],[1499,200,12],[399,200,4],[649,200,5]];
 const catalog=JSON.parse(read('data/services.json'));const links=JSON.parse(read('data/payment-links.json'));check(catalog.services.length===7,'Seven independent packages');
-catalog.services.forEach((s,i)=>{assert.deepEqual([s.price,s.maxActivities,s.businessDays],approved[i],s.sku);checks++;check(/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/.test(links[s.sku]),'Valid Stripe payment URL'); const card=read('planning/services/index.html').split(`id="${s.sku}"`)[1].split('</article>')[0];check(card.includes(`href="${links[s.sku]}"`),`${s.sku}: correct checkout in its card`);check(read('planning/services/index.html').includes(`id="${s.sku}"`),'Service anchor');});
+catalog.services.forEach((s,i)=>{assert.deepEqual([s.price,s.maxActivities,s.businessDays],approved[i],s.sku);checks++;check(/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/.test(links[s.sku]),'Valid Stripe payment URL'); const card=read('planning/services/index.html').split(`id="${s.sku}"`)[1].split('</article>')[0];check(card.includes('href="/project-portal/?sku='),`${s.sku}: gated portal entry`);check(read('planning/services/index.html').includes(`id="${s.sku}"`),'Service anchor');});
 for(const p of ['service-terms.html','refund-policy.html']){check(read(p).includes('content="noindex,follow"'),`${p} draft not indexed`);check(!read('sitemap.xml').includes('/'+p),`${p} not in sitemap`);}
-check(new Set(Object.values(links)).size===7,'Seven distinct checkouts');
+check(new Set(Object.values(links)).size===7,'Seven historical payment references retained');
+check(!pages.some(p=>read(p).includes('https://buy.stripe.com/')),'No live static checkout bypass in release candidate');
+check(read('assets/scripts/portal-config.js').includes("API_ORIGIN = ''"),'Frontend activation gate closed');
 for(const p of pages) for(const m of read(p).matchAll(/href="(https:\/\/buy\.stripe\.com\/[^"]+)"/g)) check(Object.values(links).includes(m[1]),'Only configured checkout links');
 check(read('assets/styles/site.css').includes('prefers-reduced-motion'),'Reduced motion support');
+
+
+for(const path of pages)check(!/incoming email.{0,40}(repair|unavailable)|mailbox.{0,30}(repair|unresolved|broken)|recipient unrecognized|550 bounce/i.test(read(path)),`${path}: no obsolete incoming-mail outage`);
+for(const path of ['privacy.html','company.html','support/index.html','support.html','index.html'])check(read(path).includes('mailto:support@bluefintuna.life'),`${path}: existing support contact`);
+
 console.log(`PASS: ${checks} assertions across ${pages.length} pages. Legacy company-logo remote blob must remain unchanged at deployment.`);

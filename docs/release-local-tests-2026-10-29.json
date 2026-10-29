@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-29 Asia/Samarkand",
+  "results": [
+    {
+      "command": "npm ci --ignore-scripts --prefix cloudflare/worker",
+      "exitCode": 0,
+      "output": "\nadded 48 packages, and audited 49 packages in 15s\n\n9 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n"
+    },
+    {
+      "command": "npm audit --prefix cloudflare/worker --audit-level=low",
+      "exitCode": 0,
+      "output": "found 0 vulnerabilities\n"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "output": "\n> bluefin-tuna-website@2.0.0 typecheck\n> npm run typecheck --prefix cloudflare/worker\n\n\n> bluefin-project-portal-api@0.1.0 typecheck\n> tsc --noEmit && tsc -p tsconfig.client.json\n\n"
+    },
+    {
+      "command": "npm run format:check --prefix cloudflare/worker",
+      "exitCode": 0,
+      "output": "\n> bluefin-project-portal-api@0.1.0 format:check\n> prettier --check src test ../../src/portal-client.ts\n\nChecking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "command": "npm run test:worker",
+      "exitCode": 0,
+      "output": "\n> bluefin-tuna-website@2.0.0 test:worker\n> npm test --prefix cloudflare/worker\n\n\n> bluefin-project-portal-api@0.1.0 test\n> tsx --test test/*.test.ts\n\n\u2714 seven exact base prices and activity rounding / caps (1731.248ms)\n\u2714 incompatible addons, extra fields, duplicates rejected; update materials reviewed (16.129792ms)\n\u2714 development/production missing approvals fail closed (18.960708ms)\n\u2714 origin, capability and admin authorization isolation (51.304959ms)\n\u2714 file types, traversal, signatures and length rejected (122.204916ms)\n\u2714 concurrent reservations enforce cumulative byte and count quota (175.136ms)\n\u2714 12-hour exact access boundary, delayed cron, paid and unpaid (88.986542ms)\n\u2714 checkout requires documents and affirmative current consent; freezes files (92.416ms)\n\u2714 webhook verifies signature, live mode, session and authoritative amount; retries idempotent (95.871625ms)\n\u2714 late payment does not restore expired files; reupload is manual, authenticated and free (86.216125ms)\n\u2714 cleanup failure retries and late orphan sweep (95.361625ms)\n\u2714 rate limit and optional notification minimal payload / duplicate invocation (46.169583ms)\n\u2714 notifications are claimed once and disabled without config (70.0615ms)\n\u2714 actual streamed oversize rejected without trusting Content-Length (46.882958ms)\n\u2714 upload racing expiry is removed and cannot become READY (35.10575ms)\n\u2714 short remaining TTL blocks new Stripe session (45.83025ms)\n\u2714 async pending is not paid; wrong currency/session and forged signatures rejected (70.658958ms)\n\u2714 valid admin JWT verifies signature, audience, issuer, expiry and allowlist (24.255667ms)\n\u2714 scheduled handler registers cleanup work (24.390458ms)\n\u2714 authenticated admin downloads only paid live files and issues one no-charge reupload (152.4385ms)\n\u2714 all package activity boundaries, delivery days and material prices (13.047333ms)\n\u2714 invoice flag is explicit, billing details collected and no production enabling (98.418708ms)\n\u2714 verified tax-inclusive amount and invoice reference persist; negative tax rejected (69.028667ms)\n\u2714 wrong merchant account, webhook account and metadata are rejected (95.015833ms)\n\u2714 consent/version/hash and client total cannot be bypassed; cancel-return retry reuses session (101.508542ms)\n\u2714 async failure then verified success is reconciled without paid downgrade (85.9525ms)\n\u2714 upload rejects forged lengths, MIME, category mismatch, Office archives and aborted streams (137.587958ms)\n\u2714 forged capabilities cannot read, upload or delete another order (68.746875ms)\n\u2714 operational monitor detects cleanup backlog, missing heartbeat and exhausted notifications without PII (97.665666ms)\n\u2714 checkout rejects stale price-policy hashes until a new server quote is reviewed (67.691541ms)\n\u2714 real local Workers runtime bounds two concurrent 20 MiB uploads and rejects a third (2476.588833ms)\n\u2139 tests 31\n\u2139 suites 0\n\u2139 pass 31\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 4544.93975\n"
+    },
+    {
+      "command": "npm run bundle --prefix cloudflare/worker",
+      "exitCode": 0,
+      "output": "\n> bluefin-project-portal-api@0.1.0 bundle\n> esbuild src/index.ts --bundle --format=esm --outfile=.build/worker.js --platform=browser\n\n\n  .build/worker.js  75.8kb\n\n\u26a1 Done in 5ms\n"
+    },
+    {
+      "command": "npm run migrate:local --prefix cloudflare/worker",
+      "exitCode": 0,
+      "output": "\n> bluefin-project-portal-api@0.1.0 migrate:local\n> wrangler d1 migrations apply bluefin-project-db --local\n\n\n \u26c5\ufe0f wrangler 4.154.0\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nResource location: local \n\nUse --remote if you want to access the remote instance.\n\n\u2705 No migrations to apply!\n"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "output": "\n> bluefin-tuna-website@2.0.0 build\n> node scripts/build.mjs\n\n\n  assets/scripts/portal.js  23.8kb\n\n\u26a1 Done in 2ms\nBuilt 20 canonical pages, 2 compatibility aliases and a 404 page.\n"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "output": "\n> bluefin-tuna-website@2.0.0 test\n> node tests/site.test.mjs\n\nPASS: 1112 assertions across 23 pages. Legacy company-logo remote blob must remain unchanged at deployment.\n"
+    }
+  ]
+}

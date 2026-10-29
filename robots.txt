@@ -4,5 +4,8 @@ Disallow: /src/
 Disallow: /scripts/
 Disallow: /tests/
 Disallow: /docs/
+Disallow: /cloudflare/
+Disallow: /admin/
+Disallow: /payment/
 
 Sitemap: https://bluefintuna.life/sitemap.xml

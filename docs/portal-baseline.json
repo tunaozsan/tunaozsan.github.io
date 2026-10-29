@@ -1,0 +1,10 @@
+{
+  "baselineCommit": "466e0fbee90c9aa7193b1ae742cab487c718f20e",
+  "files": {
+    "CNAME": "741982577234d983fd6c51e248b4d04979e6fe08cc1551c244aabd6d8faa1ac8",
+    "src/legacy/privacy.html": "0a93682dadee5b0d29f469a890ecee9e55e214431b41623fea191083eecaa272",
+    "src/legacy/company.html": "8d6de376a5d97afc31d96e233a30a9462bb432fc9cc4a8b81fd27579aaf042f3",
+    "assets/company-logo.png": "10dacf91c54a0a002a86300f3f947d7a6cf5a56bfd11aa905199d554da58d612",
+    "site.webmanifest": "8948f2b3aac604b2693dc80c786b9d47f2072d178b8ca4a028b0c63d15ba5df1"
+  }
+}

@@ -1,0 +1,25 @@
+name: Portal checks (no deployment)
+on:
+  pull_request:
+  push:
+    branches: [feature/bluefin-secure-payment-portal]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: cloudflare/worker/.nvmrc
+          cache: npm
+          cache-dependency-path: cloudflare/worker/package-lock.json
+      - run: npm ci --prefix cloudflare/worker
+      - run: npm run typecheck
+      - run: npm run format:check --prefix cloudflare/worker
+      - run: npm run test:worker
+      - run: npm run build
+      - run: npm test
+      - run: git diff --exit-code -- '*.html' assets/scripts/portal.js robots.txt sitemap.xml

@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-29 Asia/Samarkand",
+  "checks": [
+    {
+      "url": "https://bluefintuna.life/",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "GitHub.com",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "contactAnchor": true,
+      "sample": null
+    },
+    {
+      "url": "https://bluefintuna.life/privacy.html",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "GitHub.com",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "contactAnchor": null,
+      "sample": null
+    },
+    {
+      "url": "https://bluefintuna.life/company.html",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "GitHub.com",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "contactAnchor": null,
+      "sample": null
+    },
+    {
+      "url": "https://bluefintuna.life/support",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "GitHub.com",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "contactAnchor": null,
+      "sample": null
+    },
+    {
+      "url": "https://bluefintuna.life/support/",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "GitHub.com",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "contactAnchor": null,
+      "sample": null
+    },
+    {
+      "url": "https://bluefintuna.life/support.html",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "GitHub.com",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "contactAnchor": null,
+      "sample": null
+    },
+    {
+      "url": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "cloudflare",
+        "content-type": "text/plain;charset=UTF-8",
+        "cf-ray": "a51ef7958c206368-WAW"
+      },
+      "contactAnchor": null,
+      "sample": null
+    },
+    {
+      "url": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/health",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "server": "cloudflare",
+        "content-type": "text/plain;charset=UTF-8",
+        "cf-ray": "a51ef79579423bc0-WAW"
+      },
+      "contactAnchor": null,
+      "sample": null
+    }
+  ],
+  "workerBodyVerification": [
+    {
+      "url": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/health",
+      "method": "GET",
+      "userAgent": "Python-urllib/3.9",
+      "status": 403,
+      "headers": {
+        "server": "cloudflare",
+        "content-type": "text/plain; charset=UTF-8",
+        "cf-ray": "a51f026ea9a17dcb-WAW"
+      },
+      "body": "error code: 1010\n"
+    },
+    {
+      "url": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/health",
+      "method": "GET",
+      "userAgent": "Bluefin-Tuna-release-verification",
+      "status": 200,
+      "headers": {
+        "server": "cloudflare",
+        "content-type": "text/plain;charset=UTF-8",
+        "cf-ray": "a51f02738fc5c4fa-WAW"
+      },
+      "body": "Hello World!"
+    }
+  ],
+  "wranglerWhoami": "NOT AUTHENTICATED: token expired and could not refresh in non-interactive environment. No login or remote mutation attempted."
+}
