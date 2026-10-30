@@ -10,7 +10,9 @@ Production portal: https://bluefin-project-portal-api.bluefintuna-llc.workers.de
 
 Başvuru inbox: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/admin/applications/
 
-Ana site: https://bluefintuna.life/
+Ana site: https://bluefintuna.life/ — mevcut site çalışıyor; yeni main yayını GitHub Contents yazma izni nedeniyle 403 ile bekliyor.
+
+Yerel release commit: `f53ce895091905cc655bed0d7fccd19a50ad2971`. Son Worker sürümü: `0ba44440-13b5-4b12-b8b9-cc1263d85795`; deployment `f878bc5d-42df-4661-b8f3-7de350d8a06c`.
 
 ## Politika ve kanıt
 
@@ -36,7 +38,7 @@ Gerçek dosya intake ve Drive/delivery production entegrasyonu bu sınırlı sü
 1. Production Worker'da `STRIPE_SECRET_KEY` ve `STRIPE_WEBHOOK_SECRET` yok; gerçek Live `acct_` kimliği doğrulanamadı. Mevcut güvenli bağlantı Cloudflare içindir; bu erişim Stripe Live yetkisi sağlamaz. Sandbox secret/merchant kopyalanmadı.
 2. Live ürün/Price, Tax registrations, invoice/satıcı ayarları, webhook ve Terms/Privacy URL ayarları API ile incelenemedi. Kayıtlar tahmin edilmedi. Gerekli Live erişim sağlanınca mevcut ürünler keşfedilecek; gereksiz yeni ürün veya Payment Link açılmayacak.
 3. İlk müşteri/proje yeri ve hizmet tipine uygulanabilir belgeli işlem-vergi kuralı/tescil dayanağı yok. Hiçbir ülke/işlem için otomatik sıfır vergi veya US-only kuralı kurulmadı. Şu anda **tahsilata uygun doğrulanmış sipariş kapsamı boş**.
-4. Production `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, ayrı güvenli token şifreleme anahtarı ve kullanıcı OAuth onayı/production private root doğrulanmadı. Callback: `https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/admin/drive/oauth/callback`. Staging refresh token taşınmadı. Google OAuth publishing/refresh sürekliliği de doğrulanacak.
+4. Production `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, ve kullanıcı OAuth onayı/production private root doğrulanmadı; `DRIVE_TOKEN_KEY` ise 256 bit rastgele üretildi ve yalnız Worker Secrets'a kaydedildi. Callback: `https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/admin/drive/oauth/callback`. Staging refresh token taşınmadı. Google OAuth publishing/refresh sürekliliği de doğrulanacak.
 5. Gerçek müşteri belgeleri için güncel yerel tarama/karantina ve operatör güvenli işleme süreci henüz kanıtlanmadı. Bu nedenle dosya intake kapalıdır.
 
 Bunlar tamamlandığında yapılacak teknik iş yalnız bir bayrağı açmak değildir: production entry'ye doğrulanmış per-order vergi onayı, scope/quote/fatura-adresi değişince onayın geçersizliği, gerçek Live merchant/Price/webhook/invoice ve production Drive izolasyonu bağlanıp hedefli testten geçirilmeli. `PORTAL_ENABLED=true` tek başına bu sürümde tahsilatı açamaz. Bu ayrım istemci bypass'ına karşı test edildi.
@@ -74,3 +76,15 @@ Yeni Live Checkout henüz hazır olmadığından paketteki geçiş sırasına g�
 | Bağımsız hukuk/vergi incelemesi | NOT RUN / NOT_PERFORMED | İşletme sahibi onayı farklıdır |
 
 Gerçek browser, production D1, Cron ve son deploy kanıtı aynı klasördeki `production-browser-2026-10-30.json`, `production-final-audit-2026-10-30.json` ve `production-smoke-2026-10-30.json` dosyalarında tutulur. Yapılmayan kontroller bu raporla PASS olmaz.
+
+## Son gerçek kanıt
+
+- Production browser: gerçek Turnstile, boş/required consent, ayrı business-use checkbox, HTTP201 sentetik başvuru, dosya/ödeme yok, mobil taşma yok: **PASS**. İlk networkidle bekleme zaman aşımı başarı sayılmadı; DOM yükleme beklemesiyle gerçek tekrar tamamlandı.
+- D1 sentetik application `7c28f39d-2bdd-410a-b061-df605cd1f57d`; terms hash doğru, scope hash `593d602858ea730a4c25ca215161a036efd679c54005d8bea9961128e2d57927`; 1 application, 0 orders. **PASS**.
+- Doğal Cron heartbeat 2026-10-30 14:30:43 UTC; delete/orphan/session hataları 0. **PASS**, cleanup elle tetiklenmedi.
+- Mevcut ana site Apple Privacy/Company/Support/Contact yolları HTTP200 ve legacy Privacy/contact metni korunuyor: **PASS**. V2 şu anda Worker origin'inde yayında; ana site yeni metin yayını **FAIL / BLOCKED_BY_GITHUB_WRITE_PERMISSION**.
+- Git push 403. Bağlı GitHub integration blob yazma da 403. Keychain'deki geçerli fine-grained PAT doğru kullanıcıyı doğruluyor fakat Contents API yazması 403 `Resource not accessible by personal access token`; gereken izin `contents=write`. Hesabın depo admin/push rolü token'ın write scope'unun yerine geçmez. Secret değerleri gösterilmedi. Kullanıcıya kaydetme/doğru token eşlemesi soruldu; sonuç bekleniyor.
+
+GitHub kök neden: kullanıcının ekranındaki Bluefin-Tuna-Codex token'ı 27 Kasım, Git/gh Keychain token'ı 21 Kasım bitişli MAMMUX kaydıyla eşleşiyor. Yanlış kayıt kullanılmış; MAMMUX izinleri değiştirilmedi. Bu depoya özel Bluefin kimlik bilgisi için gizli yerel macOS giriş mekanizması hazırlandı; sonuç doğrulanmadan push başarılı sayılmayacak.
+
+Son GitHub durumu: doğru Bluefin token izni kullanıcı tarafından kaydedildi (27 Kasım bitişli), ancak depoya özel yerel kayıt bulunmadı. İlk gizli giriş geçersiz format nedeniyle kaydedilmedi; ikinci giriş tamamlanmadı/iptal edildi. Secret değeri hiçbir rapora yazılmadı. MAMMUX/global Keychain girdisi ve git credential ayarları değiştirilmedi. Yerel main commit hazır; remote main güncellemesi ve ana site v2 yayını henüz yapılmadı.

@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-30T14:28:25.539Z",
+  "at": "2026-10-30T14:40:17.045Z",
   "bindings": [
     {
       "name": "ACCESS_AUD",
@@ -40,6 +40,10 @@
       "id": "c21cc680-8df5-4f81-b411-20d18b0e5f37",
       "name": "DB",
       "type": "d1"
+    },
+    {
+      "name": "DRIVE_TOKEN_KEY",
+      "type": "secret_text"
     },
     {
       "name": "INVOICE_CREATION",
@@ -112,6 +116,38 @@
   ],
   "deployments": {
     "deployments": [
+      {
+        "id": "f878bc5d-42df-4661-b8f3-7de350d8a06c",
+        "source": "api",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "0ba44440-13b5-4b12-b8b9-cc1263d85795",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:39:52.182958Z"
+      },
+      {
+        "id": "4c64ed76-ae63-4ad5-8d37-9101645a621a",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "dd490008-f17d-426d-a5aa-ac4fdfb37168",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:28:44.560994Z"
+      },
       {
         "id": "1ce0885e-6358-4eef-8df9-13e3bf1d091f",
         "source": "wrangler",
@@ -240,39 +276,6 @@
           }
         ],
         "created_on": "2026-10-29T08:59:23.354029Z"
-      },
-      {
-        "id": "5e2693b8-6d96-4d6d-907b-11cd119d7eb9",
-        "source": "wrangler",
-        "strategy": "percentage",
-        "author_email": "ozsan_tuna@yahoo.com.tr",
-        "annotations": {
-          "workers/triggered_by": "deployment"
-        },
-        "versions": [
-          {
-            "version_id": "74e8c803-987e-4276-9c0f-b480af3eb063",
-            "percentage": 100
-          }
-        ],
-        "created_on": "2026-10-29T08:40:06.104282Z"
-      },
-      {
-        "id": "3d3e1e5b-102f-4835-a07d-c6a4e3598a0b",
-        "source": "dash",
-        "strategy": "percentage",
-        "author_email": "ozsan_tuna@yahoo.com.tr",
-        "annotations": {
-          "workers/message": "Deployed version ea7c3a78",
-          "workers/triggered_by": "deployment"
-        },
-        "versions": [
-          {
-            "version_id": "ea7c3a78-8fb5-4480-9c92-70cf4ba6ebc4",
-            "percentage": 100
-          }
-        ],
-        "created_on": "2026-10-28T13:07:41.415664Z"
       }
     ]
   },
@@ -322,9 +325,9 @@
           "served_by_colo": "VIE",
           "served_by_primary": true,
           "timings": {
-            "sql_duration_ms": 0.2517
+            "sql_duration_ms": 0.3364
           },
-          "duration": 0.2517,
+          "duration": 0.3364,
           "changes": 0,
           "last_row_id": 0,
           "changed_db": false,
@@ -350,9 +353,9 @@
           "served_by_colo": "VIE",
           "served_by_primary": true,
           "timings": {
-            "sql_duration_ms": 0.31
+            "sql_duration_ms": 0.3186
           },
-          "duration": 0.31,
+          "duration": 0.3186,
           "changes": 0,
           "last_row_id": 0,
           "changed_db": false,
@@ -365,7 +368,12 @@
     ],
     "cron": [
       {
-        "results": [],
+        "results": [
+          {
+            "key": "cleanup_completed",
+            "value": "{\"completedAt\":1793370643,\"scanned\":0,\"deleteFailures\":0,\"orphanDeleteFailures\":0,\"sessionFailures\":0}"
+          }
+        ],
         "success": true,
         "meta": {
           "served_by": "v3-prod",
@@ -373,14 +381,14 @@
           "served_by_colo": "VIE",
           "served_by_primary": true,
           "timings": {
-            "sql_duration_ms": 0.239
+            "sql_duration_ms": 0.3309
           },
-          "duration": 0.239,
+          "duration": 0.3309,
           "changes": 0,
           "last_row_id": 0,
           "changed_db": false,
           "size_after": 278528,
-          "rows_read": 0,
+          "rows_read": 1,
           "rows_written": 0,
           "total_attempts": 1
         }
@@ -407,9 +415,9 @@
           "served_by_colo": "VIE",
           "served_by_primary": true,
           "timings": {
-            "sql_duration_ms": 0.3487
+            "sql_duration_ms": 0.3516
           },
-          "duration": 0.3487,
+          "duration": 0.3516,
           "changes": 0,
           "last_row_id": 0,
           "changed_db": false,

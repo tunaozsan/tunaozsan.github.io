@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-30T14:34:21.024Z",
+  "main": [
+    {
+      "path": "/",
+      "http": 200,
+      "v2": false,
+      "contactPreserved": true
+    },
+    {
+      "path": "/privacy.html",
+      "http": 200,
+      "v2": false,
+      "legacyPrivacyPreserved": true
+    },
+    {
+      "path": "/company.html",
+      "http": 200,
+      "v2": false
+    },
+    {
+      "path": "/support",
+      "http": 200,
+      "v2": false
+    },
+    {
+      "path": "/support/",
+      "http": 200,
+      "v2": false
+    },
+    {
+      "path": "/support.html",
+      "http": 200,
+      "v2": false
+    },
+    {
+      "path": "/contact/",
+      "http": 200,
+      "v2": false
+    },
+    {
+      "path": "/service-terms.html",
+      "http": 200,
+      "v2": false
+    },
+    {
+      "path": "/refund-policy.html",
+      "http": 200,
+      "v2": false
+    }
+  ],
+  "worker": [
+    {
+      "path": "/project-portal/",
+      "http": 200,
+      "v2": true
+    },
+    {
+      "path": "/service-terms.html",
+      "http": 200,
+      "v2": true
+    },
+    {
+      "path": "/refund-policy.html",
+      "http": 200,
+      "v2": true
+    },
+    {
+      "path": "/privacy.html",
+      "http": 200,
+      "v2": true,
+      "legacyPrivacyPreserved": true
+    },
+    {
+      "path": "/support/",
+      "http": 200,
+      "v2": false
+    }
+  ]
+}

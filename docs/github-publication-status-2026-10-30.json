@@ -1,0 +1,17 @@
+{
+  "localReleaseCommit": "f53ce895091905cc655bed0d7fccd19a50ad2971",
+  "remoteMainBefore": "c04c1895be7c75227ff28bb107dd96b8d842c3dc",
+  "gitPush": "FAIL_HTTP_403",
+  "integrationContentsWrite": "FAIL_HTTP_403",
+  "keychainPATValid": true,
+  "keychainContentsWrite": "FAIL_HTTP_403",
+  "requiredPermission": "contents=write",
+  "secretValuesRecorded": false,
+  "workerPublished": true,
+  "newMainSitePublished": false,
+  "ghCliContentsWrite": "FAIL_HTTP_403",
+  "rootCause": "Git/gh use the Nov 21 Keychain credential; owner updated the separate Nov 27 Bluefin-Tuna-Codex token.",
+  "repositoryScopedCredentialFound": false,
+  "secureLocalEntry": "NOT_COMPLETED",
+  "existingGlobalCredentialChanged": false
+}
