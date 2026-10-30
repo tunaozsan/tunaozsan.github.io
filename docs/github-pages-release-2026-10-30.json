@@ -1,0 +1,23 @@
+{
+  "pages": {
+    "status": "built",
+    "cname": "bluefintuna.life",
+    "html_url": "https://bluefintuna.life/",
+    "build_type": "legacy",
+    "source": {
+      "branch": "main",
+      "path": "/"
+    },
+    "https_enforced": true
+  },
+  "build": {
+    "status": "built",
+    "commit": "7fdb461978ec8399473277054d7bbc2eaad769c5",
+    "created_at": "2026-10-30T14:47:16Z",
+    "updated_at": "2026-10-30T14:47:47Z",
+    "duration": 31496,
+    "error": {
+      "message": null
+    }
+  }
+}

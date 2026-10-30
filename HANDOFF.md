@@ -1,9 +1,9 @@
 # FINAL LAUNCH RESULT — 2026-10-30 UTC
 
-**Sınırlı açılış: production başvuru portalı AÇIK; canlı tahsilat ve dosya intake KAPALI.** İşletme sahibinin son yayın talimatı önceki preparation-only kısıtını kaldırdı. Aşağıdaki eski kayıtlar tarihsel kanıttır; güncel durum bu bölümdür.
+**Sınırlı açılış: ana site ve production başvuru portalı AÇIK; canlı tahsilat ve dosya intake KAPALI.** İşletme sahibinin son yayın talimatı önceki preparation-only kısıtını kaldırdı. Aşağıdaki eski kayıtlar tarihsel kanıttır; güncel durum bu bölümdür.
 
 - **Production site/portal URL:** https://bluefintuna.life/ · https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/project-portal/
-- **Production commit / deployment / migrations:** Yerel release commit `f53ce895091905cc655bed0d7fccd19a50ad2971`. GitHub push **FAIL (403 Contents write)**; ana GitHub Pages sitesi henüz bu commit'e geçmedi. Worker sürümü `0ba44440-13b5-4b12-b8b9-cc1263d85795`; mevcut D1'e yedek sonrası 0003, 0004, 0005, 0006 eklendi.
+- **Production commit / deployment / migrations:** Release kodu `f53ce895091905cc655bed0d7fccd19a50ad2971`; remote main push **PASS**. İlk doğrulanan GitHub Pages build: `7fdb461978ec8399473277054d7bbc2eaad769c5`, built 2026-10-30 14:47:47 UTC. Rapor-only sonraki commit'ler aynı yayın kodunu korur. Worker sürümü `0ba44440-13b5-4b12-b8b9-cc1263d85795`; mevcut D1'e yedek sonrası 0003, 0004, 0005, 0006 eklendi.
 - **Policy version / effective UTC / SHA-256:** `service-terms-2026-10-30-v2` / `2026-10-30` / `85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c`.
 - **Owner authorization:** Son yayın paketi için açık “uygula ve devreye al” talimatı; toplu yayın/adres teyidine “onaylıyorum”. `LEGAL_APPROVED` burada owner publication gate anlamındadır.
 - **External legal/tax review:** `NOT_PERFORMED`; owner onayı bağımsız uzman onayı değildir.
@@ -15,7 +15,7 @@
 - **Production Drive OAuth/root/refresh:** `NOT RUN`, production credential/kullanıcı izni eksik. Staging bağlantısı kopyalanmadı.
 - **Webhook / Cron:** Webhook route mevcut fakat Live secret eksikliği nedeniyle 503 ile kapalı; imza doğrulanmış Live olay testi `NOT RUN`. `*/15 * * * *` Cron **PASS**: doğal çalışmada 2026-10-30 14:30:43 UTC heartbeat, delete/orphan/session hata sayıları 0.
 - **Backup / rollback:** `.qa/go-live-20261030/` Git dışı kaynak/Worker/D1 yedeği; D1 export SQLite içine başarıyla yüklenerek doğrulandı. İlk geri dönüş aynı kodda `APPLICATIONS_ENABLED=false`; kapalı uyumlu Worker `844436e4-c38b-4548-9e16-fed38fa9e1cf`. Veritabanı/ödeme kayıtları silinmez, webhook/Cron kapatılmaz.
-- **Apple regression:** Yerel test `PASS`: legacy app Privacy açıklamaları, support/contact yolları ve ana sayfa contact bölümü korunuyor. Footer'da yalnız yayımlanan şartların “Proposed” etiketi kaldırıldı; yollar değişmedi. Mevcut ana site Privacy/Company/Support/Contact HTTP kontrolleri 200 ve eski app açıklamaları korunuyor. Ana sitede v2 henüz yok; v2 Worker origin'inde yayımlandı.
+- **Apple regression:** Yerel test `PASS`: legacy app Privacy açıklamaları, support/contact yolları ve ana sayfa contact bölümü korunuyor. Footer'da yalnız yayımlanan şartların “Proposed” etiketi kaldırıldı; yollar değişmedi. Mevcut ana site Privacy/Company/Support/Contact HTTP kontrolleri 200 ve eski app açıklamaları korunuyor. V2 ana sitede ve Worker origin'inde yayımlandı; gerçek HTTP ve bundle hash doğrulandı.
 
 | Güncel kontrol | Sonuç | Kanıt / sınır |
 |---|---|---|
@@ -27,14 +27,14 @@
 | Production D1 kanıtı | PASS | 1 sentetik application, 0 orders; terms/quote hash, kabul zamanı doğrulandı |
 | Mobil 390px | PASS | Yatay taşma yok; dosya/Checkout panelleri gizli |
 | Production doğal Cron | PASS | 14:30:43 UTC heartbeat; 0 hata, elle cleanup çağrılmadı |
-| GitHub main push / yeni ana site yayını | FAIL | Git push 403; entegrasyon ve Keychain Contents API yazması da 403. Worker yayını bundan bağımsız tamamlandı |
+| GitHub main push / yeni ana site yayını | PASS | Bluefin token depoya özel Keychain'e bağlandı; MAMMUX korundu. Pages built, v2 Terms/Refund/Privacy ana sitede HTTP200 |
 | Production API güvenliği | PASS | Yanlış origin 403, Checkout 503, anonim admin Access 302; 302 yetkili API testi yerine sayılmadı |
 | Son policy .html adresleri | PASS | Worker'da doğrudan 200; ilk auto-redirect hatası düzeltildi |
 | Gerçek Live ödeme/webhook/invoice/Drive/teslim | NOT RUN | Zorunlu gerçek bağlantılar/vergi dayanağı eksik; staging testleri bunlar sayılmadı |
 | Production yetkili admin browser oturumu | NOT RUN | Mevcut Access policy ve yerel JWT testi doğrulandı; yeni kullanıcı oturumu açılmadı |
 | Gerçek 30/90 gün | NOT RUN | Önceki staging simülasyonları korundu; bu yayının genel engeli yapılmadı |
 
-**Tek toplu insan/erişim listesi:** (0) GitHub Bluefin-Tuna-Codex token'ını bu depoya özel Keychain kaydına güvenli bağlama: kullanıcı doğru Bluefin token iznini kaydetti, fakat Git hâlâ 21 Kasım bitişli ayrı kaydı kullanıyor. Gizli yerel giriş tamamlanmadı; mevcut global/MAMMUX kaydı değiştirilmedi. (1) Production Live Stripe key + production webhook secret güvenli Worker Secrets'a; gerçek merchant ID ve mevcut Live katalog/vergi/fatura erişimi. (2) Production Google OAuth client/secret, doğru callback ve sahibinin Google izni; ayrı private root/publishing kontrolü. (3) İlk müşteri/project/service için belgeli uygulanabilir transaction-tax kuralı/tescil dayanağı. (4) Gerçek dosyalar için güncel yerel tarama/karantina ve operatör işleme prosedürü. Secret'lar sohbete gönderilmez. Bunlar geldikten sonra per-order tax/Live/Drive production bağlama ve hedefli test işi tamamlanmadan yalnız bayrakla ödeme açılmaz.
+**Tek toplu insan/erişim listesi:** (1) Production Live Stripe key + production webhook secret güvenli Worker Secrets'a; gerçek merchant ID ve mevcut Live katalog/vergi/fatura erişimi. (2) Production Google OAuth client/secret, doğru callback ve sahibinin Google izni; ayrı private root/publishing kontrolü. (3) İlk müşteri/project/service için belgeli uygulanabilir transaction-tax kuralı/tescil dayanağı. (4) Gerçek dosyalar için güncel yerel tarama/karantina ve operatör işleme prosedürü. Secret'lar sohbete gönderilmez. Bunlar geldikten sonra per-order tax/Live/Drive production bağlama ve hedefli test işi tamamlanmadan yalnız bayrakla ödeme açılmaz.
 
 Ayrıntı ve kontrollü geçiş/rollback: [Production açılış raporu](docs/production-launch-2026-10-30.md). Gerçek kanıt: `docs/production-browser-2026-10-30.json`, `docs/production-smoke-2026-10-30.json`, `docs/production-final-audit-2026-10-30.json`.
 

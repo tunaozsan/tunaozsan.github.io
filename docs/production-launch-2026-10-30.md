@@ -10,9 +10,9 @@ Production portal: https://bluefin-project-portal-api.bluefintuna-llc.workers.de
 
 Başvuru inbox: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/admin/applications/
 
-Ana site: https://bluefintuna.life/ — mevcut site çalışıyor; yeni main yayını GitHub Contents yazma izni nedeniyle 403 ile bekliyor.
+Ana site: https://bluefintuna.life/ — v2 Terms/Refund/Privacy eki ve portal yönlendirmesi yayımlandı, gerçek HTTP/browser/hash ile doğrulandı.
 
-Yerel release commit: `f53ce895091905cc655bed0d7fccd19a50ad2971`. Son Worker sürümü: `0ba44440-13b5-4b12-b8b9-cc1263d85795`; deployment `f878bc5d-42df-4661-b8f3-7de350d8a06c`.
+Yayımlanan release kodu commit: `f53ce895091905cc655bed0d7fccd19a50ad2971`. Son Worker sürümü: `0ba44440-13b5-4b12-b8b9-cc1263d85795`; deployment `f878bc5d-42df-4661-b8f3-7de350d8a06c`.
 
 ## Politika ve kanıt
 
@@ -82,9 +82,15 @@ Gerçek browser, production D1, Cron ve son deploy kanıtı aynı klasördeki `p
 - Production browser: gerçek Turnstile, boş/required consent, ayrı business-use checkbox, HTTP201 sentetik başvuru, dosya/ödeme yok, mobil taşma yok: **PASS**. İlk networkidle bekleme zaman aşımı başarı sayılmadı; DOM yükleme beklemesiyle gerçek tekrar tamamlandı.
 - D1 sentetik application `7c28f39d-2bdd-410a-b061-df605cd1f57d`; terms hash doğru, scope hash `593d602858ea730a4c25ca215161a036efd679c54005d8bea9961128e2d57927`; 1 application, 0 orders. **PASS**.
 - Doğal Cron heartbeat 2026-10-30 14:30:43 UTC; delete/orphan/session hataları 0. **PASS**, cleanup elle tetiklenmedi.
-- Mevcut ana site Apple Privacy/Company/Support/Contact yolları HTTP200 ve legacy Privacy/contact metni korunuyor: **PASS**. V2 şu anda Worker origin'inde yayında; ana site yeni metin yayını **FAIL / BLOCKED_BY_GITHUB_WRITE_PERMISSION**.
-- Git push 403. Bağlı GitHub integration blob yazma da 403. Keychain'deki geçerli fine-grained PAT doğru kullanıcıyı doğruluyor fakat Contents API yazması 403 `Resource not accessible by personal access token`; gereken izin `contents=write`. Hesabın depo admin/push rolü token'ın write scope'unun yerine geçmez. Secret değerleri gösterilmedi. Kullanıcıya kaydetme/doğru token eşlemesi soruldu; sonuç bekleniyor.
+- Mevcut ana site Apple Privacy/Company/Support/Contact yolları HTTP200 ve legacy Privacy/contact metni korunuyor: **PASS**. V2 ana site ve Worker origin'inde yayında: **PASS**.
+- Tarihsel GitHub teşhisi (ÇÖZÜLDÜ): Git push 403. Bağlı GitHub integration blob yazma da 403. Keychain'deki geçerli fine-grained PAT doğru kullanıcıyı doğruluyor fakat Contents API yazması 403 `Resource not accessible by personal access token`; gereken izin `contents=write`. Hesabın depo admin/push rolü token'ın write scope'unun yerine geçmez. Secret değerleri gösterilmedi. Doğru Bluefin kaydı güvenli olarak depoya özel bağlanınca push başarılı oldu.
 
-GitHub kök neden: kullanıcının ekranındaki Bluefin-Tuna-Codex token'ı 27 Kasım, Git/gh Keychain token'ı 21 Kasım bitişli MAMMUX kaydıyla eşleşiyor. Yanlış kayıt kullanılmış; MAMMUX izinleri değiştirilmedi. Bu depoya özel Bluefin kimlik bilgisi için gizli yerel macOS giriş mekanizması hazırlandı; sonuç doğrulanmadan push başarılı sayılmayacak.
+GitHub kök neden: kullanıcının ekranındaki Bluefin-Tuna-Codex token'ı 27 Kasım, Git/gh Keychain token'ı 21 Kasım bitişli MAMMUX kaydıyla eşleşiyor. Yanlış kayıt kullanılmış; MAMMUX izinleri değiştirilmedi. Bu depoya özel Bluefin kimlik bilgisi için gizli yerel macOS giriş mekanizması hazırlandı; sonuç doğrulandı ve push başarılı oldu.
 
-Son GitHub durumu: doğru Bluefin token izni kullanıcı tarafından kaydedildi (27 Kasım bitişli), ancak depoya özel yerel kayıt bulunmadı. İlk gizli giriş geçersiz format nedeniyle kaydedilmedi; ikinci giriş tamamlanmadı/iptal edildi. Secret değeri hiçbir rapora yazılmadı. MAMMUX/global Keychain girdisi ve git credential ayarları değiştirilmedi. Yerel main commit hazır; remote main güncellemesi ve ana site v2 yayını henüz yapılmadı.
+Tarihsel yerel giriş denemeleri: doğru Bluefin token izni kullanıcı tarafından kaydedildi (27 Kasım bitişli), ancak depoya özel yerel kayıt bulunmadı. İlk gizli giriş geçersiz format nedeniyle kaydedilmedi; ikinci giriş tamamlanmadı/iptal edildi. Secret değeri hiçbir rapora yazılmadı. MAMMUX/global Keychain girdisi ve git credential ayarları değiştirilmedi. Bu geçici engel aşağıdaki son adımla giderildi.
+
+## GitHub yayınının tamamlanması
+
+Kullanıcı Bluefin token'ını yeniledi; gizli macOS alanından alınan değer yalnız bellekte doğrulandı ve bu depoya özel Keychain kaydına yazıldı. Token değeri sohbet/log/Git dosyalarına yazılmadı. `credential.useHttpPath=true` yalnız bu repoda ayarlandı; global/MAMMUX kaydı korunuyor. Gerçek Contents blob yazması ve ardından git push **PASS**.
+
+İlk ana site yayını: `7fdb461978ec8399473277054d7bbc2eaad769c5` (release kodu `f53ce895091905cc655bed0d7fccd19a50ad2971`), GitHub Pages built 2026-10-30 14:47:47 UTC, mevcut `main /` kaynağı ve `bluefintuna.life` CNAME korundu. Yeni yasal sayfalar ana sitede HTTP200. Son rapor güncellemesi yalnız belgeler/kanıtlardır; Worker kodunu veya tahsilat kapısını değiştirmez.

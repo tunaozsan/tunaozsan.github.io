@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-30T14:34:21.024Z",
+  "at": "2026-10-30T14:48:10.213Z",
   "main": [
     {
       "path": "/",
@@ -10,7 +10,7 @@
     {
       "path": "/privacy.html",
       "http": 200,
-      "v2": false,
+      "v2": true,
       "legacyPrivacyPreserved": true
     },
     {
@@ -41,12 +41,12 @@
     {
       "path": "/service-terms.html",
       "http": 200,
-      "v2": false
+      "v2": true
     },
     {
       "path": "/refund-policy.html",
       "http": 200,
-      "v2": false
+      "v2": true
     }
   ],
   "worker": [

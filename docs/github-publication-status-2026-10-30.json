@@ -1,17 +1,27 @@
 {
   "localReleaseCommit": "f53ce895091905cc655bed0d7fccd19a50ad2971",
   "remoteMainBefore": "c04c1895be7c75227ff28bb107dd96b8d842c3dc",
-  "gitPush": "FAIL_HTTP_403",
+  "gitPush": "PASS",
   "integrationContentsWrite": "FAIL_HTTP_403",
   "keychainPATValid": true,
-  "keychainContentsWrite": "FAIL_HTTP_403",
+  "keychainContentsWrite": "PASS",
   "requiredPermission": "contents=write",
   "secretValuesRecorded": false,
   "workerPublished": true,
-  "newMainSitePublished": false,
+  "newMainSitePublished": true,
   "ghCliContentsWrite": "FAIL_HTTP_403",
-  "rootCause": "Git/gh use the Nov 21 Keychain credential; owner updated the separate Nov 27 Bluefin-Tuna-Codex token.",
-  "repositoryScopedCredentialFound": false,
-  "secureLocalEntry": "NOT_COMPLETED",
-  "existingGlobalCredentialChanged": false
+  "rootCause": "Initial Git/gh attempts used the Nov 21 credential instead of Bluefin-Tuna-Codex; resolved by validated repository-scoped Keychain entry for the renewed Bluefin token.",
+  "repositoryScopedCredentialFound": true,
+  "secureLocalEntry": "VERIFIED_AND_STORED",
+  "existingGlobalCredentialChanged": false,
+  "historicalFailures": {
+    "gitPush": 403,
+    "integrationWrite": 403,
+    "oldKeychainWrite": 403,
+    "ghCliWrite": 403
+  },
+  "firstPublishedMainCommit": "7fdb461978ec8399473277054d7bbc2eaad769c5",
+  "MAMMUXChanged": false,
+  "credentialScope": "repository-only",
+  "tokenExpiry": "2026-11-29 14:45:37 UTC"
 }
