@@ -2,3 +2,11 @@
 @media(max-width:900px){.portal-grid{grid-template-columns:1fr}.portal-summary{position:static;grid-row:1}.portal-intro{padding-top:46px}.portal-panel{padding:24px}}
 @media(max-width:374px){.portal-panel{padding:18px}.portal-steps{gap:16px}.portal-intro h1{font-size:42px}.material-row{grid-template-columns:1fr 76px}}
 [dir=rtl] .portal-page{text-align:right}
+/* Support and staging notices inherit the portal's light text palette. */
+.portal-page .notice{background:#e4f1fc;color:#172c42}
+.portal-page .notice a:hover{color:#0855c5}
+/* WebKit's native select can paint long option labels beyond narrow forms. */
+.portal-page select{appearance:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding-inline-end:36px;background-image:linear-gradient(45deg,transparent 50%,#172c42 50%),linear-gradient(135deg,#172c42 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+[dir=rtl] .portal-page select{background-position:13px 50%,18px 50%}
+
+#application-fields {margin-block:2rem;} #application-fields[hidden]{display:none;}

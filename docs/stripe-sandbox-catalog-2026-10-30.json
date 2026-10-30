@@ -1,0 +1,369 @@
+{
+  "http": 200,
+  "data": {
+    "account": "acct_1UVrQ3BxU4PsnoX0",
+    "mode": "test",
+    "records": [
+      {
+        "kind": "products",
+        "id": "prod_VXJDpYXEUxydPR",
+        "name": "UPDATE-MAT-PIPING",
+        "active": true,
+        "sku": "UPDATE-MAT-PIPING"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDVTATVqc7JY",
+        "name": "UPDATE-MAT-STRUCTURAL_STEEL",
+        "active": true,
+        "sku": "UPDATE-MAT-STRUCTURAL_STEEL"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDwUjjHBMP0Y",
+        "name": "UPDATE-MAT-FORMWORK",
+        "active": true,
+        "sku": "UPDATE-MAT-FORMWORK"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDYLxsoJXvFN",
+        "name": "UPDATE-MAT-REBAR",
+        "active": true,
+        "sku": "UPDATE-MAT-REBAR"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJD87aMKHQ6VH",
+        "name": "UPDATE-MAT-CONCRETE",
+        "active": true,
+        "sku": "UPDATE-MAT-CONCRETE"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJD3nfSymbKoN",
+        "name": "BASELINE-MAT-PIPING",
+        "active": true,
+        "sku": "BASELINE-MAT-PIPING"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDNcrc3vqCQa",
+        "name": "BASELINE-MAT-STRUCTURAL_STEEL",
+        "active": true,
+        "sku": "BASELINE-MAT-STRUCTURAL_STEEL"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDcZ4zKQuUBH",
+        "name": "BASELINE-MAT-FORMWORK",
+        "active": true,
+        "sku": "BASELINE-MAT-FORMWORK"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDugEhKimUGt",
+        "name": "BASELINE-MAT-REBAR",
+        "active": true,
+        "sku": "BASELINE-MAT-REBAR"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJD5FCJN1M9Os",
+        "name": "BASELINE-MAT-CONCRETE",
+        "active": true,
+        "sku": "BASELINE-MAT-CONCRETE"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDYfri3kZ5kX",
+        "name": "Additional in-scope revision",
+        "active": true,
+        "sku": "REVISION"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDFDDlD2ZJfh",
+        "name": "Additional 50 activities Update With Resources",
+        "active": true,
+        "sku": "EXTRA-50-UPDATE-R"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDuoUs2oh88J",
+        "name": "Additional 50 activities Baseline With Resources",
+        "active": true,
+        "sku": "EXTRA-50-BASE-R"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJD4fcBNCaraT",
+        "name": "Additional 50 activities Without Resources",
+        "active": true,
+        "sku": "EXTRA-50-NR"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VXJDLMwfYnnJaR",
+        "name": "Schedule Score pilot",
+        "active": true,
+        "sku": "SCHEDULE-SCORE-PILOT"
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBoJYaLI90KCI",
+        "name": "Detailed Baseline — With Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBkROf3ChxJ63",
+        "name": "Basic Baseline — Without Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBsHQgqNjrfXy",
+        "name": "Primavera P6 Schedule Update — With Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VW9ACK31oDmdvm",
+        "name": "Primavera P6 Schedule Audit",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBnGhGnvgdQ7X",
+        "name": "Detailed Baseline — Without Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBmgTL9h3t0Ye",
+        "name": "Basic Baseline — With Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBqv5CiNDTTSq",
+        "name": "Primavera P6 Schedule Update — Without Resources",
+        "active": true
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbJBxU4PsnoX0BUQsDUpd",
+        "product": "prod_VXJDpYXEUxydPR",
+        "unit_amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "UPDATE-MAT-PIPING",
+        "sku": "UPDATE-MAT-PIPING"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbGBxU4PsnoX0T3xzinsL",
+        "product": "prod_VXJDVTATVqc7JY",
+        "unit_amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "UPDATE-MAT-STRUCTURAL_STEEL",
+        "sku": "UPDATE-MAT-STRUCTURAL_STEEL"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbFBxU4PsnoX0lzWD9DQJ",
+        "product": "prod_VXJDwUjjHBMP0Y",
+        "unit_amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "UPDATE-MAT-FORMWORK",
+        "sku": "UPDATE-MAT-FORMWORK"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbDBxU4PsnoX0KOY8X2to",
+        "product": "prod_VXJDYLxsoJXvFN",
+        "unit_amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "UPDATE-MAT-REBAR",
+        "sku": "UPDATE-MAT-REBAR"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbCBxU4PsnoX0MQUMvYjG",
+        "product": "prod_VXJD87aMKHQ6VH",
+        "unit_amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "UPDATE-MAT-CONCRETE",
+        "sku": "UPDATE-MAT-CONCRETE"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbBBxU4PsnoX09YL7cZw4",
+        "product": "prod_VXJD3nfSymbKoN",
+        "unit_amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "BASELINE-MAT-PIPING",
+        "sku": "BASELINE-MAT-PIPING"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEbABxU4PsnoX02nfCqJPB",
+        "product": "prod_VXJDNcrc3vqCQa",
+        "unit_amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "BASELINE-MAT-STRUCTURAL_STEEL",
+        "sku": "BASELINE-MAT-STRUCTURAL_STEEL"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEb8BxU4PsnoX0m2yxcZgx",
+        "product": "prod_VXJDcZ4zKQuUBH",
+        "unit_amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "BASELINE-MAT-FORMWORK",
+        "sku": "BASELINE-MAT-FORMWORK"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEb7BxU4PsnoX0BNfgEyUP",
+        "product": "prod_VXJDugEhKimUGt",
+        "unit_amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "BASELINE-MAT-REBAR",
+        "sku": "BASELINE-MAT-REBAR"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEb6BxU4PsnoX0veeCQRYF",
+        "product": "prod_VXJD5FCJN1M9Os",
+        "unit_amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "BASELINE-MAT-CONCRETE",
+        "sku": "BASELINE-MAT-CONCRETE"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEb5BxU4PsnoX08EMb5dmN",
+        "product": "prod_VXJDYfri3kZ5kX",
+        "unit_amount": 9900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "REVISION",
+        "sku": "REVISION"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEb3BxU4PsnoX0KNLoBLVL",
+        "product": "prod_VXJDFDDlD2ZJfh",
+        "unit_amount": 15000,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "EXTRA-50-UPDATE-R",
+        "sku": "EXTRA-50-UPDATE-R"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEazBxU4PsnoX0vdXrDmMe",
+        "product": "prod_VXJDuoUs2oh88J",
+        "unit_amount": 17500,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "EXTRA-50-BASE-R",
+        "sku": "EXTRA-50-BASE-R"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEawBxU4PsnoX0k0IW1oY3",
+        "product": "prod_VXJD4fcBNCaraT",
+        "unit_amount": 10000,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "EXTRA-50-NR",
+        "sku": "EXTRA-50-NR"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UWEavBxU4PsnoX0obx745nP",
+        "product": "prod_VXJDLMwfYnnJaR",
+        "unit_amount": 100,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": "SCHEDULE-SCORE-PILOT",
+        "sku": "SCHEDULE-SCORE-PILOT"
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQgBxU4PsnoX0CekdoUq0",
+        "product": "prod_VWBoJYaLI90KCI",
+        "unit_amount": 149900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX05ksKEZ8a",
+        "product": "prod_VWBkROf3ChxJ63",
+        "unit_amount": 49900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0xkiA8soq",
+        "product": "prod_VWBsHQgqNjrfXy",
+        "unit_amount": 64900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0jOEmafZV",
+        "product": "prod_VW9ACK31oDmdvm",
+        "unit_amount": 19900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0drjlBZPi",
+        "product": "prod_VWBnGhGnvgdQ7X",
+        "unit_amount": 99900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0yZz0EQlv",
+        "product": "prod_VWBqv5CiNDTTSq",
+        "unit_amount": 39900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0mnRJSdEp",
+        "product": "prod_VWBmgTL9h3t0Ye",
+        "unit_amount": 79900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      }
+    ]
+  }
+}

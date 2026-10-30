@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-29",
+  "readiness": {
+    "mode": "test",
+    "configuredAccount": "acct_1UVrQ3BxU4PsnoX0",
+    "sandboxAccountMatches": true,
+    "restVersion": "2025-02-24.acacia",
+    "intakeEnabled": false,
+    "turnstileConfigured": true,
+    "saltConfigured": true
+  },
+  "positive": {
+    "status": 200,
+    "body": {
+      "valid": true,
+      "hostname": "bluefin-project-portal-staging.bluefintuna-llc.workers.dev",
+      "action": "create-order"
+    }
+  },
+  "replay": {
+    "status": 403,
+    "body": {
+      "valid": false,
+      "hostname": "bluefin-project-portal-staging.bluefintuna-llc.workers.dev",
+      "action": "create-order"
+    }
+  },
+  "wrongAction": {
+    "status": 403,
+    "body": {
+      "valid": false,
+      "hostname": "bluefin-project-portal-staging.bluefintuna-llc.workers.dev",
+      "action": "other-action"
+    }
+  }
+}

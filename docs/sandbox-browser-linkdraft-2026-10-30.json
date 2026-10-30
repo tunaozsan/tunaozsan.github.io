@@ -1,0 +1,10 @@
+{
+  "mode": "linkdraft",
+  "orderId": "112e60d6-c9f3-41c7-a263-8966aab6e676",
+  "tests": [
+    {
+      "name": "real_order_created",
+      "status": "PASS"
+    }
+  ]
+}

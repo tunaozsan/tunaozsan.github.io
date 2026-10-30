@@ -1,0 +1,63 @@
+{
+  "tests": [
+    {
+      "test": "real_portal_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "real_missing_consent_and_wrong_version_rejected",
+      "status": "PASS",
+      "results": [
+        {
+          "http": 400,
+          "error": "consent_required"
+        },
+        {
+          "http": 400,
+          "error": "consent_required"
+        }
+      ]
+    },
+    {
+      "test": "real_Sandbox_Checkout_created",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_mandatory_terms_blocks_submit",
+      "status": "PASS",
+      "remainedOnCheckout": true,
+      "checked": false,
+      "nearby": [
+        {
+          "tag": "INPUT",
+          "cls": "Checkbox-Input Checkbox-Input--invalid",
+          "text": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "Checkbox-InputContainer",
+          "text": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "Checkbox",
+          "text": "I agree to the Service Terms and Cancellation & Refund Policy. Draft test version service-terms-2026-10-30-v1."
+        },
+        {
+          "tag": "DIV",
+          "cls": "CheckboxField CheckboxField--invalid",
+          "text": "I agree to the Service Terms and Cancellation & Refund Policy. Draft test version service-terms-2026-10-30-v1.\n\nİşleminizi tamamlamak için Bluefin Tuna Portal Staging koşullarını kabul edin."
+        },
+        {
+          "tag": "DIV",
+          "cls": "FormFieldCheckbox TermsOfServiceConsentCheckbox mb4 mt2",
+          "text": "I agree to the Service Terms and Cancellation & Refund Policy. Draft test version service-terms-2026-10-30-v1.\n\nİşleminizi tamamlamak için Bluefin Tuna Portal Staging koşullarını kabul edin."
+        }
+      ],
+      "paymentSubmittedWithConsent": false
+    }
+  ],
+  "orderId": "f38b9a0f-5c54-4fca-b49d-8a439d3a76df",
+  "policyVersion": "service-terms-2026-10-30-v1",
+  "policyHash": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876"
+}

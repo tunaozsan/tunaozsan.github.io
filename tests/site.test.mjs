@@ -19,10 +19,10 @@ check(read('index.html').match(/id="contact"[\s\S]*mailto:support@bluefintuna.li
 const approved=[[199,150,5],[499,75,5],[799,75,7],[999,200,10],[1499,200,12],[399,200,4],[649,200,5]];
 const catalog=JSON.parse(read('data/services.json'));const links=JSON.parse(read('data/payment-links.json'));check(catalog.services.length===7,'Seven independent packages');
 catalog.services.forEach((s,i)=>{assert.deepEqual([s.price,s.maxActivities,s.businessDays],approved[i],s.sku);checks++;check(/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/.test(links[s.sku]),'Valid Stripe payment URL'); const card=read('planning/services/index.html').split(`id="${s.sku}"`)[1].split('</article>')[0];check(card.includes('href="/project-portal/?sku='),`${s.sku}: gated portal entry`);check(read('planning/services/index.html').includes(`id="${s.sku}"`),'Service anchor');});
-for(const p of ['service-terms.html','refund-policy.html']){check(read(p).includes('content="noindex,follow"'),`${p} draft not indexed`);check(!read('sitemap.xml').includes('/'+p),`${p} not in sitemap`);}
+for(const p of ['service-terms.html','refund-policy.html']){check(read(p).includes('content="index,follow"'),`${p} effective policy indexed`);check(read('sitemap.xml').includes('/'+p),`${p} in sitemap`);}
 check(new Set(Object.values(links)).size===7,'Seven historical payment references retained');
 check(!pages.some(p=>read(p).includes('https://buy.stripe.com/')),'No live static checkout bypass in release candidate');
-check(read('assets/scripts/portal-config.js').includes("API_ORIGIN = ''"),'Frontend activation gate closed');
+check(read('assets/scripts/portal-config.js').includes('https://bluefin-project-portal-api.bluefintuna-llc.workers.dev'),'Frontend uses production application origin');
 for(const p of pages) for(const m of read(p).matchAll(/href="(https:\/\/buy\.stripe\.com\/[^"]+)"/g)) check(Object.values(links).includes(m[1]),'Only configured checkout links');
 check(read('assets/styles/site.css').includes('prefers-reduced-motion'),'Reduced motion support');
 

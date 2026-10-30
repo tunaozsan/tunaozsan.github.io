@@ -1,0 +1,50 @@
+{
+  "orderId": "9d49e04a-676d-4529-8f0a-07847486dc55",
+  "kind": "REMOTE_STAGING_DEADLINE_SIMULATION_NOT_30_OR_90_DAYS_ELAPSED",
+  "tests": [
+    {
+      "test": "configured_30_90_day_intervals",
+      "status": "PASS"
+    },
+    {
+      "test": "simulated_expired_unused_invitation",
+      "http": 401,
+      "status": "PASS"
+    },
+    {
+      "test": "simulated_day30_expired_delivery_with_valid_session",
+      "http": 410,
+      "status": "PASS"
+    },
+    {
+      "test": "simulated_day90_real_Cron_and_physical_deletion",
+      "status": "PASS",
+      "detail": "Existing real scheduled Cron; 9/9 known Drive objects returned 404. Deadline was simulated, not 90 days elapsed.",
+      "purgedAt": 1793352647,
+      "checkedObjects": 9
+    },
+    {
+      "test": "original_R2_TTL_unchanged",
+      "status": "PASS",
+      "ttlSeconds": 43200
+    },
+    {
+      "test": "real_Cron_R2_to_Drive_transfer",
+      "status": "PASS",
+      "attempts": 1,
+      "verifiedAt": 1793352645
+    },
+    {
+      "test": "R2_source_still_intact_after_Drive_archive_simulation",
+      "status": "PASS"
+    }
+  ],
+  "originalDeadlines": {
+    "published_at": 1793352246,
+    "expires_at": 1795944246,
+    "retention_at": 1801128246,
+    "created_at": 1793351753,
+    "r2_expires_at": 1793394953
+  },
+  "archiveSimulationStartedAt": 1793352254
+}

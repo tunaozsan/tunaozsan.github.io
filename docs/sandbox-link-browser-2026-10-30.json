@@ -1,0 +1,5 @@
+{
+  "redirect": true,
+  "initialAttempt": "Timeout; country change cleared postal code, session remained unpaid; same session resumed",
+  "note": "Stripe paid/consent and D1 checked separately"
+}

@@ -1,0 +1,114 @@
+{
+  "http": 200,
+  "data": {
+    "account": "acct_1UVrQ3BxU4PsnoX0",
+    "mode": "test",
+    "records": [
+      {
+        "kind": "products",
+        "id": "prod_VWBoJYaLI90KCI",
+        "name": "Detailed Baseline — With Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBkROf3ChxJ63",
+        "name": "Basic Baseline — Without Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBsHQgqNjrfXy",
+        "name": "Primavera P6 Schedule Update — With Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VW9ACK31oDmdvm",
+        "name": "Primavera P6 Schedule Audit",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBnGhGnvgdQ7X",
+        "name": "Detailed Baseline — Without Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBmgTL9h3t0Ye",
+        "name": "Basic Baseline — With Resources",
+        "active": true
+      },
+      {
+        "kind": "products",
+        "id": "prod_VWBqv5CiNDTTSq",
+        "name": "Primavera P6 Schedule Update — Without Resources",
+        "active": true
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQgBxU4PsnoX0CekdoUq0",
+        "product": "prod_VWBoJYaLI90KCI",
+        "unit_amount": 149900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX05ksKEZ8a",
+        "product": "prod_VWBkROf3ChxJ63",
+        "unit_amount": 49900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0xkiA8soq",
+        "product": "prod_VWBsHQgqNjrfXy",
+        "unit_amount": 64900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0jOEmafZV",
+        "product": "prod_VW9ACK31oDmdvm",
+        "unit_amount": 19900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0drjlBZPi",
+        "product": "prod_VWBnGhGnvgdQ7X",
+        "unit_amount": 99900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0yZz0EQlv",
+        "product": "prod_VWBqv5CiNDTTSq",
+        "unit_amount": 39900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      },
+      {
+        "kind": "prices",
+        "id": "price_1UVrQdBxU4PsnoX0mnRJSdEp",
+        "product": "prod_VWBmgTL9h3t0Ye",
+        "unit_amount": 79900,
+        "currency": "usd",
+        "active": true,
+        "lookup_key": null
+      }
+    ]
+  }
+}

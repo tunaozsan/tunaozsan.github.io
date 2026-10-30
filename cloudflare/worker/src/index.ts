@@ -23,7 +23,7 @@ import {
   rate,
 } from "./security";
 import { upload, removeFile } from "./storage";
-import { checkout, webhook, quoteOrder } from "./payments";
+import { checkout, webhook, quoteOrder, stripe } from "./payments";
 import { operations } from "./operations";
 import { cleanup } from "./cleanup";
 const json = (data: unknown, status = 200) => Response.json(data, { status });
@@ -324,6 +324,61 @@ async function route(
 }
 async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
   const actor = await admin(req, e, d);
+  const agreementPath = url.pathname.match(
+    /^\/api\/v1\/admin\/orders\/([a-f0-9-]{36})\/agreement$/,
+  );
+  if (agreementPath && req.method === "GET") {
+    const evidence = await e.DB.prepare(
+      "SELECT * FROM agreement_acceptances WHERE order_id=?",
+    )
+      .bind(agreementPath[1])
+      .first();
+    return json({
+      acceptance: evidence || null,
+      historicalEvidenceNotBackfilled: !evidence,
+    });
+  }
+  if (
+    url.pathname === "/api/v1/admin/catalog-inventory" &&
+    req.method === "GET"
+  ) {
+    if (e.APP_ENV !== "test" || e.STRIPE_ACCOUNT_ID !== "acct_1UVrQ3BxU4PsnoX0")
+      throw new Problem(403, "sandbox_required");
+    const account = await stripe(e, d, "account");
+    if (account.id !== e.STRIPE_ACCOUNT_ID)
+      throw new Problem(503, "merchant_not_verified");
+    const records: any[] = [];
+    for (const kind of ["products", "prices"]) {
+      let cursor = "";
+      for (let page = 0; page < 20; page++) {
+        const list = await stripe(
+          e,
+          d,
+          kind +
+            "?limit=100" +
+            (cursor ? "&starting_after=" + encodeURIComponent(cursor) : ""),
+        );
+        for (const x of list.data || []) {
+          if (x.livemode !== false) throw new Problem(403, "sandbox_required");
+          records.push({
+            kind,
+            id: x.id,
+            name: x.name,
+            product: x.product,
+            unit_amount: x.unit_amount,
+            currency: x.currency,
+            active: x.active,
+            lookup_key: x.lookup_key,
+            sku: x.metadata?.sku,
+          });
+        }
+        if (!list.has_more) break;
+        if (page === 19) throw new Problem(503, "inventory_incomplete");
+        cursor = list.data.at(-1).id;
+      }
+    }
+    return json({ account: account.id, mode: "test", records });
+  }
   const now = d.now();
   if (url.pathname === "/api/v1/admin/operations" && req.method === "GET")
     return json(await operations(e, d));

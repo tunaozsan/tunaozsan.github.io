@@ -1,1 +1,22 @@
-{"compilerOptions":{"target":"ES2022","module":"ESNext","moduleResolution":"Bundler","strict":true,"noEmit":true,"lib":["ES2022","DOM","DOM.Iterable"],"skipLibCheck":true,"types":[]},"include":["../../src/portal-client.ts","src/catalog.ts"]}
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": [
+    "../../src/portal-client.ts",
+    "src/catalog.ts",
+    "../../src/delivery-client.ts",
+    "../../src/delivery-admin.ts"
+  ]
+}

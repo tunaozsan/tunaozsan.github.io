@@ -1,0 +1,8 @@
+{
+  "scope": "Local SQLite restore of real staging export; no remote rollback or production mutation",
+  "additiveMigration": "PASS",
+  "repeatApply": "PASS",
+  "rollbackOnCopy": "PASS",
+  "originalTableCount": 8,
+  "originalRowsPreserved": true
+}

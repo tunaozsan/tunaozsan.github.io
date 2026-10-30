@@ -1,0 +1,13 @@
+{
+  "action": "link-create",
+  "checkedAt": "2026-10-30T12:15:03.569Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "id": "plink_1UWEi3BxU4PsnoX09iNiqZtt",
+        "url": "https://buy.stripe.com/test_5kQ6oGfFegL84oJbZ05sA07"
+      }
+    }
+  ]
+}

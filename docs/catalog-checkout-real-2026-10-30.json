@@ -1,0 +1,69 @@
+{
+  "tests": [
+    {
+      "test": "real_portal_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "real_missing_consent_and_wrong_version_rejected",
+      "status": "PASS",
+      "results": [
+        {
+          "http": 400,
+          "error": "consent_required"
+        },
+        {
+          "http": 400,
+          "error": "consent_required"
+        }
+      ]
+    },
+    {
+      "test": "real_Sandbox_Checkout_created",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_submit_without_agreement",
+      "status": "NOT_RUN",
+      "validation": {
+        "required": false,
+        "checked": false,
+        "invalid": false,
+        "ariaInvalid": null
+      }
+    },
+    {
+      "test": "real_test_payment_redirect",
+      "status": "PASS",
+      "note": "Redirect alone is not payment/acceptance evidence; D1 and signed webhook checked separately."
+    },
+    {
+      "test": "real_signed_webhook_and_D1_acceptance",
+      "status": "PASS"
+    }
+  ],
+  "orderId": "93355bdd-6949-4891-96c3-e00e57577dc0",
+  "policyVersion": "service-terms-2026-10-30-v1",
+  "policyHash": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+  "evidence": {
+    "order_id": "93355bdd-6949-4891-96c3-e00e57577dc0",
+    "agreement_version": "service-terms-2026-10-30-v1",
+    "agreement_sha256": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+    "agreement_status": "DRAFT",
+    "documents_url": "https://bluefin-project-portal-staging.bluefintuna-llc.workers.dev/assets/legal/service-terms-2026-10-30-v1.json",
+    "quote_sha256": "0f0d8d9d8f514b46b931fda3ae2ce46df2fec599a57ff85751006f50710f32f6",
+    "portal_accepted_at": 1793361365,
+    "stripe_session_id": "cs_test_a15OerPt2lZQoA17Xru1u9xtmZees1ZFsE5VUMM7hQcZ9EWkUwSRnOGWSF",
+    "stripe_terms_status": "ACCEPTED",
+    "stripe_verified_at": 1793361395,
+    "stripe_event_id": "evt_1UWEQBBxU4PsnoX0EF5NRE4r",
+    "stripe_event_created_at": 1793361395,
+    "status": "PAID",
+    "paid_at": 1793361395,
+    "paid_total": 19900
+  }
+}

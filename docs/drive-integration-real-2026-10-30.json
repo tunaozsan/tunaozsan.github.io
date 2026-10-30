@@ -1,0 +1,95 @@
+{
+  "environment": "staging",
+  "tests": [
+    {
+      "test": "real_paid_reupload_issued",
+      "status": "PASS",
+      "expiresAt": 1793394953
+    },
+    {
+      "test": "real_R2_upload_original_12h_TTL",
+      "status": "PASS"
+    },
+    {
+      "test": "customer_response_no_Google_identifiers",
+      "status": "PASS"
+    },
+    {
+      "test": "real_independent_customer_download_synthetic.pdf",
+      "http": 200,
+      "status": "PASS",
+      "bytes": 616,
+      "sha256Matches": true
+    },
+    {
+      "test": "real_independent_customer_download_synthetic.xlsx",
+      "http": 200,
+      "status": "PASS",
+      "bytes": 1397,
+      "sha256Matches": true
+    },
+    {
+      "test": "real_independent_customer_download_synthetic.xer",
+      "http": 200,
+      "status": "PASS",
+      "bytes": 92,
+      "sha256Matches": true
+    },
+    {
+      "test": "real_cross_order_file_rejected",
+      "http": 404,
+      "status": "PASS"
+    },
+    {
+      "test": "real_invite_reuse_rejected",
+      "http": 401,
+      "status": "PASS"
+    },
+    {
+      "test": "real_revoked_download_rejected",
+      "http": 401,
+      "status": "PASS"
+    },
+    {
+      "test": "real_repeat_worker_idempotency_after_Cron",
+      "status": "PASS",
+      "jobs": 1,
+      "attempts": 1
+    },
+    {
+      "test": "real_unpaid_admin_Drive_upload_rejected",
+      "http": 403,
+      "status": "PASS"
+    }
+  ],
+  "orderId": "9d49e04a-676d-4529-8f0a-07847486dc55",
+  "parentId": "966850e0-bace-4638-9440-b14524e5ce6f",
+  "input": {
+    "fileId": "9622df2c-9a3c-4903-bedd-a369db94c754",
+    "expiresAt": 1793394953,
+    "orderStatus": "PAID",
+    "paid": true,
+    "bytes": 92,
+    "sha256": "006dd9167013dfb91bd44b97002f5269ae517f09e33dbbba6245d9b04ab0972b"
+  },
+  "files": [
+    {
+      "id": "21100a7b-14d1-40db-bc8c-23aae0cdf17f",
+      "name": "synthetic.pdf",
+      "bytes": 616,
+      "sha256": "54f5a3734febe372814070e6430275beda2ecdb462655c4e538937806dcfe603"
+    },
+    {
+      "id": "ee741b51-43af-4f1e-a2e3-8db42f56e770",
+      "name": "synthetic.xlsx",
+      "bytes": 1397,
+      "sha256": "b11843cb258c3af5530e4e3c011003f29414f1afb65d0e8711f14aee5d98693e"
+    },
+    {
+      "id": "9565c8ae-4c83-41b9-8bf9-79942d035e8c",
+      "name": "synthetic.xer",
+      "bytes": 92,
+      "sha256": "006dd9167013dfb91bd44b97002f5269ae517f09e33dbbba6245d9b04ab0972b"
+    }
+  ]
+}

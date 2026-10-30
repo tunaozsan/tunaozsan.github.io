@@ -34,24 +34,63 @@ const fakeFetch = async (url: any, opt: any = {}) => {
   }
   if (String(url).endsWith("/account"))
     return Response.json({ id: "acct_test" });
+  if (String(url).includes("/prices?")) {
+    const sku = new URL(String(url)).searchParams.get("lookup_keys[]")!;
+    const amount =
+      packages.find((p) => p.sku === sku)?.cents ??
+      (sku === "REVISION"
+        ? 9900
+        : sku === "EXTRA-50-NR"
+          ? 10000
+          : sku === "EXTRA-50-BASE-R"
+            ? 17500
+            : sku === "EXTRA-50-UPDATE-R"
+              ? 15000
+              : sku.startsWith("BASELINE-MAT-")
+                ? 24900
+                : 11900);
+    return Response.json({
+      has_more: false,
+      data: [
+        {
+          id: "price_fixture_" + amount,
+          lookup_key: sku,
+          unit_amount: amount,
+          currency: "usd",
+          active: true,
+          type: "one_time",
+          livemode: false,
+          product: { id: "prod_fixture", active: true, livemode: false },
+        },
+      ],
+    });
+  }
   if (String(url).endsWith("/checkout/sessions")) {
     const b = new URLSearchParams(opt.body);
     stripeCalls.push(b);
     const oid = b.get("client_reference_id");
     const total = [...b.keys()]
-      .filter((k) => k.endsWith("[unit_amount]"))
+      .filter((k) => k.endsWith("[price]"))
       .reduce(
         (s, k) =>
           s +
-          Number(b.get(k)) *
-            Number(b.get(k.replace("[price_data][unit_amount]", "[quantity]"))),
+          Number(b.get(k)!.replace("price_fixture_", "")) *
+            Number(b.get(k.replace("[price]", "[quantity]"))),
         0,
       );
     const s = {
       id: "cs_test_" + oid,
       url: "https://checkout.stripe.com/c/pay/" + oid,
       client_reference_id: oid,
-      metadata: { order_id: oid, quote_hash: b.get("metadata[quote_hash]") },
+      metadata: {
+        order_id: oid,
+        quote_hash: b.get("metadata[quote_hash]"),
+        agreement_version: b.get("metadata[agreement_version]"),
+        agreement_sha256: b.get("metadata[agreement_sha256]"),
+      },
+      consent_collection: {
+        terms_of_service: b.get("consent_collection[terms_of_service]"),
+      },
       currency: "usd",
       amount_subtotal: total,
       amount_total: total,
@@ -65,7 +104,10 @@ const fakeFetch = async (url: any, opt: any = {}) => {
     return Response.json(s);
   }
   const sid = String(url).split("/").pop();
-  return Response.json(sessions[sid!] || {});
+  const session = sessions[sid!];
+  if (session?.payment_status === "paid" && !("consent" in session))
+    session.consent = { terms_of_service: "accepted" };
+  return Response.json(session || {});
 };
 const d: any = { now: () => clock, fetch: fakeFetch };
 const api = (
@@ -211,6 +253,7 @@ beforeEach(async () => {
   for (const table of [
     "notifications",
     "payment_events",
+    "agreement_acceptances",
     "audit_events",
     "order_files",
     "orders",
@@ -668,38 +711,63 @@ test("valid admin JWT verifies signature, audience, issuer, expiry and allowlist
   const { generateKeyPair, exportJWK, SignJWT, createLocalJWKSet } =
     await import("jose");
   const { verifyAdminJWT } = await import("../src/security");
+  const config = JSON.parse(
+    readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
+  );
+  const accessEnv = { ...e, ...config.vars };
+  assert.equal(accessEnv.APP_ENV, "production");
+  assert.equal(accessEnv.PORTAL_ENABLED, "false");
+  assert.equal(accessEnv.LEGAL_APPROVED, "true");
   const { privateKey, publicKey } = await generateKeyPair("RS256");
   const jwk = await exportJWK(publicKey);
   jwk.kid = "test";
   const resolver = createLocalJWKSet({ keys: [jwk] });
-  const jwt = await new SignJWT({ email: "operator@example.com" })
+  const jwt = await new SignJWT({ email: accessEnv.ADMIN_EMAILS })
     .setProtectedHeader({ alg: "RS256", kid: "test" })
-    .setIssuer(e.ACCESS_ISSUER)
-    .setAudience(e.ACCESS_AUD)
+    .setIssuer(accessEnv.ACCESS_ISSUER)
+    .setAudience(accessEnv.ACCESS_AUD)
     .setIssuedAt()
     .setExpirationTime("2m")
     .sign(privateKey);
-  assert.equal(await verifyAdminJWT(jwt, e, resolver), "access-admin");
-  const expired = await new SignJWT({ email: "operator@example.com" })
+  assert.equal(await verifyAdminJWT(jwt, accessEnv, resolver), "access-admin");
+  const expired = await new SignJWT({ email: accessEnv.ADMIN_EMAILS })
     .setProtectedHeader({ alg: "RS256", kid: "test" })
-    .setIssuer(e.ACCESS_ISSUER)
-    .setAudience(e.ACCESS_AUD)
+    .setIssuer(accessEnv.ACCESS_ISSUER)
+    .setAudience(accessEnv.ACCESS_AUD)
     .setExpirationTime(1)
     .sign(privateKey);
-  await assert.rejects(() => verifyAdminJWT(expired, e, resolver));
+  await assert.rejects(() => verifyAdminJWT(expired, accessEnv, resolver));
   await assert.rejects(() =>
-    verifyAdminJWT(jwt, { ...e, ACCESS_AUD: "wrong" }, resolver),
+    verifyAdminJWT(jwt, { ...accessEnv, ACCESS_AUD: "wrong" }, resolver),
   );
   await assert.rejects(() =>
     verifyAdminJWT(
       jwt,
-      { ...e, ACCESS_ISSUER: "https://other.cloudflareaccess.com" },
+      { ...accessEnv, ACCESS_ISSUER: "https://other.cloudflareaccess.com" },
       resolver,
     ),
   );
   await assert.rejects(() =>
-    verifyAdminJWT(jwt, { ...e, ADMIN_EMAILS: "other@example.com" }, resolver),
+    verifyAdminJWT(
+      jwt,
+      { ...accessEnv, ADMIN_EMAILS: "other@example.com" },
+      resolver,
+    ),
   );
+  const noExpiry = await new SignJWT({ email: accessEnv.ADMIN_EMAILS })
+    .setProtectedHeader({ alg: "RS256", kid: "test" })
+    .setIssuer(accessEnv.ACCESS_ISSUER)
+    .setAudience(accessEnv.ACCESS_AUD)
+    .sign(privateKey);
+  await assert.rejects(() => verifyAdminJWT(noExpiry, accessEnv, resolver));
+  const attacker = await generateKeyPair("RS256");
+  const forged = await new SignJWT({ email: accessEnv.ADMIN_EMAILS })
+    .setProtectedHeader({ alg: "RS256", kid: "test" })
+    .setIssuer(accessEnv.ACCESS_ISSUER)
+    .setAudience(accessEnv.ACCESS_AUD)
+    .setExpirationTime("2m")
+    .sign(attacker.privateKey);
+  await assert.rejects(() => verifyAdminJWT(forged, accessEnv, resolver));
 });
 test("scheduled handler registers cleanup work", async () => {
   const pending: Promise<any>[] = [];
@@ -1261,4 +1329,305 @@ test("checkout rejects stale price-policy hashes until a new server quote is rev
     ).status,
     200,
   );
+});
+
+test("Turnstile rejects successful tokens with wrong hostname or action", async () => {
+  for (const response of [
+    { success: true, hostname: "other.example", action: "create-order" },
+    { success: true, hostname: "bluefintuna.life", action: "other-action" },
+    { success: false, hostname: "bluefintuna.life", action: "create-order" },
+  ]) {
+    d.fetch = async (url: any, options: any) =>
+      String(url).includes("siteverify")
+        ? Response.json(response)
+        : fakeFetch(url, options);
+    const result = await api("/api/v1/orders", "POST", {
+      cart: cart(),
+      customer: {
+        name: "Test",
+        email: "test@example.com",
+        project: "Synthetic",
+        dataDate: "2026-10-29",
+      },
+      turnstileToken: "synthetic-test-token",
+    });
+    assert.equal(result.status, 403);
+    assert.equal(((await result.json()) as any).error, "challenge_failed");
+  }
+  const row = await e.DB.prepare("SELECT COUNT(*) AS n FROM orders").first();
+  assert.equal(row.n, 0);
+});
+
+test("agreement evidence binds every core package to one version, scope and session", async () => {
+  for (const pack of packages) {
+    clock += 3601; // Separate customers/test windows; preserve the real rate limiter.
+    const o = await create(
+      cart(pack.sku, pack.activities, { existingResources: true }),
+    );
+    const required = quote(
+      cart(pack.sku, pack.activities, { existingResources: true }),
+    ).required;
+    for (const category of required)
+      assert.equal((await file(o, category)).status, 201);
+    const q: any = await (
+      await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+    ).json();
+    for (const consent of [false, undefined, "true"]) {
+      assert.equal(
+        (
+          await api(
+            `/api/v1/orders/${o.orderId}/checkout`,
+            "POST",
+            { consent, termsVersion: TERMS, quoteHash: q.quoteHash },
+            o.token,
+          )
+        ).status,
+        400,
+      );
+    }
+    assert.equal(
+      (
+        await api(
+          `/api/v1/orders/${o.orderId}/checkout`,
+          "POST",
+          {
+            consent: true,
+            termsVersion: "old-version",
+            quoteHash: q.quoteHash,
+          },
+          o.token,
+        )
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await api(
+          `/api/v1/orders/${o.orderId}/checkout`,
+          "POST",
+          { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+          o.token,
+        )
+      ).status,
+      200,
+    );
+    const row: any = await e.DB.prepare(
+      "SELECT * FROM agreement_acceptances WHERE order_id=?",
+    )
+      .bind(o.orderId)
+      .first();
+    assert.equal(row.agreement_version, TERMS);
+    assert.match(row.agreement_sha256, /^[a-f0-9]{64}$/);
+    assert.equal(row.portal_accepted_at, clock);
+    assert.equal(row.stripe_session_id, "cs_test_" + o.orderId);
+    assert.equal(JSON.parse(row.scope_json).cart.sku, pack.sku);
+    assert.equal(row.stripe_terms_status, "PENDING");
+    assert.equal(
+      stripeCalls.at(-1).get("consent_collection[terms_of_service]"),
+      "required",
+    );
+  }
+});
+
+test("missing Stripe acceptance or wrong policy metadata never marks an order paid", async () => {
+  const o = await create();
+  const session = await pay(o);
+  session.status = "complete";
+  session.payment_status = "paid";
+  const event = {
+    id: "evt_agreement",
+    type: "checkout.session.completed",
+    livemode: false,
+    created: clock - 1,
+    data: { object: session },
+  };
+  session.consent = null;
+  assert.equal((await signed(event)).status, 409);
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT paid_at FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).paid_at,
+    null,
+  );
+  session.consent = { terms_of_service: "accepted" };
+  const version = session.metadata.agreement_version;
+  session.metadata.agreement_version = "wrong";
+  assert.equal((await signed(event)).status, 409);
+  session.metadata.agreement_version = version;
+  assert.equal((await signed(event)).status, 200);
+  const evidence: any = await e.DB.prepare(
+    "SELECT * FROM agreement_acceptances WHERE order_id=?",
+  )
+    .bind(o.orderId)
+    .first();
+  assert.equal(evidence.stripe_terms_status, "ACCEPTED");
+  assert.equal(evidence.stripe_verified_at, clock);
+  assert.equal(evidence.stripe_event_created_at, clock - 1);
+  assert.equal(evidence.stripe_event_id, "evt_agreement");
+  assert.equal(evidence.stripe_session_id, session.id);
+  await assert.rejects(() =>
+    e.DB.prepare(
+      "UPDATE agreement_acceptances SET agreement_version=? WHERE order_id=?",
+    )
+      .bind("tampered", o.orderId)
+      .run(),
+  );
+  clock += 5;
+  assert.equal((await signed(event)).status, 200);
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT stripe_verified_at FROM agreement_acceptances WHERE order_id=?",
+      )
+        .bind(o.orderId)
+        .first()
+    ).stripe_verified_at,
+    evidence.stripe_verified_at,
+  );
+});
+
+test("one contract covers compatible addon scope; pilot and unreviewed Update materials cannot bypass eligibility", async () => {
+  const carts = [
+    cart("baseline_basic_nores", 76, { revisions: 1 }),
+    cart("baseline_basic_withres", 76, {
+      materials: [{ code: "concrete", rows: 50 }],
+    }),
+    cart("update_withres", 201, { existingResources: true }),
+  ];
+  for (const c of carts) {
+    const o = await create(c);
+    for (const k of quote(c).required) await file(o, k);
+    const q: any = await (
+      await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+    ).json();
+    assert.equal(
+      (
+        await api(
+          `/api/v1/orders/${o.orderId}/checkout`,
+          "POST",
+          { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+          o.token,
+        )
+      ).status,
+      200,
+    );
+    const row: any = await e.DB.prepare(
+      "SELECT scope_json,agreement_version FROM agreement_acceptances WHERE order_id=?",
+    )
+      .bind(o.orderId)
+      .first();
+    assert.equal(row.agreement_version, TERMS);
+    assert.ok(JSON.parse(row.scope_json).lines.length > 1);
+  }
+  for (const code of [
+    "concrete",
+    "rebar",
+    "formwork",
+    "structural_steel",
+    "piping",
+  ]) {
+    assert.equal(
+      quote(
+        cart("baseline_basic_withres", 75, { materials: [{ code, rows: 50 }] }),
+      ).scopeReview.length,
+      0,
+    );
+    assert.ok(
+      quote(
+        cart("update_withres", 200, {
+          existingResources: true,
+          materials: [{ code, rows: 50 }],
+        }),
+      ).scopeReview.length > 0,
+    );
+  }
+  assert.throws(() => quote(cart("schedule_score", 1)), /unknown_package/);
+});
+
+test("historical v1 remains Draft and byte-identical after owner-adopted v2 publication", async () => {
+  const { createHash } = await import("node:crypto");
+  const v1 = readFileSync(
+    new URL(
+      "../../../data/legal/service-terms-2026-10-30-v1.json",
+      import.meta.url,
+    ),
+  );
+  assert.equal(
+    createHash("sha256").update(v1).digest("hex"),
+    "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+  );
+  assert.equal(JSON.parse(v1.toString()).status, "DRAFT");
+});
+
+test("direct Payment Link metadata cannot bind a session or fabricate D1 consent", async () => {
+  const o = await create();
+  const s = await pay(o);
+  s.status = "complete";
+  s.payment_status = "paid";
+  const event = {
+    id: "evt_direct_link",
+    type: "checkout.session.completed",
+    livemode: false,
+    data: { object: { ...s, id: "cs_other_link" } },
+  };
+  assert.equal((await signed(event)).status, 409);
+  await e.DB.prepare("DELETE FROM agreement_acceptances WHERE order_id=?")
+    .bind(o.orderId)
+    .run();
+  await e.DB.prepare(
+    "UPDATE orders SET consent_version='historical' WHERE id=?",
+  )
+    .bind(o.orderId)
+    .run();
+  event.data.object = s;
+  assert.equal((await signed(event)).status, 409);
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT paid_at FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).paid_at,
+    null,
+  );
+});
+test("missing or changed Catalog price fails closed without dynamic product creation", async () => {
+  const o = await create();
+  await file(o);
+  const q: any = await (
+    await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+  ).json();
+  for (const data of [
+    [],
+    [
+      {
+        id: "price_wrong",
+        lookup_key: "p6_audit",
+        unit_amount: 1,
+        currency: "usd",
+        active: true,
+        type: "one_time",
+        livemode: false,
+        product: { active: true, livemode: false },
+      },
+    ],
+  ]) {
+    d.fetch = async (url: any, opt: any) =>
+      String(url).includes("/prices?")
+        ? Response.json({ data, has_more: false })
+        : fakeFetch(url, opt);
+    const r = await api(
+      `/api/v1/orders/${o.orderId}/checkout`,
+      "POST",
+      { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+      o.token,
+    );
+    assert.equal(r.status, 503);
+    assert.equal(
+      ((await r.json()) as any).error,
+      "catalog_price_missing_or_mismatched",
+    );
+  }
+  assert.equal(stripeCalls.length, 0);
 });

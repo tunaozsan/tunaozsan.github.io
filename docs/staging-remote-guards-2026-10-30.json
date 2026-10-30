@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-30T04:39:10.537Z",
+  "results": [
+    {
+      "name": "health",
+      "status": 200,
+      "expected": 200,
+      "result": "PASS",
+      "enabled": false,
+      "allowOrigin": null
+    },
+    {
+      "name": "intake",
+      "status": 503,
+      "expected": 503,
+      "result": "PASS",
+      "error": "portal_not_enabled",
+      "allowOrigin": "https://bluefin-project-portal-staging.bluefintuna-llc.workers.dev"
+    },
+    {
+      "name": "unsignedWebhook",
+      "status": 400,
+      "expected": 400,
+      "result": "PASS",
+      "error": "invalid_signature",
+      "allowOrigin": null
+    },
+    {
+      "name": "allowedPreflight",
+      "status": 204,
+      "expected": 204,
+      "result": "PASS",
+      "allowOrigin": "https://bluefin-project-portal-staging.bluefintuna-llc.workers.dev"
+    },
+    {
+      "name": "foreignPreflight",
+      "status": 403,
+      "expected": 403,
+      "result": "PASS",
+      "error": "origin_denied",
+      "allowOrigin": null
+    },
+    {
+      "name": "anonymousAdmin",
+      "status": 302,
+      "expected": 302,
+      "result": "PASS",
+      "allowOrigin": null
+    }
+  ],
+  "healthBurst": {
+    "scope": "20 read-only health requests, not upload capacity/load certification",
+    "successful": 20,
+    "p95ms": 4260
+  }
+}

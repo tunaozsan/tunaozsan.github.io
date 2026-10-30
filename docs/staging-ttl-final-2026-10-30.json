@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-30T03:00:13.387Z",
+  "transport": "Existing Chrome test browser page fetch; credentials remain in browser",
+  "admin": {
+    "status": 200,
+    "verified": true,
+    "operations": {
+      "serverTime": 1793329213,
+      "status": "healthy",
+      "alerts": [],
+      "cleanup": {
+        "completedAt": 1793328342,
+        "scanned": 0,
+        "deleteFailures": 0,
+        "orphanDeleteFailures": 0,
+        "sessionFailures": 0
+      },
+      "files": {
+        "overdue": 0,
+        "retrying": 0
+      },
+      "notifications": {
+        "pending": 1,
+        "exhausted": 0,
+        "overdue": 1,
+        "enabled": false
+      },
+      "retrieval": {
+        "urgent": 0
+      }
+    }
+  },
+  "files": [
+    {
+      "orderId": "966850e0-bace-4638-9440-b14524e5ce6f",
+      "fileId": "8ddad3b7-0766-400a-a6d3-bacedc163c66",
+      "status": 410,
+      "error": "files_expired",
+      "result": "PASS"
+    },
+    {
+      "orderId": "039d322c-c207-4824-87bc-810d5e41de20",
+      "fileId": "8ca7e27f-4bf1-4ab2-8842-4d075c1ae550",
+      "status": 410,
+      "error": "files_expired",
+      "result": "PASS"
+    }
+  ],
+  "health": {
+    "status": 200,
+    "redirected": false,
+    "data": {
+      "service": "bluefin-project-portal",
+      "version": "0.1.0",
+      "mode": "test",
+      "enabled": false
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "workerTests": {
+    "status": "PASS",
+    "passed": 33,
+    "failed": 0
+  },
+  "staticTests": {
+    "status": "PASS",
+    "assertions": 1112,
+    "pages": 23
+  },
+  "typecheck": "PASS",
+  "format": "PASS",
+  "realTTLAfterExpiry": "NOT RUN",
+  "realCronPhysicalDeletion": "NOT RUN"
+}

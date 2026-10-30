@@ -1,0 +1,223 @@
+{
+  "checkedAt": "2026-10-30T11:11:30.981Z",
+  "method": "Public hosted pages, read-only. No payment submitted or link settings changed.",
+  "results": [
+    {
+      "sku": "AUDIT-150",
+      "url": "https://buy.stripe.com/00weVcbpf19k0BUbJ82Nq00",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UV74WBzdKYgwVw6EYEHxMeJ"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    },
+    {
+      "sku": "BASE-BASIC-NR-75",
+      "url": "https://buy.stripe.com/cNi4gy50R6tE0BU3cC2Nq02",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UVAC5BzdKYgwVw6aKsnuS6z"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    },
+    {
+      "sku": "BASE-BASIC-R-75",
+      "url": "https://buy.stripe.com/cNidR8fFv4lwbgybJ82Nq04",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UVAGtBzdKYgwVw6WTiViWrl"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    },
+    {
+      "sku": "BASE-DETAIL-NR-200",
+      "url": "https://buy.stripe.com/cNi6oGbpff0a98q7sS2Nq03",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UVAElBzdKYgwVw6DvU7Biee"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    },
+    {
+      "sku": "BASE-DETAIL-R-200",
+      "url": "https://buy.stripe.com/5kQeVcctj8BMckC6oO2Nq05",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UVAJ4BzdKYgwVw6nVq5vgGQ"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    },
+    {
+      "sku": "UPDATE-NR-200",
+      "url": "https://buy.stripe.com/aFaaEW3WN6tE2K2fZo2Nq06",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UVAL1BzdKYgwVw6uosQvzep"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    },
+    {
+      "sku": "UPDATE-R-200",
+      "url": "https://buy.stripe.com/5kQ28q3WN7xI4Sa3cC2Nq07",
+      "checkboxes": [
+        {
+          "label": "Save my information for faster checkout",
+          "checked": false,
+          "required": false
+        }
+      ],
+      "legalLinks": [
+        {
+          "label": "Terms",
+          "href": "https://stripe.com/legal/end-users"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://stripe.com/privacy"
+        }
+      ],
+      "productText": "Pay Bluefin Tuna LLC",
+      "formLoaded": true,
+      "plinkIds": [
+        "plink_1UVAMfBzdKYgwVw6pow909cB"
+      ],
+      "consentCollectionTerms": [
+        "none"
+      ],
+      "status": "REQUIRED_NOT_OBSERVED",
+      "livePaymentSubmitted": false
+    }
+  ]
+}

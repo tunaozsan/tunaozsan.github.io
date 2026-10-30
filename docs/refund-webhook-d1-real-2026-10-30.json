@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-30T13:22:37.678Z",
+  "status": "PASS",
+  "evidence": {
+    "id": "a34c98c0-fae4-4848-863a-5d9a537d26e6",
+    "status": "PAID",
+    "paid_total": 19900,
+    "stripe_terms_status": "ACCEPTED",
+    "delivery_status": "REVOKED",
+    "version": 2,
+    "published_at": 1793366493,
+    "retention_at": 1801142493,
+    "archive_hold": null,
+    "charge_id": "ch_3UWFjcBxU4PsnoX00YjRAtZF",
+    "amount_refunded": 19900,
+    "first_seen_at": 1793366501,
+    "customer_sessions": 0,
+    "customer_invites": 0,
+    "refund_events": 1,
+    "refund_event_id": "evt_3UWFjcBxU4PsnoX00Zxc9m3J"
+  }
+}

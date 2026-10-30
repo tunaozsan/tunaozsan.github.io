@@ -8,7 +8,7 @@ export class Problem extends Error {
 }
 export const TTL = 43200,
   MAX_FILE = 20 * 1024 * 1024;
-export const TERMS = "portal-draft-2026-10-29";
+export { AGREEMENT_VERSION as TERMS } from "./agreement";
 export const packages = [
   ["p6_audit", "Primavera P6 Schedule Audit", 19900, 150, 5, 0, false],
   [
@@ -145,21 +145,28 @@ export function quote(raw: unknown) {
     reasons.push(
       "Existing MH/cost resource assignments must be confirmed; initial setup is quote-only.",
     );
-  const lines = [{ name: p.name, unit: p.cents, quantity: 1 }];
+  const lines = [{ sku: p.sku, name: p.name, unit: p.cents, quantity: 1 }];
   if (blocks)
     lines.push({
+      sku: p.resources
+        ? update
+          ? "EXTRA-50-UPDATE-R"
+          : "EXTRA-50-BASE-R"
+        : "EXTRA-50-NR",
       name: `Additional 50 activities (${p.resources ? "MH + cost" : "without resources"})`,
       unit: p.resources ? (update ? 15000 : 17500) : 10000,
       quantity: blocks,
     });
   for (const x of selected)
     lines.push({
+      sku: `${update ? "UPDATE" : "BASELINE"}-MAT-${x.code.toUpperCase()}`,
       name: `Material: ${x.code.replaceAll("_", " ")} (${x.rows} BOQ rows)`,
       unit: update ? 11900 : 24900,
       quantity: 1,
     });
   if (revisions)
     lines.push({
+      sku: "REVISION",
       name: "Additional in-scope revision",
       unit: 9900,
       quantity: revisions,

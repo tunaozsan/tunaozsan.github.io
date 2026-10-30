@@ -1,0 +1,25 @@
+{
+  "action": "link-close",
+  "checkedAt": "2026-10-30T12:28:28.510Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "link": "plink_1UWEi3BxU4PsnoX09iNiqZtt",
+        "active": false,
+        "sessions": [
+          {
+            "id": "cs_test_a1LiJnMwrZrYFXbg5znqOVt1mL7vi4JpwPHLML7uUuN3UNGdx1RuCpnrSY",
+            "status": "complete",
+            "payment_status": "paid",
+            "consent": {
+              "promotions": null,
+              "terms_of_service": "accepted"
+            },
+            "order_id": "112e60d6-c9f3-41c7-a263-8966aab6e676"
+          }
+        ]
+      }
+    }
+  ]
+}

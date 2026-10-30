@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-30T09:31:05.620Z",
+  "orderId": "9d49e04a-676d-4529-8f0a-07847486dc55",
+  "jobs": [
+    {
+      "id": "31e8d4d299fd22fb4381979342672261",
+      "file_id": "9622df2c-9a3c-4903-bedd-a369db94c754",
+      "state": "VERIFIED",
+      "attempts": 1,
+      "error_code": null,
+      "sha256": "006dd9167013dfb91bd44b97002f5269ae517f09e33dbbba6245d9b04ab0972b",
+      "verified_at": 1793352645
+    }
+  ],
+  "project": [
+    {
+      "retention_at": 1793352252,
+      "purged_at": 1793352647
+    }
+  ],
+  "audit": [
+    {
+      "action": "drive_input_verified:9622df2c-9a3c-4903-bedd-a369db94c754",
+      "created_at": 1793352645
+    },
+    {
+      "action": "drive_retention_deleted",
+      "created_at": 1793352647
+    }
+  ],
+  "ttl": [
+    {
+      "seconds": 43200
+    }
+  ],
+  "archiveVerification": {
+    "http": 200,
+    "checked": 9,
+    "missing": 9,
+    "allAbsent": true,
+    "verifiedAt": 1793352669
+  },
+  "r2": {
+    "http": 200,
+    "bytes": 92,
+    "sha256": "006dd9167013dfb91bd44b97002f5269ae517f09e33dbbba6245d9b04ab0972b"
+  },
+  "adminUI": {
+    "statuses": "Project Status\nPAID\nDrive Transfer Status\nVERIFIED\nDelivery Published\nEXPIRED / 30.10.2026 14:24:06\nDownloads\n3 started (not proof of complete receipt). Latest: 30.10.2026 14:20:45\nCustomer Access Expiration\n30.10.2026 14:24:12\nArchive Expiration\n30.10.2026 14:24:12 / Deleted: 30.10.2026 14:30:47",
+    "hasPublish": 1,
+    "hasUpload": 1
+  }
+}

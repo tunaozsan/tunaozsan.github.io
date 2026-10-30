@@ -1,0 +1,40 @@
+{
+  "mode": "refund",
+  "orderId": "a34c98c0-fae4-4848-863a-5d9a537d26e6",
+  "tests": [
+    {
+      "name": "real_order_created",
+      "status": "PASS"
+    },
+    {
+      "name": "unchecked_consent",
+      "status": "PASS"
+    },
+    {
+      "name": "real_catalog_checkout",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "submit_disabled_before_acceptance",
+      "status": "NOT_RUN"
+    },
+    {
+      "test": "real_Stripe_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "submit_disabled_before_acceptance",
+      "status": "NOT_RUN"
+    },
+    {
+      "test": "real_test_payment_redirect",
+      "status": "PASS",
+      "note": "Redirect alone is not payment/acceptance evidence; D1 and signed webhook checked separately."
+    }
+  ],
+  "scope": "Agreement version: service-terms-2026-10-30-v1 · DRAFT. One project / one reporting period where applicable.\n\n150 requested activities; 0 additional in-scope revisions. Proposed turnaround: 5 business days after complete inputs are accepted and scope is confirmed.\n\n1 × Primavera P6 Schedule Audit — $199.00\n\nServer subtotal: $199.00 USD before applicable tax. Required document categories received; usability and scope still require review."
+}

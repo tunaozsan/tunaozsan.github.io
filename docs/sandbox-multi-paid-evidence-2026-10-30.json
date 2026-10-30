@@ -1,0 +1,50 @@
+{
+  "action": "evidence",
+  "checkedAt": "2026-10-30T12:13:14.284Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "order": "2bafb4ae-2784-4bd8-8852-da471faa9b98",
+        "status": "PAID",
+        "paid_at": 1793362303,
+        "total": 132200,
+        "acceptance": {
+          "agreement_version": "service-terms-2026-10-30-v1",
+          "agreement_sha256": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+          "scope_json": "{\"cart\":{\"sku\":\"baseline_basic_withres\",\"activities\":125,\"revisions\":1,\"materials\":[{\"code\":\"concrete\",\"rows\":1}],\"existingResources\":false},\"lines\":[{\"sku\":\"baseline_basic_withres\",\"name\":\"Basic Baseline — With Resources\",\"unit\":79900,\"quantity\":1},{\"sku\":\"EXTRA-50-BASE-R\",\"name\":\"Additional 50 activities (MH + cost)\",\"unit\":17500,\"quantity\":1},{\"sku\":\"BASELINE-MAT-CONCRETE\",\"name\":\"Material: concrete (1 BOQ rows)\",\"unit\":24900,\"quantity\":1},{\"sku\":\"REVISION\",\"name\":\"Additional in-scope revision\",\"unit\":9900,\"quantity\":1}],\"total\":132200,\"currency\":\"usd\",\"required\":[\"boq\",\"drawings\",\"scope\",\"resources\",\"materials\"]}",
+          "stripe_terms_status": "ACCEPTED",
+          "stripe_session_id": "cs_test_b1ZWtOw8fOCh43cOphfLBqd1OtGjoBihNfd37pgkDj1jheN3RH3lrkI3Pr"
+        },
+        "session": {
+          "id": "cs_test_b1ZWtOw8fOCh43cOphfLBqd1OtGjoBihNfd37pgkDj1jheN3RH3lrkI3Pr",
+          "status": "complete",
+          "payment_status": "paid",
+          "amount_total": 132200
+        },
+        "lines": [
+          {
+            "price": "price_1UVrQdBxU4PsnoX0mnRJSdEp",
+            "quantity": 1,
+            "amount_total": 79900
+          },
+          {
+            "price": "price_1UWEazBxU4PsnoX0vdXrDmMe",
+            "quantity": 1,
+            "amount_total": 17500
+          },
+          {
+            "price": "price_1UWEb6BxU4PsnoX0veeCQRYF",
+            "quantity": 1,
+            "amount_total": 24900
+          },
+          {
+            "price": "price_1UWEb5BxU4PsnoX08EMb5dmN",
+            "quantity": 1,
+            "amount_total": 9900
+          }
+        ]
+      }
+    }
+  ]
+}

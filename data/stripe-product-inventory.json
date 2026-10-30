@@ -1,0 +1,597 @@
+{
+  "status": "22_SANDBOX_MAPPED_LIVE_NOT_INSPECTED",
+  "lookupKeyConvention": "Known Sandbox IDs mapped explicitly; future unmapped SKUs require verified SKU lookup_key, no guessing",
+  "products": [
+    {
+      "sku": "p6_audit",
+      "display_sku": "AUDIT-150",
+      "name": "Primavera P6 Schedule Audit",
+      "product_id": "prod_VW9ACK31oDmdvm",
+      "price_id": "price_1UVrQdBxU4PsnoX0jOEmafZV",
+      "amount": 19900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "baseline_basic_nores",
+      "display_sku": "BASE-BASIC-NR-75",
+      "name": "Basic Baseline \u2014 Without Resources",
+      "product_id": "prod_VWBkROf3ChxJ63",
+      "price_id": "price_1UVrQdBxU4PsnoX05ksKEZ8a",
+      "amount": 49900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "baseline_basic_withres",
+      "display_sku": "BASE-BASIC-R-75",
+      "name": "Basic Baseline \u2014 With Resources",
+      "product_id": "prod_VWBmgTL9h3t0Ye",
+      "price_id": "price_1UVrQdBxU4PsnoX0mnRJSdEp",
+      "amount": 79900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "baseline_detailed_nores",
+      "display_sku": "BASE-DETAIL-NR-200",
+      "name": "Detailed Baseline \u2014 Without Resources",
+      "product_id": "prod_VWBnGhGnvgdQ7X",
+      "price_id": "price_1UVrQdBxU4PsnoX0drjlBZPi",
+      "amount": 99900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "baseline_detailed_withres",
+      "display_sku": "BASE-DETAIL-R-200",
+      "name": "Detailed Baseline \u2014 With Resources",
+      "product_id": "prod_VWBoJYaLI90KCI",
+      "price_id": "price_1UVrQgBxU4PsnoX0CekdoUq0",
+      "amount": 149900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "update_nores",
+      "display_sku": "UPDATE-NR-200",
+      "name": "Primavera P6 Schedule Update \u2014 Without Resources",
+      "product_id": "prod_VWBqv5CiNDTTSq",
+      "price_id": "price_1UVrQdBxU4PsnoX0yZz0EQlv",
+      "amount": 39900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "update_withres",
+      "display_sku": "UPDATE-R-200",
+      "name": "Primavera P6 Schedule Update \u2014 With Resources",
+      "product_id": "prod_VWBsHQgqNjrfXy",
+      "price_id": "price_1UVrQdBxU4PsnoX0xkiA8soq",
+      "amount": 64900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "supported"
+      },
+      "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "SCHEDULE-SCORE-PILOT",
+      "display_sku": "SCHEDULE-SCORE-PILOT",
+      "name": "Schedule Score pilot",
+      "product_id": "prod_VXJDLMwfYnnJaR",
+      "price_id": "price_1UWEavBxU4PsnoX0obx745nP",
+      "amount": 100,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [],
+        "standalone": true,
+        "boq_rows_max": null,
+        "limits": null,
+        "checkout": "BLOCKED - no implemented SKU, approved deliverable or supplied Payment Link"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "EXTRA-50-NR",
+      "display_sku": "EXTRA-50-NR",
+      "name": "Additional 50 activities Without Resources",
+      "product_id": "prod_VXJD4fcBNCaraT",
+      "price_id": "price_1UWEawBxU4PsnoX0k0IW1oY3",
+      "amount": 10000,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_nores",
+          "baseline_detailed_nores",
+          "update_nores"
+        ],
+        "standalone": false,
+        "boq_rows_max": null,
+        "limits": "Basic <=2 blocks; Detailed/Update <=4; no Audit",
+        "checkout": "parent-required"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "EXTRA-50-BASE-R",
+      "display_sku": "EXTRA-50-BASE-R",
+      "name": "Additional 50 activities Baseline With Resources",
+      "product_id": "prod_VXJDuoUs2oh88J",
+      "price_id": "price_1UWEazBxU4PsnoX0vdXrDmMe",
+      "amount": 17500,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_withres",
+          "baseline_detailed_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": null,
+        "limits": "Basic <=2; Detailed <=4",
+        "checkout": "parent-required"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "EXTRA-50-UPDATE-R",
+      "display_sku": "EXTRA-50-UPDATE-R",
+      "name": "Additional 50 activities Update With Resources",
+      "product_id": "prod_VXJDFDDlD2ZJfh",
+      "price_id": "price_1UWEb3BxU4PsnoX0KNLoBLVL",
+      "amount": 15000,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": null,
+        "limits": "Update <=4; existing MH/cost assignments confirmed",
+        "checkout": "parent-required"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "REVISION",
+      "display_sku": "REVISION",
+      "name": "Additional in-scope revision",
+      "product_id": "prod_VXJDYfri3kZ5kX",
+      "price_id": "price_1UWEb5BxU4PsnoX08EMb5dmN",
+      "amount": 9900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_nores",
+          "baseline_basic_withres",
+          "baseline_detailed_nores",
+          "baseline_detailed_withres",
+          "update_nores",
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": null,
+        "limits": "Eligible non-Audit parent; max 3 selected extras",
+        "checkout": "parent-required"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "BASELINE-MAT-CONCRETE",
+      "display_sku": "BASELINE-MAT-CONCRETE",
+      "name": "BASELINE-MAT-CONCRETE",
+      "product_id": "prod_VXJD5FCJN1M9Os",
+      "price_id": "price_1UWEb6BxU4PsnoX0veeCQRYF",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_withres",
+          "baseline_detailed_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "supported as compatible scope"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "BASELINE-MAT-REBAR",
+      "display_sku": "BASELINE-MAT-REBAR",
+      "name": "BASELINE-MAT-REBAR",
+      "product_id": "prod_VXJDugEhKimUGt",
+      "price_id": "price_1UWEb7BxU4PsnoX0BNfgEyUP",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_withres",
+          "baseline_detailed_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "supported as compatible scope"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "BASELINE-MAT-FORMWORK",
+      "display_sku": "BASELINE-MAT-FORMWORK",
+      "name": "BASELINE-MAT-FORMWORK",
+      "product_id": "prod_VXJDcZ4zKQuUBH",
+      "price_id": "price_1UWEb8BxU4PsnoX0m2yxcZgx",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_withres",
+          "baseline_detailed_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "supported as compatible scope"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "BASELINE-MAT-STRUCTURAL_STEEL",
+      "display_sku": "BASELINE-MAT-STRUCTURAL_STEEL",
+      "name": "BASELINE-MAT-STRUCTURAL_STEEL",
+      "product_id": "prod_VXJDNcrc3vqCQa",
+      "price_id": "price_1UWEbABxU4PsnoX02nfCqJPB",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_withres",
+          "baseline_detailed_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "supported as compatible scope"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "BASELINE-MAT-PIPING",
+      "display_sku": "BASELINE-MAT-PIPING",
+      "name": "BASELINE-MAT-PIPING",
+      "product_id": "prod_VXJD3nfSymbKoN",
+      "price_id": "price_1UWEbBBxU4PsnoX09YL7cZw4",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "baseline_basic_withres",
+          "baseline_detailed_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "supported as compatible scope"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "UPDATE-MAT-CONCRETE",
+      "display_sku": "UPDATE-MAT-CONCRETE",
+      "name": "UPDATE-MAT-CONCRETE",
+      "product_id": "prod_VXJD87aMKHQ6VH",
+      "price_id": "price_1UWEbCBxU4PsnoX0MQUMvYjG",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "BLOCKED pending existing material mapping review - quote only"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "UPDATE-MAT-REBAR",
+      "display_sku": "UPDATE-MAT-REBAR",
+      "name": "UPDATE-MAT-REBAR",
+      "product_id": "prod_VXJDYLxsoJXvFN",
+      "price_id": "price_1UWEbDBxU4PsnoX0KOY8X2to",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "BLOCKED pending existing material mapping review - quote only"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "UPDATE-MAT-FORMWORK",
+      "display_sku": "UPDATE-MAT-FORMWORK",
+      "name": "UPDATE-MAT-FORMWORK",
+      "product_id": "prod_VXJDwUjjHBMP0Y",
+      "price_id": "price_1UWEbFBxU4PsnoX0lzWD9DQJ",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "BLOCKED pending existing material mapping review - quote only"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "UPDATE-MAT-STRUCTURAL_STEEL",
+      "display_sku": "UPDATE-MAT-STRUCTURAL_STEEL",
+      "name": "UPDATE-MAT-STRUCTURAL_STEEL",
+      "product_id": "prod_VXJDVTATVqc7JY",
+      "price_id": "price_1UWEbGBxU4PsnoX0T3xzinsL",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "BLOCKED pending existing material mapping review - quote only"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    },
+    {
+      "sku": "UPDATE-MAT-PIPING",
+      "display_sku": "UPDATE-MAT-PIPING",
+      "name": "UPDATE-MAT-PIPING",
+      "product_id": "prod_VXJDpYXEUxydPR",
+      "price_id": "price_1UWEbJBxU4PsnoX0BUQsDUpd",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "environment": "sandbox",
+      "compatibility": {
+        "parents": [
+          "update_withres"
+        ],
+        "standalone": false,
+        "boq_rows_max": 50,
+        "limits": null,
+        "checkout": "BLOCKED pending existing material mapping review - quote only"
+      },
+      "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
+      "live": {
+        "product_id": null,
+        "price_id": null,
+        "active": null,
+        "status": "NOT_INSPECTED"
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "tests": [
+    {
+      "test": "real_portal_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "real_missing_consent_and_wrong_version_rejected",
+      "status": "PASS",
+      "results": [
+        {
+          "http": 400,
+          "error": "consent_required"
+        },
+        {
+          "http": 400,
+          "error": "consent_required"
+        }
+      ]
+    },
+    {
+      "test": "real_Sandbox_Checkout_created",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_checkbox_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_submit_without_agreement",
+      "status": "NOT_RUN",
+      "validation": {
+        "required": false,
+        "checked": false,
+        "invalid": false,
+        "ariaInvalid": null
+      },
+      "detail": "Native required/aria-invalid is not used by Stripe. Separate repeated real test confirmed CheckboxField--invalid and localized blocking message; see agreement-stripe-rejection-2026-10-30.json."
+    },
+    {
+      "test": "real_test_payment_redirect",
+      "status": "PASS",
+      "note": "Redirect alone is not payment/acceptance evidence; D1 and signed webhook checked separately."
+    },
+    {
+      "test": "real_signed_webhook_and_D1_acceptance",
+      "status": "PASS"
+    },
+    {
+      "test": "real_Stripe_mandatory_terms_blocks_submit_separate_test",
+      "status": "PASS",
+      "evidence": "agreement-stripe-rejection-2026-10-30.json"
+    }
+  ],
+  "orderId": "38b9ba5f-4387-4080-91d3-416c272a3562",
+  "policyVersion": "service-terms-2026-10-30-v1",
+  "policyHash": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+  "evidence": {
+    "order_id": "38b9ba5f-4387-4080-91d3-416c272a3562",
+    "agreement_version": "service-terms-2026-10-30-v1",
+    "agreement_sha256": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+    "agreement_status": "DRAFT",
+    "documents_url": "https://bluefin-project-portal-staging.bluefintuna-llc.workers.dev/assets/legal/service-terms-2026-10-30-v1.json",
+    "quote_sha256": "0f0d8d9d8f514b46b931fda3ae2ce46df2fec599a57ff85751006f50710f32f6",
+    "portal_accepted_at": 1793358923,
+    "stripe_session_id": "cs_test_a1XUkeuDAWQLnuzCeMqV2bd1YeV7r3asJc4T8hfdXrXAITnR5IOy0jKQSw",
+    "stripe_terms_status": "ACCEPTED",
+    "stripe_verified_at": 1793359094,
+    "stripe_event_id": "evt_1UWDp3BxU4PsnoX0vV0KijTs",
+    "stripe_event_created_at": 1793359093,
+    "status": "PAID",
+    "paid_at": 1793359094,
+    "paid_total": 19900
+  }
+}

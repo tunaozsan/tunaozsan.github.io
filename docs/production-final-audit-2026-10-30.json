@@ -1,0 +1,424 @@
+{
+  "at": "2026-10-30T14:28:25.539Z",
+  "bindings": [
+    {
+      "name": "ACCESS_AUD",
+      "text": "e711d1ed5278a9e0f4777aa2b66106f0f862606175cc16073f2abef965c59fa0",
+      "type": "plain_text"
+    },
+    {
+      "name": "ACCESS_ISSUER",
+      "text": "https://proud-voice-6952.cloudflareaccess.com",
+      "type": "plain_text"
+    },
+    {
+      "name": "ADMIN_EMAILS",
+      "text": "ozsan_tuna@yahoo.com.tr",
+      "type": "plain_text"
+    },
+    {
+      "name": "ALLOWED_ORIGINS",
+      "text": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev",
+      "type": "plain_text"
+    },
+    {
+      "name": "APP_ENV",
+      "text": "production",
+      "type": "plain_text"
+    },
+    {
+      "name": "APPLICATIONS_ENABLED",
+      "text": "true",
+      "type": "plain_text"
+    },
+    {
+      "name": "ASSETS",
+      "type": "assets"
+    },
+    {
+      "database_id": "c21cc680-8df5-4f81-b411-20d18b0e5f37",
+      "id": "c21cc680-8df5-4f81-b411-20d18b0e5f37",
+      "name": "DB",
+      "type": "d1"
+    },
+    {
+      "name": "INVOICE_CREATION",
+      "text": "false",
+      "type": "plain_text"
+    },
+    {
+      "name": "LEGAL_APPROVED",
+      "text": "true",
+      "type": "plain_text"
+    },
+    {
+      "name": "MAX_FILE_SIZE_BYTES",
+      "text": "20971520",
+      "type": "plain_text"
+    },
+    {
+      "name": "MAX_FILES_PER_ORDER",
+      "text": "20",
+      "type": "plain_text"
+    },
+    {
+      "name": "MAX_ORDER_SIZE_BYTES",
+      "text": "104857600",
+      "type": "plain_text"
+    },
+    {
+      "name": "PORTAL_ENABLED",
+      "text": "false",
+      "type": "plain_text"
+    },
+    {
+      "name": "PUBLIC_SITE_ORIGIN",
+      "text": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev",
+      "type": "plain_text"
+    },
+    {
+      "name": "RATE_LIMIT_SALT",
+      "type": "secret_text"
+    },
+    {
+      "name": "STRIPE_ACCOUNT_ID",
+      "text": "",
+      "type": "plain_text"
+    },
+    {
+      "name": "TAX_MODE",
+      "text": "unconfigured",
+      "type": "plain_text"
+    },
+    {
+      "name": "TURNSTILE_SECRET_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "TURNSTILE_SITE_KEY",
+      "text": "0x4AAAAAAFqzcQjgbI_eP7Le",
+      "type": "plain_text"
+    },
+    {
+      "bucket_name": "bluefin-project-uploads",
+      "name": "UPLOADS",
+      "type": "r2_bucket"
+    },
+    {
+      "name": "UPLOAD_SESSION_TTL_SECONDS",
+      "text": "43200",
+      "type": "plain_text"
+    }
+  ],
+  "deployments": {
+    "deployments": [
+      {
+        "id": "1ce0885e-6358-4eef-8df9-13e3bf1d091f",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "0280ea8b-074e-4c99-9790-0166077d4e1d",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:23:02.055592Z"
+      },
+      {
+        "id": "d6c7f6c6-fbc0-42ab-8424-9eceeb7bf4c1",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "7dff760f-e951-4f07-9384-95fd84e3af11",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:20:47.894784Z"
+      },
+      {
+        "id": "bb6301f1-b5ae-4263-853e-cedd3bc59903",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "844436e4-c38b-4548-9e16-fed38fa9e1cf",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:20:15.989234Z"
+      },
+      {
+        "id": "f732bf92-26ad-4aca-9b2d-bde502d56c4d",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "ec7c5366-6692-4f37-9650-09bd38a3134a",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:18:30.028139Z"
+      },
+      {
+        "id": "226583b5-0d7e-4666-8d32-517d3cba5c0b",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "ecdde3c1-626f-4de8-95d1-58ed5c7fe619",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:16:38.633116Z"
+      },
+      {
+        "id": "23a38e6a-e401-4916-a244-50d718b701c1",
+        "source": "api",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "a8a02049-94b9-4e45-bcb6-0ee2c92e5ef7",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-30T14:12:42.658972Z"
+      },
+      {
+        "id": "8bfdc87a-e956-4377-bfaf-3f537fb38ca2",
+        "source": "dash",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/message": "Deployed version 6c2cc5a1",
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "6c2cc5a1-ec69-4bdc-b5a0-c0aadbec3200",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-29T10:19:37.596668Z"
+      },
+      {
+        "id": "8ccde7a9-87c7-4834-be5a-126baf11489a",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "8a656bc3-78b3-48f7-b353-a3b0b5c0812a",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-29T08:59:23.354029Z"
+      },
+      {
+        "id": "5e2693b8-6d96-4d6d-907b-11cd119d7eb9",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "74e8c803-987e-4276-9c0f-b480af3eb063",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-29T08:40:06.104282Z"
+      },
+      {
+        "id": "3d3e1e5b-102f-4835-a07d-c6a4e3598a0b",
+        "source": "dash",
+        "strategy": "percentage",
+        "author_email": "ozsan_tuna@yahoo.com.tr",
+        "annotations": {
+          "workers/message": "Deployed version ea7c3a78",
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "ea7c3a78-8fb5-4480-9c92-70cf4ba6ebc4",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-28T13:07:41.415664Z"
+      }
+    ]
+  },
+  "stagingDeployment": {
+    "id": "b89b0abd-c1b7-407a-af24-535ca91b8736",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "ozsan_tuna@yahoo.com.tr",
+    "annotations": {
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "35bc08b7-3750-4e31-ada7-753878d3680b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-30T13:22:54.221915Z"
+  },
+  "database": {
+    "migrations": [
+      {
+        "results": [
+          {
+            "name": "0001_init.sql"
+          },
+          {
+            "name": "0002_release_evidence.sql"
+          },
+          {
+            "name": "0003_drive_delivery.sql"
+          },
+          {
+            "name": "0004_agreement_acceptance.sql"
+          },
+          {
+            "name": "0005_refund_revocation.sql"
+          },
+          {
+            "name": "0006_application_review.sql"
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "VIE",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2517
+          },
+          "duration": 0.2517,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 278528,
+          "rows_read": 6,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "counts": [
+      {
+        "results": [
+          {
+            "orders_count": 0,
+            "application_count": 1
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "VIE",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.31
+          },
+          "duration": 0.31,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 278528,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "cron": [
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "VIE",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.239
+          },
+          "duration": 0.239,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 278528,
+          "rows_read": 0,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "synthetic": [
+      {
+        "results": [
+          {
+            "id": "7c28f39d-2bdd-410a-b061-df605cd1f57d",
+            "terms_version": "service-terms-2026-10-30-v2",
+            "terms_sha256": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c",
+            "quote_sha256": "593d602858ea730a4c25ca215161a036efd679c54005d8bea9961128e2d57927",
+            "status": "TAX_REVIEW_REQUIRED",
+            "accepted_at": 1793370316,
+            "created_at": 1793370316,
+            "expires_at": 1795962316
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "VIE",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.3487
+          },
+          "duration": 0.3487,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 278528,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ]
+  }
+}

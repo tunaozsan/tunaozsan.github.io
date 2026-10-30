@@ -1,0 +1,57 @@
+{
+  "health": {
+    "status": 200,
+    "data": {
+      "service": "bluefin-project-portal",
+      "version": "0.1.0",
+      "mode": "test",
+      "enabled": false
+    }
+  },
+  "readiness": {
+    "status": 200,
+    "data": {
+      "mode": "test",
+      "configuredAccount": "acct_1UVrQ3BxU4PsnoX0",
+      "sandboxAccountMatches": true,
+      "restVersion": "2025-02-24.acacia",
+      "intakeEnabled": false,
+      "turnstileConfigured": true,
+      "saltConfigured": true
+    }
+  },
+  "newOrderStatus": 503,
+  "webhookUnsignedStatus": 400,
+  "webhookUnsignedBody": {
+    "error": "invalid_signature",
+    "requestId": "626c81a8-8c44-4ccf-95f8-68823363aaa7"
+  },
+  "operations": {
+    "status": 200,
+    "data": {
+      "serverTime": 1793284627,
+      "status": "healthy",
+      "alerts": [],
+      "cleanup": {
+        "completedAt": 1793284240,
+        "scanned": 0,
+        "deleteFailures": 0,
+        "orphanDeleteFailures": 0,
+        "sessionFailures": 0
+      },
+      "files": {
+        "overdue": 0,
+        "retrying": 0
+      },
+      "notifications": {
+        "pending": 1,
+        "exhausted": 0,
+        "overdue": 1,
+        "enabled": false
+      },
+      "retrieval": {
+        "urgent": 0
+      }
+    }
+  }
+}

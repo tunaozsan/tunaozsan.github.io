@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-29T14:30:37.447203+00:00",
+  "success": true,
+  "results": [
+    [
+      {
+        "id": "966850e0-bace-4638-9440-b14524e5ce6f",
+        "status": "PAID",
+        "created_at": 1793279940,
+        "expires_at": 1793323140,
+        "paid_at": 1793283726,
+        "paid_total": 19900,
+        "paid_tax": 0,
+        "stripe_invoice_id": "in_1UVuDPBxU4PsnoX0q4pllwtO",
+        "retrieved_at": null
+      },
+      {
+        "id": "039d322c-c207-4824-87bc-810d5e41de20",
+        "status": "DRAFT",
+        "created_at": 1793279960,
+        "expires_at": 1793323160,
+        "paid_at": null,
+        "paid_total": null,
+        "paid_tax": null,
+        "stripe_invoice_id": null,
+        "retrieved_at": null
+      }
+    ],
+    [
+      {
+        "id": "evt_1UVuDSBxU4PsnoX0EyRp43va",
+        "event_type": "checkout.session.completed",
+        "order_id": "966850e0-bace-4638-9440-b14524e5ce6f",
+        "status": "PROCESSED"
+      }
+    ],
+    [
+      {
+        "id": "8ddad3b7-0766-400a-a6d3-bacedc163c66",
+        "order_id": "966850e0-bace-4638-9440-b14524e5ce6f",
+        "state": "READY",
+        "bytes": 87,
+        "expires_at": 1793323140,
+        "deleted_at": null
+      },
+      {
+        "id": "8ca7e27f-4bf1-4ab2-8842-4d075c1ae550",
+        "order_id": "039d322c-c207-4824-87bc-810d5e41de20",
+        "state": "READY",
+        "bytes": 87,
+        "expires_at": 1793323160,
+        "deleted_at": null
+      }
+    ],
+    [
+      {
+        "key": "cleanup_completed",
+        "value": "{\"completedAt\":1793283340,\"scanned\":0,\"deleteFailures\":0,\"orphanDeleteFailures\":0,\"sessionFailures\":0}"
+      }
+    ]
+  ]
+}

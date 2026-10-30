@@ -1,0 +1,63 @@
+{
+  "order": {
+    "stripe_session_id": "cs_test_a1Iql74FQkvoO1hSeOVJBwq9p9HKj7NCas2MInXYTIU6MwyC0feEwnNBxV",
+    "status": "PAID",
+    "paid_total": 19900,
+    "paid_tax": 0
+  },
+  "session": {
+    "id": "cs_test_a1Iql74FQkvoO1hSeOVJBwq9p9HKj7NCas2MInXYTIU6MwyC0feEwnNBxV",
+    "livemode": false,
+    "status": "complete",
+    "payment_status": "paid",
+    "currency": "usd",
+    "amount_total": 19900,
+    "invoice": "in_1UVuDPBxU4PsnoX0q4pllwtO"
+  },
+  "invoice": {
+    "id": "in_1UVuDPBxU4PsnoX0q4pllwtO",
+    "status": "paid",
+    "paid": true,
+    "total": 19900,
+    "currency": "usd",
+    "customer_name": "Staging Synthetic Buyer",
+    "customer_address": {
+      "city": "New York",
+      "country": "US",
+      "line1": "123 Test Street",
+      "line2": null,
+      "postal_code": "10001",
+      "state": "NY"
+    },
+    "pdfAvailable": true
+  },
+  "processed": [
+    {
+      "id": "evt_1UVuDSBxU4PsnoX0EyRp43va",
+      "event_type": "checkout.session.completed",
+      "status": "PROCESSED"
+    }
+  ],
+  "endpoints": [
+    {
+      "id": "we_1UVsLABxU4PsnoX0A0jmGtLe",
+      "api_version": "2026-09-30.endive",
+      "status": "enabled",
+      "livemode": false,
+      "enabled_events": [
+        "checkout.session.async_payment_failed",
+        "checkout.session.async_payment_succeeded",
+        "checkout.session.completed",
+        "checkout.session.expired"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "evt_1UVuDSBxU4PsnoX0EyRp43va",
+      "api_version": "2026-09-30.endive",
+      "type": "checkout.session.completed",
+      "livemode": false
+    }
+  ]
+}

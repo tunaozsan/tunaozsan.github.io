@@ -1,0 +1,192 @@
+{
+  "agreementVersion": "service-terms-2026-10-30-v2",
+  "status": "APPROVED",
+  "products": [
+    {
+      "product": "AUDIT-150",
+      "name": "Primavera P6 Schedule Audit",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/00weVcbpf19k0BUbJ82Nq00"
+    },
+    {
+      "product": "BASE-BASIC-NR-75",
+      "name": "Basic Baseline \u2014 Without Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/cNi4gy50R6tE0BU3cC2Nq02"
+    },
+    {
+      "product": "BASE-BASIC-R-75",
+      "name": "Basic Baseline \u2014 With Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/cNidR8fFv4lwbgybJ82Nq04"
+    },
+    {
+      "product": "BASE-DETAIL-NR-200",
+      "name": "Detailed Baseline \u2014 Without Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/cNi6oGbpff0a98q7sS2Nq03"
+    },
+    {
+      "product": "BASE-DETAIL-R-200",
+      "name": "Detailed Baseline \u2014 With Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/5kQeVcctj8BMckC6oO2Nq05"
+    },
+    {
+      "product": "UPDATE-NR-200",
+      "name": "Primavera P6 Schedule Update \u2014 Without Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/aFaaEW3WN6tE2K2fZo2Nq06"
+    },
+    {
+      "product": "UPDATE-R-200",
+      "name": "Primavera P6 Schedule Update \u2014 With Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "scopeSource": "server order summary",
+      "checkout": "supported",
+      "paymentLink": "https://buy.stripe.com/5kQ28q3WN7xI4Sa3cC2Nq07"
+    },
+    {
+      "product": "SCHEDULE-SCORE-PILOT",
+      "name": "Schedule Score pilot",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "proposedPriceUsd": 1,
+      "checkout": "BLOCKED - no implemented SKU, approved deliverable or supplied Payment Link"
+    },
+    {
+      "product": "EXTRA-50-NR",
+      "name": "Additional 50 activities Without Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 100,
+      "eligibility": "Basic <=2 blocks; Detailed/Update <=4; no Audit",
+      "standaloneAllowed": false
+    },
+    {
+      "product": "EXTRA-50-BASE-R",
+      "name": "Additional 50 activities Baseline With Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 175,
+      "eligibility": "Basic <=2; Detailed <=4",
+      "standaloneAllowed": false
+    },
+    {
+      "product": "EXTRA-50-UPDATE-R",
+      "name": "Additional 50 activities Update With Resources",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 150,
+      "eligibility": "Update <=4; existing MH/cost assignments confirmed",
+      "standaloneAllowed": false
+    },
+    {
+      "product": "REVISION",
+      "name": "Additional in-scope revision",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 99,
+      "eligibility": "Eligible non-Audit parent; max 3 selected extras",
+      "standaloneAllowed": false
+    },
+    {
+      "product": "BASELINE-MAT-CONCRETE",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 249,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "supported as compatible scope"
+    },
+    {
+      "product": "BASELINE-MAT-REBAR",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 249,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "supported as compatible scope"
+    },
+    {
+      "product": "BASELINE-MAT-FORMWORK",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 249,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "supported as compatible scope"
+    },
+    {
+      "product": "BASELINE-MAT-STRUCTURAL_STEEL",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 249,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "supported as compatible scope"
+    },
+    {
+      "product": "BASELINE-MAT-PIPING",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 249,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "supported as compatible scope"
+    },
+    {
+      "product": "UPDATE-MAT-CONCRETE",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 119,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "BLOCKED pending existing material mapping review - quote only"
+    },
+    {
+      "product": "UPDATE-MAT-REBAR",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 119,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "BLOCKED pending existing material mapping review - quote only"
+    },
+    {
+      "product": "UPDATE-MAT-FORMWORK",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 119,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "BLOCKED pending existing material mapping review - quote only"
+    },
+    {
+      "product": "UPDATE-MAT-STRUCTURAL_STEEL",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 119,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "BLOCKED pending existing material mapping review - quote only"
+    },
+    {
+      "product": "UPDATE-MAT-PIPING",
+      "agreementVersion": "service-terms-2026-10-30-v2",
+      "priceUsd": 119,
+      "boqRowsMax": 50,
+      "parentRequired": "With Resources",
+      "standaloneAllowed": false,
+      "checkout": "BLOCKED pending existing material mapping review - quote only"
+    }
+  ],
+  "approvalBasis": "Owner publication authorization; not independent legal or tax review"
+}

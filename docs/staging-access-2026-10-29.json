@@ -1,0 +1,8 @@
+{
+  "name": "Bluefin Tuna Staging Admin",
+  "id": "aa4353f6-90e8-4f21-a342-eeb3e6433267",
+  "aud": "94290c6bcd9e081ae695bb80122236650e63c67276e14641314feff137164c9a",
+  "domain": "bluefin-project-portal-staging.bluefintuna-llc.workers.dev/api/v1/admin/*",
+  "policy_count": 1,
+  "allowed_email": "ozsan_tuna@yahoo.com.tr"
+}

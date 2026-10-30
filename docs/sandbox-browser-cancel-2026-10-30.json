@@ -1,0 +1,24 @@
+{
+  "mode": "cancel",
+  "orderId": "e2cdcb02-14bd-4ee4-909a-1d050daacaf6",
+  "tests": [
+    {
+      "name": "real_order_created",
+      "status": "PASS"
+    },
+    {
+      "name": "unchecked_consent",
+      "status": "PASS"
+    },
+    {
+      "name": "real_catalog_checkout",
+      "status": "PASS"
+    },
+    {
+      "name": "cancel_return_navigation",
+      "status": "PASS",
+      "note": "Return navigation does not imply Stripe Session cancellation; expire and webhook checked separately."
+    }
+  ],
+  "scope": "Agreement version: service-terms-2026-10-30-v1 · DRAFT. One project / one reporting period where applicable.\n\n150 requested activities; 0 additional in-scope revisions. Proposed turnaround: 5 business days after complete inputs are accepted and scope is confirmed.\n\n1 × Primavera P6 Schedule Audit — $199.00\n\nServer subtotal: $199.00 USD before applicable tax. Required document categories received; usability and scope still require review."
+}

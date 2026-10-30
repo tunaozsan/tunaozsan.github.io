@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-30T12:28:49.715Z",
+  "rows": [
+    {
+      "id": "112e60d6-c9f3-41c7-a263-8966aab6e676",
+      "status": "DRAFT",
+      "paid_at": null,
+      "paid_total": null,
+      "stripe_session_id": null,
+      "acceptance_count": 0,
+      "payment_events": 0,
+      "drive_jobs": 0,
+      "refund_held_jobs": 0,
+      "verified_jobs": 0
+    },
+    {
+      "id": "2bafb4ae-2784-4bd8-8852-da471faa9b98",
+      "status": "PAID",
+      "paid_at": 1793362303,
+      "paid_total": 132200,
+      "stripe_session_id": "cs_test_b1ZWtOw8fOCh43cOphfLBqd1OtGjoBihNfd37pgkDj1jheN3RH3lrkI3Pr",
+      "acceptance_count": 1,
+      "payment_events": 1,
+      "drive_jobs": 5,
+      "refund_held_jobs": 4,
+      "verified_jobs": 0
+    },
+    {
+      "id": "e2cdcb02-14bd-4ee4-909a-1d050daacaf6",
+      "status": "EXPIRED_UNPAID",
+      "paid_at": null,
+      "paid_total": null,
+      "stripe_session_id": "cs_test_a1X2Fv17amtpyjCi2yeugiOrWS2jD0Xh0fOHwOoBHSV2Qov9wYHwhKy79W",
+      "acceptance_count": 1,
+      "payment_events": 1,
+      "drive_jobs": 0,
+      "refund_held_jobs": 0,
+      "verified_jobs": 0
+    }
+  ]
+}

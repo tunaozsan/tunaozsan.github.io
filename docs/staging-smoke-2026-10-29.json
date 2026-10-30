@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-29",
+  "version": "d4731a11-82ab-4ec4-b337-24dae5c5a03a",
+  "base": "https://bluefin-project-portal-staging.bluefintuna-llc.workers.dev",
+  "checks": [
+    {
+      "path": "/health",
+      "status": 200,
+      "body": {
+        "service": "bluefin-project-portal",
+        "version": "0.1.0",
+        "mode": "test",
+        "enabled": false
+      },
+      "pass": true
+    },
+    {
+      "path": "/project-portal/",
+      "status": 200,
+      "test_banner": true,
+      "pass": true
+    },
+    {
+      "path": "/assets/scripts/portal.js",
+      "status": 200,
+      "staging_origin": true,
+      "production_api_absent": true,
+      "pass": true
+    },
+    {
+      "path": "/api/v1/admin/operations",
+      "status": 503,
+      "body": {
+        "error": "admin_not_configured",
+        "requestId": "09b1f689-ce85-40d2-b866-d0b98bc0a21a"
+      },
+      "pass": true
+    },
+    {
+      "path": "/api/v1/orders",
+      "status": 503,
+      "body": {
+        "error": "portal_not_enabled",
+        "requestId": "40ba8e2d-3fe6-4f37-97dd-e05e16bb4dd1"
+      },
+      "pass": true
+    }
+  ]
+}

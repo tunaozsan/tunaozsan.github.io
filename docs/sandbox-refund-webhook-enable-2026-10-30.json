@@ -1,0 +1,21 @@
+{
+  "action": "refund-webhook-enable",
+  "checkedAt": "2026-10-30T13:15:53.305Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "id": "we_1UVsLABxU4PsnoX0A0jmGtLe",
+        "enabled_events": [
+          "checkout.session.async_payment_failed",
+          "checkout.session.async_payment_succeeded",
+          "checkout.session.completed",
+          "checkout.session.expired",
+          "charge.refunded"
+        ],
+        "api_version": "2026-09-30.endive",
+        "status": "enabled"
+      }
+    }
+  ]
+}

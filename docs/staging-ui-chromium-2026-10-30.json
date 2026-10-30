@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-30T04:35:40.143Z",
+  "engine": "chromium",
+  "scope": "Automated staging closed-portal audit; device emulation is not physical iOS or screen-reader validation",
+  "viewports": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "noOverflow": true,
+      "h1": 1,
+      "reducedMotion": true
+    },
+    {
+      "width": 375,
+      "scrollWidth": 375,
+      "noOverflow": true,
+      "h1": 1,
+      "reducedMotion": true
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "noOverflow": true,
+      "h1": 1,
+      "reducedMotion": true
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "noOverflow": true,
+      "h1": 1,
+      "reducedMotion": true
+    }
+  ],
+  "axe": {
+    "passes": 29,
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "count": 2
+      }
+    ]
+  },
+  "navigation": {
+    "domContentLoadedMs": 38190,
+    "transferSize": 4731
+  }
+}

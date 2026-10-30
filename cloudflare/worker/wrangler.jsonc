@@ -1,19 +1,54 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "bluefin-project-portal-api",
-  "main": "src/index.ts",
+  "main": "src/production.ts",
   "compatibility_date": "2026-10-28",
   "workers_dev": true,
-  "d1_databases": [{"binding":"DB","database_name":"bluefin-project-db","database_id":"c21cc680-8df5-4f81-b411-20d18b0e5f37","migrations_dir":"migrations"}],
-  "r2_buckets": [{"binding":"UPLOADS","bucket_name":"bluefin-project-uploads"}],
-  "triggers": {"crons":[]},
-  "vars": {
-    "APP_ENV":"development", "PORTAL_ENABLED":"false", "LEGAL_APPROVED":"false",
-    "PUBLIC_SITE_ORIGIN":"https://bluefintuna.life", "ALLOWED_ORIGINS":"https://bluefintuna.life",
-    "UPLOAD_SESSION_TTL_SECONDS":"43200", "MAX_FILE_SIZE_BYTES":"20971520",
-    "MAX_ORDER_SIZE_BYTES":"104857600", "MAX_FILES_PER_ORDER":"20",
-    "ACCESS_ISSUER":"", "ACCESS_AUD":"", "ADMIN_EMAILS":"",
-    "STRIPE_ACCOUNT_ID":"", "TAX_MODE":"unconfigured", "INVOICE_CREATION":"false"
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bluefin-project-db",
+      "database_id": "c21cc680-8df5-4f81-b411-20d18b0e5f37",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS",
+      "bucket_name": "bluefin-project-uploads"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "*/15 * * * *"
+    ]
   },
-  "observability":{"enabled":false}
+  "vars": {
+    "APP_ENV": "production",
+    "PORTAL_ENABLED": "false",
+    "LEGAL_APPROVED": "true",
+    "PUBLIC_SITE_ORIGIN": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev",
+    "ALLOWED_ORIGINS": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev",
+    "UPLOAD_SESSION_TTL_SECONDS": "43200",
+    "MAX_FILE_SIZE_BYTES": "20971520",
+    "MAX_ORDER_SIZE_BYTES": "104857600",
+    "MAX_FILES_PER_ORDER": "20",
+    "ACCESS_ISSUER": "https://proud-voice-6952.cloudflareaccess.com",
+    "ACCESS_AUD": "e711d1ed5278a9e0f4777aa2b66106f0f862606175cc16073f2abef965c59fa0",
+    "ADMIN_EMAILS": "ozsan_tuna@yahoo.com.tr",
+    "STRIPE_ACCOUNT_ID": "",
+    "TAX_MODE": "unconfigured",
+    "INVOICE_CREATION": "false",
+    "APPLICATIONS_ENABLED": "true",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFqzcQjgbI_eP7Le"
+  },
+  "observability": {
+    "enabled": false
+  },
+  "assets": {
+    "directory": ".build/production-assets",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "none"
+  }
 }

@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "sandbox_name": "Bluefin Tuna Portal Staging",
+  "sandbox_account_id": "acct_1UVrQ3BxU4PsnoX0",
+  "sandbox_account_verified_via_api": false,
+  "account_id_applied": "local_staging_config_only",
+  "access_list": "success; no staging app",
+  "access_create": {
+    "http": 403,
+    "code": 1010,
+    "error": "auth.forbidden"
+  },
+  "access_aud": "not_created",
+  "staging_secret_names_present": [],
+  "required_stripe_secrets": [
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET"
+  ],
+  "stripe_api_connection_available": false,
+  "deployment_this_step": false,
+  "payment_started": false
+}

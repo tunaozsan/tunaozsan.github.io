@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-30T03:20:54.526Z",
+  "status": 200,
+  "data": {
+    "orderId": "45f0be70-dc6b-4488-a380-b3ca25fd06a1",
+    "sessionId": "cs_test_a1xYYho1EUN4L4auB2tu41YFpaPZTsQOkCp8H3M3p6u0CBPCArlBOguHcA",
+    "status": "expired",
+    "livemode": false
+  }
+}

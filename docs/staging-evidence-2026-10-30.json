@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-30T03:25:07.683Z",
+  "status": 200,
+  "data": {
+    "completedEvent": {
+      "id": "evt_1UVuDSBxU4PsnoX0EyRp43va",
+      "pendingWebhooks": 0
+    },
+    "orders": [
+      {
+        "id": "45f0be70-dc6b-4488-a380-b3ca25fd06a1",
+        "status": "EXPIRED_UNPAID",
+        "paid_total": null,
+        "paid_tax": null,
+        "paid_at": null,
+        "stripe_invoice_id": null
+      },
+      {
+        "id": "966850e0-bace-4638-9440-b14524e5ce6f",
+        "status": "PAID_FILES_EXPIRED",
+        "paid_total": 19900,
+        "paid_tax": 0,
+        "paid_at": 1793283726,
+        "stripe_invoice_id": "in_1UVuDPBxU4PsnoX0q4pllwtO"
+      }
+    ],
+    "events": [
+      {
+        "id": "evt_1UVuDSBxU4PsnoX0EyRp43va",
+        "event_type": "checkout.session.completed",
+        "order_id": "966850e0-bace-4638-9440-b14524e5ce6f",
+        "status": "PROCESSED"
+      },
+      {
+        "id": "evt_1UW6N8BxU4PsnoX0xlmSpaWv",
+        "event_type": "checkout.session.expired",
+        "order_id": "45f0be70-dc6b-4488-a380-b3ca25fd06a1",
+        "status": "PROCESSED"
+      }
+    ],
+    "stripeExpiredEvents": [
+      {
+        "id": "evt_1UW6N8BxU4PsnoX0xlmSpaWv",
+        "type": "checkout.session.expired",
+        "api_version": "2026-09-30.endive",
+        "livemode": false,
+        "pending_webhooks": 0
+      }
+    ],
+    "payment": {
+      "amount": 19900,
+      "currency": "usd",
+      "paid": true,
+      "captured": true,
+      "receiptAvailable": true,
+      "billingCountry": "US",
+      "method": "card",
+      "balance": {
+        "amount": 19900,
+        "fee": 607,
+        "net": 19293,
+        "currency": "usd",
+        "status": "pending"
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-29T14:38:12.432573+00:00",
+  "files": [
+    {
+      "id": "8ca7e27f-4bf1-4ab2-8842-4d075c1ae550",
+      "order_id": "039d322c-c207-4824-87bc-810d5e41de20",
+      "state": "READY",
+      "expires_at": 1793323160,
+      "deleted_at": null,
+      "retries": 0,
+      "created_at": 1793279960,
+      "order_status": "DRAFT",
+      "r2_http": 200,
+      "object_bytes": 87,
+      "sha256": "d30568614dfd21c0bc0f80e07470bba67b4cf4fe003092f6783f622358c02c10",
+      "ttl_seconds": 43200
+    },
+    {
+      "id": "8ddad3b7-0766-400a-a6d3-bacedc163c66",
+      "order_id": "966850e0-bace-4638-9440-b14524e5ce6f",
+      "state": "READY",
+      "expires_at": 1793323140,
+      "deleted_at": null,
+      "retries": 0,
+      "created_at": 1793279940,
+      "order_status": "PAID",
+      "r2_http": 200,
+      "object_bytes": 87,
+      "sha256": "d30568614dfd21c0bc0f80e07470bba67b4cf4fe003092f6783f622358c02c10",
+      "ttl_seconds": 43200
+    }
+  ],
+  "heartbeat": {
+    "result": [
+      {
+        "results": [
+          {
+            "value": "{\"completedAt\":1793284240,\"scanned\":0,\"deleteFailures\":0,\"orphanDeleteFailures\":0,\"sessionFailures\":0}"
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "WAW",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.3644
+          },
+          "duration": 0.3644,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 122880,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "errors": [],
+    "messages": [],
+    "success": true
+  }
+}

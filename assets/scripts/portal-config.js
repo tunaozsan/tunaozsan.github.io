@@ -1,6 +1,5 @@
-// Deliberately unconfigured. Set only after backend, Access, legal and owner approval.
-export const API_ORIGIN = '';
-export const TURNSTILE_SITE_KEY = '';
+// Public production endpoint. Applications only; server payment/file gates remain closed.
+export const API_ORIGIN = 'https://bluefin-project-portal-api.bluefintuna-llc.workers.dev';
+export const TURNSTILE_SITE_KEY = '0x4AAAAAAFqzcQjgbI_eP7Le';
 export const DEFAULT_LOCALE = 'en';
-// English is the reviewed source. Add translations only after human validation.
 export const VALIDATED_LOCALES = ['en'];

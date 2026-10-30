@@ -1,3 +1,5 @@
+import { AGREEMENT_HASH } from "../cloudflare/worker/src/agreement";
+import { setupDriveAdmin, showDeliveryAdmin } from "./delivery-admin";
 import {
   packages,
   materials,
@@ -23,6 +25,7 @@ let session: any = null,
   serverQuote: any = null,
   activeXHR: XMLHttpRequest | null = null,
   enabled = false,
+  applicationMode = false,
   challenge = "",
   offset = 0;
 try {
@@ -99,7 +102,10 @@ function preview() {
     );
     $("scope-warning").textContent = q.scopeReview.join(" ");
     $("create-order").disabled =
-      !enabled || q.scopeReview.length > 0 || !challenge;
+      !enabled ||
+      (!applicationMode && q.scopeReview.length > 0) ||
+      !challenge ||
+      (applicationMode && !$("application-consent").checked);
     $("package-info").textContent =
       `${q.days} business days after complete usable inputs and scope confirmation. Required: ${q.required.join(", ")}.`;
     return q;
@@ -206,6 +212,12 @@ async function status() {
   tick();
 }
 async function start() {
+  if (API_ORIGIN && location.hostname === "bluefintuna.life") {
+    location.replace(
+      API_ORIGIN + location.pathname + location.search + location.hash,
+    );
+    return;
+  }
   if ($("configure-form")) {
     $("package").replaceChildren(
       ...packages.map((p) => {
@@ -262,6 +274,54 @@ async function start() {
       $("create-order").disabled = true;
       try {
         const form = new FormData($("configure-form"));
+        if (applicationMode) {
+          const q = quote(cart());
+          const quoteHash = Array.from(
+            new Uint8Array(
+              await crypto.subtle.digest(
+                "SHA-256",
+                new TextEncoder().encode(JSON.stringify(q)),
+              ),
+            ),
+            (n) => n.toString(16).padStart(2, "0"),
+          ).join("");
+          const customer: any = {};
+          for (const key of [
+            "name",
+            "email",
+            "project",
+            "dataDate",
+            "businessName",
+            "billingCountry",
+            "billingState",
+            "billingAddress",
+            "billingCity",
+            "billingPostal",
+            "projectCountry",
+          ])
+            customer[key] = String(form.get(key) || "");
+          customer.businessUse = $("business-use").checked;
+          const r = await api("/api/v1/applications", "POST", {
+            cart: cart(),
+            customer,
+            turnstileToken: challenge,
+            acceptance: {
+              accepted: $("application-consent").checked,
+              version: TERMS,
+              hash: AGREEMENT_HASH,
+              quoteHash,
+            },
+          });
+          notice(
+            `Application ${r.applicationId} received for scope and tax review. No payment has been taken. Please keep this reference. We will contact you at the supplied email.`,
+          );
+          $("configure-form").hidden = true;
+          $("portal-notice").scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          return;
+        }
         const r = await api("/api/v1/orders", "POST", {
           cart: cart(),
           customer: {
@@ -370,8 +430,30 @@ async function start() {
       try {
         serverQuote = await api(route("quote"), "POST", {});
         $("review-panel").hidden = false;
-        $("server-summary").textContent =
-          `Policy version: ${serverQuote.termsVersion}. Server subtotal: ${money(serverQuote.total)}. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`;
+        $("consent").checked = false;
+        const lineItems = el("ul", "");
+        for (const line of serverQuote.lines)
+          lineItems.append(
+            el(
+              "li",
+              `${line.quantity} × ${line.name} — ${money(line.unit * line.quantity)}`,
+            ),
+          );
+        $("server-summary").replaceChildren(
+          el(
+            "p",
+            `Agreement version: ${serverQuote.termsVersion} · ${serverQuote.agreementStatus}. One project / one reporting period where applicable.`,
+          ),
+          el(
+            "p",
+            `${serverQuote.cart.activities} requested activities; ${serverQuote.cart.revisions} additional in-scope revisions. Proposed turnaround: ${serverQuote.days} business days after complete inputs are accepted and scope is confirmed.`,
+          ),
+          lineItems,
+          el(
+            "p",
+            `Server subtotal: ${money(serverQuote.total)} USD before applicable tax. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`,
+          ),
+        );
         $("checkout").hidden = !!session.paid;
         $("consent").closest("label").hidden = !!session.paid;
         if (session.paid && !serverQuote.missing.length) {
@@ -398,7 +480,7 @@ async function start() {
         const r = await api(route("checkout"), "POST", {
           quoteHash: serverQuote.quoteHash,
           consent: $("consent").checked,
-          termsVersion: TERMS,
+          termsVersion: serverQuote.termsVersion,
         });
         const u = new URL(r.url);
         if (u.protocol !== "https:" || u.hostname !== "checkout.stripe.com")
@@ -406,7 +488,7 @@ async function start() {
         location.assign(u.href);
       } catch (e) {
         notice((e as Error).message);
-        $("checkout").disabled = false;
+        $("checkout").disabled = !$("consent").checked;
       }
     });
   }
@@ -432,11 +514,40 @@ async function start() {
   if (API_ORIGIN) {
     try {
       const health = await api("/health");
-      enabled = health.enabled;
+      applicationMode = health.applicationsEnabled === true;
+      enabled = health.enabled || applicationMode;
+      if (applicationMode && $("configure-form")) {
+        $("application-fields").hidden = false;
+        $("application-fields").disabled = false;
+        $("create-order").textContent = "Submit scope for review ↗";
+        $("business-use").addEventListener("change", () => {
+          $("application-fields").querySelector(
+            '[name="businessName"]',
+          ).required = $("business-use").checked;
+        });
+        $("resume-form").closest("details").hidden = true;
+        const steps = document.querySelector(".portal-steps");
+        if (steps)
+          steps.replaceChildren(
+            el("li", "01 · Select scope"),
+            el("li", "02 · Billing & project facts"),
+            el("li", "03 · Submit for review"),
+          );
+      }
+      if (applicationMode && $("load-admin")) {
+        const button = el("a", "Open protected application inbox ↗");
+        button.href = API_ORIGIN + "/admin/applications/";
+        button.className = "button";
+        $("load-admin").before(button);
+      }
       notice(
-        enabled
-          ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
-          : "The secure portal is not enabled. Uploads and payments remain unavailable.",
+        applicationMode
+          ? "Applications are open. Scope and transaction tax are reviewed before payment. File uploads and Checkout are currently unavailable."
+          : enabled
+            ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
+            : $("load-admin")
+              ? "Customer orders and payments are closed. Authorized administrators can connect Drive below."
+              : "The secure portal is not enabled. Uploads and payments remain unavailable.",
       );
       if (enabled && $("configure-form") && TURNSTILE_SITE_KEY) {
         const script = document.createElement("script");
@@ -458,7 +569,7 @@ async function start() {
         };
         document.head.append(script);
       }
-      if (session && $("configure-form")) await workspace();
+      if (session && !applicationMode && $("configure-form")) await workspace();
     } catch (e) {
       notice(
         "Secure service unavailable. No payment or upload has been started. " +
@@ -469,6 +580,7 @@ async function start() {
   setInterval(tick, 1000);
 }
 function adminUI() {
+  setupDriveAdmin(API_ORIGIN, $("load-admin").parentElement!);
   let orders: any[] = [],
     before: number | undefined,
     cursorId: string | undefined;
@@ -612,6 +724,7 @@ function adminUI() {
       });
       panel.append(b);
     }
+    await showDeliveryAdmin(API_ORIGIN, id, panel);
   }
   $("load-admin").addEventListener("click", () => {
     orders = [];
@@ -622,3 +735,14 @@ function adminUI() {
   $("admin-search").addEventListener("input", draw);
 }
 start().catch((e) => notice(e.message));
+
+window.addEventListener("pageshow", () => {
+  const consent = document.getElementById("consent") as HTMLInputElement | null;
+  const checkout = document.getElementById(
+    "checkout",
+  ) as HTMLButtonElement | null;
+  if (consent) consent.checked = false;
+  const applicationConsent = $("application-consent");
+  if (applicationConsent) applicationConsent.checked = false;
+  if (checkout) checkout.disabled = true;
+});

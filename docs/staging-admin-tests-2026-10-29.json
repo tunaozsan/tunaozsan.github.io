@@ -1,0 +1,41 @@
+{
+  "beforeDownload": 409,
+  "unpaidDownload": 403,
+  "paidDownload": 200,
+  "syntheticBytesMatch": true,
+  "markRetrieved": 200,
+  "retrievedAt": 1793284353,
+  "status": "PAID",
+  "operations": {
+    "status": 200,
+    "data": {
+      "serverTime": 1793284353,
+      "status": "healthy",
+      "alerts": [],
+      "cleanup": {
+        "completedAt": 1793284240,
+        "scanned": 0,
+        "deleteFailures": 0,
+        "orphanDeleteFailures": 0,
+        "sessionFailures": 0
+      },
+      "files": {
+        "overdue": 0,
+        "retrying": 0
+      },
+      "notifications": {
+        "pending": 1,
+        "exhausted": 0,
+        "overdue": 0,
+        "enabled": false
+      },
+      "retrieval": {
+        "urgent": 0
+      }
+    }
+  },
+  "customerResume": {
+    "resumedPaid": true,
+    "has199": true
+  }
+}

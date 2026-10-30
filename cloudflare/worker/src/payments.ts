@@ -1,3 +1,6 @@
+import { refundEvent } from "./refunds";
+import { sandboxPrices } from "./stripe-catalog";
+import { AGREEMENT_HASH, AGREEMENT_STATUS } from "./agreement";
 import { Problem, quote, TERMS } from "./catalog";
 import { type Env, type Deps, digest, signature, bounded } from "./security";
 export async function stripe(
@@ -21,18 +24,37 @@ export async function stripe(
   return (await r.json()) as any;
 }
 export async function checkout(e: Env, d: Deps, o: any, body: any) {
+  if (e.APP_ENV === "production" && AGREEMENT_STATUS !== "APPROVED")
+    throw new Problem(503, "agreement_not_approved");
   if (o.paid_at) throw new Problem(409, "already_paid");
   if (o.expires_at - d.now() < 1860)
     throw new Problem(409, "too_late_for_checkout");
   if (body.consent !== true || body.termsVersion !== TERMS)
     throw new Problem(400, "consent_required");
   if (o.stripe_session_id && o.checkout_url) {
+    const evidence = await e.DB.prepare(
+      "SELECT * FROM agreement_acceptances WHERE order_id=?",
+    )
+      .bind(o.id)
+      .first<any>();
+    if (
+      !evidence ||
+      evidence.agreement_version !== TERMS ||
+      evidence.agreement_sha256 !== AGREEMENT_HASH ||
+      evidence.stripe_session_id !== o.stripe_session_id ||
+      evidence.quote_sha256 !== body.quoteHash
+    )
+      throw new Problem(409, "agreement_changed_review_again");
     const existing = await stripe(
       e,
       d,
       "checkout/sessions/" + encodeURIComponent(o.stripe_session_id),
     );
-    if (existing.status !== "open" || existing.payment_status !== "unpaid")
+    if (
+      existing.status !== "open" ||
+      existing.payment_status !== "unpaid" ||
+      existing.consent_collection?.terms_of_service !== "required"
+    )
       throw new Problem(409, "checkout_no_longer_open");
     return { url: o.checkout_url };
   }
@@ -44,7 +66,12 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     throw new Problem(409, "quote_expired");
   const q = quote(JSON.parse(o.cart));
   const currentHash = await digest(
-    JSON.stringify({ cart: q.cart, total: q.total, terms: TERMS }),
+    JSON.stringify({
+      cart: q.cart,
+      total: q.total,
+      terms: TERMS,
+      agreementHash: AGREEMENT_HASH,
+    }),
   );
   if (q.total !== o.subtotal || currentHash !== o.quote_hash)
     throw new Problem(409, "quote_changed_review_again");
@@ -97,11 +124,60 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     locked.quote_hash !== o.quote_hash
   )
     throw new Problem(409, "order_locked");
+  const acceptedOrder = await e.DB.prepare(
+    "SELECT consent_at,consent_version FROM orders WHERE id=?",
+  )
+    .bind(o.id)
+    .first<any>();
+  if (acceptedOrder?.consent_version !== TERMS || !acceptedOrder.consent_at)
+    throw new Problem(409, "consent_record_missing");
+  await e.DB.prepare(
+    "INSERT OR IGNORE INTO agreement_acceptances(order_id,agreement_version,agreement_sha256,agreement_status,documents_url,scope_json,quote_sha256,portal_accepted_at) VALUES (?,?,?,?,?,?,?,?)",
+  )
+    .bind(
+      o.id,
+      TERMS,
+      AGREEMENT_HASH,
+      AGREEMENT_STATUS,
+      e.PUBLIC_SITE_ORIGIN + "/assets/legal/" + TERMS + ".json",
+      JSON.stringify({
+        cart: q.cart,
+        lines: q.lines,
+        total: q.total,
+        currency: "usd",
+        required: q.required,
+      }),
+      o.quote_hash,
+      acceptedOrder.consent_at,
+    )
+    .run();
+  const acceptance = await e.DB.prepare(
+    "SELECT agreement_sha256,quote_sha256 FROM agreement_acceptances WHERE order_id=?",
+  )
+    .bind(o.id)
+    .first<any>();
+  if (
+    acceptance?.agreement_sha256 !== AGREEMENT_HASH ||
+    acceptance.quote_sha256 !== o.quote_hash
+  )
+    throw new Problem(409, "agreement_changed_review_again");
   const b = new URLSearchParams({
     mode: "payment",
     client_reference_id: o.id,
     "metadata[order_id]": o.id,
     "metadata[quote_hash]": o.quote_hash,
+    "metadata[agreement_version]": TERMS,
+    "metadata[agreement_sha256]": AGREEMENT_HASH,
+    "metadata[agreement_status]": AGREEMENT_STATUS,
+    "custom_text[terms_of_service_acceptance][message]":
+      "I agree to the [Service Terms](" +
+      e.PUBLIC_SITE_ORIGIN +
+      "/service-terms.html) and [Cancellation & Refund Policy](" +
+      e.PUBLIC_SITE_ORIGIN +
+      "/refund-policy.html). Agreement version " +
+      TERMS +
+      ".",
+
     "payment_method_types[0]": "card",
     success_url: e.PUBLIC_SITE_ORIGIN + "/payment/success/",
     cancel_url: e.PUBLIC_SITE_ORIGIN + "/payment/cancel/",
@@ -120,12 +196,50 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
       "Bluefin Tuna LLC · " + q.lines[0].name,
     );
   }
-  q.lines.forEach((l, i) => {
-    b.set(`line_items[${i}][price_data][currency]`, "usd");
-    b.set(`line_items[${i}][price_data][unit_amount]`, String(l.unit));
-    b.set(`line_items[${i}][price_data][product_data][name]`, l.name);
+  for (const [i, l] of q.lines.entries()) {
+    // Persisted Catalog prices only; never invent Stripe IDs or silently create products.
+    const mapped =
+      e.APP_ENV === "test" && e.STRIPE_ACCOUNT_ID === "acct_1UVrQ3BxU4PsnoX0"
+        ? sandboxPrices[l.sku]
+        : undefined;
+    const result = mapped
+      ? {
+          data: [
+            await stripe(e, d, "prices/" + mapped.price + "?expand[]=product"),
+          ],
+          has_more: false,
+        }
+      : await stripe(
+          e,
+          d,
+          "prices?" +
+            new URLSearchParams({
+              "lookup_keys[]": l.sku,
+              active: "true",
+              "expand[]": "data.product",
+              limit: "2",
+            }),
+        );
+    const p = result.data?.[0];
+    if (
+      result.has_more ||
+      result.data?.length !== 1 ||
+      !p?.active ||
+      (mapped
+        ? p.id !== mapped.price || p.product?.id !== mapped.product
+        : p.lookup_key !== l.sku) ||
+      p.unit_amount !== l.unit ||
+      p.currency !== "usd" ||
+      p.type !== "one_time" ||
+      p.livemode !== (e.APP_ENV === "production") ||
+      !p.product?.active ||
+      p.product?.deleted ||
+      p.product?.livemode !== p.livemode
+    )
+      throw new Problem(503, "catalog_price_missing_or_mismatched");
+    b.set(`line_items[${i}][price]`, p.id);
     b.set(`line_items[${i}][quantity]`, String(l.quantity));
-  });
+  }
   const session = await stripe(
     e,
     d,
@@ -134,6 +248,7 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     `checkout-${o.id}-${o.quote_hash}`,
   );
   if (
+    session.consent_collection?.terms_of_service !== "required" ||
     session.livemode !== (e.APP_ENV === "production") ||
     session.client_reference_id !== o.id ||
     session.amount_subtotal !== q.total ||
@@ -142,11 +257,14 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     !/^https:\/\/checkout\.stripe\.com\//.test(session.url || "")
   )
     throw new Problem(502, "invalid_checkout_response");
-  await e.DB.prepare(
-    "UPDATE orders SET stripe_session_id=?,checkout_url=? WHERE id=? AND stripe_session_id IS NULL",
-  )
-    .bind(session.id, session.url, o.id)
-    .run();
+  await e.DB.batch([
+    e.DB.prepare(
+      "UPDATE orders SET stripe_session_id=?,checkout_url=? WHERE id=? AND stripe_session_id IS NULL",
+    ).bind(session.id, session.url, o.id),
+    e.DB.prepare(
+      "UPDATE agreement_acceptances SET stripe_session_id=? WHERE order_id=? AND stripe_session_id IS NULL",
+    ).bind(session.id, o.id),
+  ]);
   return { url: session.url };
 }
 export async function webhook(req: Request, e: Env, d: Deps) {
@@ -173,6 +291,8 @@ export async function webhook(req: Request, e: Env, d: Deps) {
     throw new Problem(400, "wrong_environment");
   if (event.account && event.account !== e.STRIPE_ACCOUNT_ID)
     throw new Problem(400, "wrong_account");
+  if (e.APP_ENV === "test" && event.type === "charge.refunded")
+    return refundEvent(e, d, event);
   if (
     ![
       "checkout.session.completed",
@@ -211,6 +331,22 @@ export async function webhook(req: Request, e: Env, d: Deps) {
   )
     throw new Problem(400, "payment_mismatch");
   const paid = s.payment_status === "paid" && s.status === "complete";
+  const acceptance = await e.DB.prepare(
+    "SELECT * FROM agreement_acceptances WHERE order_id=?",
+  )
+    .bind(o.id)
+    .first<any>();
+  if (!acceptance) throw new Problem(409, "consent_record_missing");
+  if (
+    acceptance &&
+    (acceptance.stripe_session_id !== s.id ||
+      acceptance.agreement_version !== s.metadata?.agreement_version ||
+      acceptance.agreement_sha256 !== s.metadata?.agreement_sha256 ||
+      acceptance.quote_sha256 !== s.metadata?.quote_hash ||
+      s.consent_collection?.terms_of_service !== "required" ||
+      (paid && s.consent?.terms_of_service !== "accepted"))
+  )
+    throw new Problem(409, "stripe_consent_not_verified");
   if (!paid && event.type === "checkout.session.async_payment_succeeded")
     throw new Problem(400, "payment_not_paid");
   const state = paid
@@ -223,6 +359,18 @@ export async function webhook(req: Request, e: Env, d: Deps) {
         ? "CANCELLED"
         : "PAYMENT_PROCESSING";
   await e.DB.batch([
+    ...(acceptance && paid
+      ? [
+          e.DB.prepare(
+            "UPDATE agreement_acceptances SET stripe_terms_status='ACCEPTED',stripe_verified_at=?,stripe_event_id=?,stripe_event_created_at=? WHERE order_id=? AND stripe_terms_status='PENDING'",
+          ).bind(
+            d.now(),
+            event.id,
+            Number.isSafeInteger(event.created) ? event.created : null,
+            o.id,
+          ),
+        ]
+      : []),
     e.DB.prepare(
       "INSERT OR IGNORE INTO payment_events(id,event_type,order_id,created_at,status) VALUES (?,?,?,?,'PROCESSED')",
     ).bind(event.id, event.type, o.id, d.now()),
@@ -258,7 +406,12 @@ export async function quoteOrder(e: Env, d: Deps, o: any) {
     (x) => !files.results.some((f) => f.category === x),
   );
   const hash = await digest(
-    JSON.stringify({ cart: q.cart, total: q.total, terms: TERMS }),
+    JSON.stringify({
+      cart: q.cart,
+      total: q.total,
+      terms: TERMS,
+      agreementHash: AGREEMENT_HASH,
+    }),
   );
   await e.DB.prepare(
     "UPDATE orders SET subtotal=?,quote_hash=?,quote_until=?,status=CASE WHEN paid_at IS NOT NULL AND ?=0 THEN 'PAID' ELSE status END WHERE id=? AND status='DRAFT'",
@@ -277,5 +430,7 @@ export async function quoteOrder(e: Env, d: Deps, o: any) {
     quoteHash: hash,
     quoteUntil: Math.min(o.expires_at, d.now() + 900),
     termsVersion: TERMS,
+    agreementHash: AGREEMENT_HASH,
+    agreementStatus: AGREEMENT_STATUS,
   };
 }

@@ -1,0 +1,6 @@
+{
+  "test": "real_admin_browser_PDF_upload_review_publish_revoke",
+  "status": "PASS",
+  "invitationNotLogged": true,
+  "finalState": "REVOKED"
+}

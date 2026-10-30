@@ -1,0 +1,14 @@
+{
+  "sitekey": "0x4AAAAAAFrEERMLKOiOdyyh",
+  "domains": [
+    "bluefin-project-portal-staging.bluefintuna-llc.workers.dev"
+  ],
+  "mode": "managed",
+  "secret_names": [
+    "RATE_LIMIT_SALT",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "TURNSTILE_SECRET_KEY"
+  ],
+  "stripe_secrets_unchanged": true
+}

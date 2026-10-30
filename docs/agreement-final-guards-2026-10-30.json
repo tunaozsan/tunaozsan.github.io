@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-30T11:32:40.321Z",
+  "flags": {
+    "APP_ENV": "test",
+    "DELIVERY_ENABLED": "true",
+    "DELIVERY_POLICY_APPROVED": "true",
+    "DRIVE_ENABLED": "true",
+    "LEGAL_APPROVED": "false",
+    "PORTAL_ENABLED": "false",
+    "STRIPE_ACCOUNT_ID": "acct_1UVrQ3BxU4PsnoX0"
+  },
+  "healthEnabled": false,
+  "closedReuploadHttp": 503,
+  "stagingOnly": true,
+  "noTestWindow": true
+}

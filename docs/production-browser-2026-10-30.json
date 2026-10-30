@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-30T14:25:12.555Z",
+  "tests": [
+    {
+      "name": "terms_initially_unchecked",
+      "status": "PASS"
+    },
+    {
+      "name": "business_declaration_separate_unchecked",
+      "status": "PASS"
+    },
+    {
+      "name": "checkout_and_file_panels_hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "real_turnstile_token_issued",
+      "status": "PASS"
+    },
+    {
+      "name": "no_consent_submit_disabled",
+      "status": "PASS"
+    },
+    {
+      "name": "real_application_submission",
+      "status": "PASS",
+      "http": 201,
+      "applicationId": "7c28f39d-2bdd-410a-b061-df605cd1f57d",
+      "statusValue": "TAX_REVIEW_REQUIRED",
+      "charged": false,
+      "termsVersion": "service-terms-2026-10-30-v2",
+      "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+    },
+    {
+      "name": "no_charge_or_upload",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile_no_horizontal_overflow",
+      "status": "PASS"
+    }
+  ]
+}

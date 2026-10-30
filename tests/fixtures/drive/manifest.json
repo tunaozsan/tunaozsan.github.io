@@ -1,0 +1,14 @@
+{
+  "synthetic.pdf": {
+    "bytes": 616,
+    "sha256": "54f5a3734febe372814070e6430275beda2ecdb462655c4e538937806dcfe603"
+  },
+  "synthetic.xer": {
+    "bytes": 92,
+    "sha256": "006dd9167013dfb91bd44b97002f5269ae517f09e33dbbba6245d9b04ab0972b"
+  },
+  "synthetic.xlsx": {
+    "bytes": 1397,
+    "sha256": "b11843cb258c3af5530e4e3c011003f29414f1afb65d0e8711f14aee5d98693e"
+  }
+}

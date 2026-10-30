@@ -1,0 +1,77 @@
+{
+  "order": "a34c98c0-fae4-4848-863a-5d9a537d26e6",
+  "tests": [
+    {
+      "name": "real_final_upload",
+      "status": "PASS",
+      "http": 201
+    },
+    {
+      "name": "admin_approval",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "name": "publish_before_refund",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "name": "independent_customer_activate",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "name": "download_before_refund",
+      "status": "PASS",
+      "http": 200,
+      "bytes": 95,
+      "sha256Matches": true
+    },
+    {
+      "name": "actual_stripe_refund",
+      "status": "PASS",
+      "http": 200,
+      "refundId": "re_3UWFjcBxU4PsnoX00pRDwsZU"
+    },
+    {
+      "name": "automatic_revoke_before_customer_request",
+      "status": "PASS",
+      "latencyMs": 232,
+      "deliveryStatus": "REVOKED"
+    },
+    {
+      "name": "retention_deadline_unchanged",
+      "status": "PASS",
+      "retentionAt": 1801142493
+    },
+    {
+      "name": "existing_customer_session_denied",
+      "status": "PASS",
+      "http": 401
+    },
+    {
+      "name": "range_download_denied",
+      "status": "PASS",
+      "http": 401
+    },
+    {
+      "name": "original_invite_denied",
+      "status": "PASS",
+      "http": 401
+    },
+    {
+      "name": "admin_regenerate_denied",
+      "status": "PASS",
+      "http": 403,
+      "error": "payment_refunded"
+    },
+    {
+      "name": "admin_republish_denied",
+      "status": "PASS",
+      "http": 403,
+      "error": "payment_refunded"
+    }
+  ],
+  "fileId": "e88ca15b-4628-4826-a7b0-d452b4f1078f"
+}

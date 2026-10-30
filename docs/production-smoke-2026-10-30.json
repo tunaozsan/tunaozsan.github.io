@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-30T14:27:26.123Z",
+  "tests": [
+    {
+      "name": "health",
+      "http": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "portal",
+      "http": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "terms",
+      "http": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "privacy",
+      "http": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous_admin",
+      "http": 302,
+      "status": "PASS"
+    },
+    {
+      "name": "unsigned_webhook_closed",
+      "http": 503,
+      "status": "PASS"
+    },
+    {
+      "name": "checkout_closed",
+      "http": 503,
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_origin",
+      "http": 403,
+      "status": "PASS"
+    },
+    {
+      "name": "staging_path_access_intercepted",
+      "http": 302,
+      "status": "PASS"
+    }
+  ],
+  "health": {
+    "service": "bluefin-project-portal",
+    "mode": "production",
+    "enabled": false,
+    "applicationsEnabled": true,
+    "checkoutEnabled": false,
+    "filesEnabled": false,
+    "termsVersion": "service-terms-2026-10-30-v2",
+    "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+  }
+}

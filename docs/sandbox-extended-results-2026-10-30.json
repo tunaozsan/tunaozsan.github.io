@@ -1,0 +1,20 @@
+{
+  "catalog_creation": "PASS",
+  "catalog_idempotency": "PASS",
+  "sandbox_products": 22,
+  "sandbox_prices": 22,
+  "multi_addon_checkout_webhook_D1": "PASS",
+  "refund_and_fulfillment_hold": "PASS",
+  "cancel_expiry_webhook": "PASS",
+  "direct_payment_link_isolation": "PASS",
+  "test_link_disabled": "PASS",
+  "local_worker_tests": 62,
+  "all_contracts": "DRAFT",
+  "production_changed": false,
+  "limitations": [
+    "Cancel redirect is not cancellation; explicit Stripe Session expiry and webhook were verified.",
+    "Refunded order retains historical PAID; Drive job hold and live Stripe check prevent new transfer. Automatic refund event reconciliation/download revocation is a separate readiness item.",
+    "No real 12-hour waiting repeated; existing TTL unchanged.",
+    "Production and legal/owner approvals NOT RUN."
+  ]
+}

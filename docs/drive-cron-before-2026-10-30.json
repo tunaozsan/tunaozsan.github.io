@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-30T09:29:48.680Z",
+  "orderId": "9d49e04a-676d-4529-8f0a-07847486dc55",
+  "jobs": [],
+  "project": [
+    {
+      "retention_at": 1793352252,
+      "purged_at": null
+    }
+  ],
+  "audit": [],
+  "ttl": [
+    {
+      "seconds": 43200
+    }
+  ]
+}

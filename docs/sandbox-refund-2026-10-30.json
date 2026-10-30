@@ -1,0 +1,15 @@
+{
+  "action": "refund",
+  "checkedAt": "2026-10-30T12:13:58.202Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "refund_id": "re_3UWEenBxU4PsnoX017FulXvU",
+        "status": "succeeded",
+        "amount": 132200,
+        "fulfillmentGate": "payment_on_hold"
+      }
+    }
+  ]
+}

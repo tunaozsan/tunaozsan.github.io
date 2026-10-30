@@ -1,0 +1,201 @@
+{
+  "action": "provision",
+  "checkedAt": "2026-10-30T12:09:16.008Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "sku": "SCHEDULE-SCORE-PILOT",
+        "product_id": "prod_VXJDLMwfYnnJaR",
+        "price_id": "price_1UWEavBxU4PsnoX0obx745nP",
+        "amount": 100,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "EXTRA-50-NR",
+        "product_id": "prod_VXJD4fcBNCaraT",
+        "price_id": "price_1UWEawBxU4PsnoX0k0IW1oY3",
+        "amount": 10000,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "EXTRA-50-BASE-R",
+        "product_id": "prod_VXJDuoUs2oh88J",
+        "price_id": "price_1UWEazBxU4PsnoX0vdXrDmMe",
+        "amount": 17500,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "EXTRA-50-UPDATE-R",
+        "product_id": "prod_VXJDFDDlD2ZJfh",
+        "price_id": "price_1UWEb3BxU4PsnoX0KNLoBLVL",
+        "amount": 15000,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "REVISION",
+        "product_id": "prod_VXJDYfri3kZ5kX",
+        "price_id": "price_1UWEb5BxU4PsnoX08EMb5dmN",
+        "amount": 9900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "BASELINE-MAT-CONCRETE",
+        "product_id": "prod_VXJD5FCJN1M9Os",
+        "price_id": "price_1UWEb6BxU4PsnoX0veeCQRYF",
+        "amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "BASELINE-MAT-REBAR",
+        "product_id": "prod_VXJDugEhKimUGt",
+        "price_id": "price_1UWEb7BxU4PsnoX0BNfgEyUP",
+        "amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "BASELINE-MAT-FORMWORK",
+        "product_id": "prod_VXJDcZ4zKQuUBH",
+        "price_id": "price_1UWEb8BxU4PsnoX0m2yxcZgx",
+        "amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "BASELINE-MAT-STRUCTURAL_STEEL",
+        "product_id": "prod_VXJDNcrc3vqCQa",
+        "price_id": "price_1UWEbABxU4PsnoX02nfCqJPB",
+        "amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "BASELINE-MAT-PIPING",
+        "product_id": "prod_VXJD3nfSymbKoN",
+        "price_id": "price_1UWEbBBxU4PsnoX09YL7cZw4",
+        "amount": 24900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "UPDATE-MAT-CONCRETE",
+        "product_id": "prod_VXJD87aMKHQ6VH",
+        "price_id": "price_1UWEbCBxU4PsnoX0MQUMvYjG",
+        "amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "UPDATE-MAT-REBAR",
+        "product_id": "prod_VXJDYLxsoJXvFN",
+        "price_id": "price_1UWEbDBxU4PsnoX0KOY8X2to",
+        "amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "UPDATE-MAT-FORMWORK",
+        "product_id": "prod_VXJDwUjjHBMP0Y",
+        "price_id": "price_1UWEbFBxU4PsnoX0lzWD9DQJ",
+        "amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "UPDATE-MAT-STRUCTURAL_STEEL",
+        "product_id": "prod_VXJDVTATVqc7JY",
+        "price_id": "price_1UWEbGBxU4PsnoX0T3xzinsL",
+        "amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    },
+    {
+      "http": 200,
+      "result": {
+        "sku": "UPDATE-MAT-PIPING",
+        "product_id": "prod_VXJDpYXEUxydPR",
+        "price_id": "price_1UWEbJBxU4PsnoX0BUQsDUpd",
+        "amount": 11900,
+        "currency": "usd",
+        "active": true,
+        "createdProduct": false,
+        "createdPrice": false
+      }
+    }
+  ]
+}

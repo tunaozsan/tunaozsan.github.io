@@ -1,0 +1,13 @@
+{
+  "action": "expire",
+  "checkedAt": "2026-10-30T12:13:57.278Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "session": "cs_test_a1X2Fv17amtpyjCi2yeugiOrWS2jD0Xh0fOHwOoBHSV2Qov9wYHwhKy79W",
+        "status": "expired"
+      }
+    }
+  ]
+}

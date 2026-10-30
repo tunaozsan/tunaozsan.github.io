@@ -1,0 +1,74 @@
+{
+  "status": "DRAFT_NOT_EXECUTED",
+  "requires": [
+    "Owner and qualified legal approval",
+    "Effective matching legal URLs",
+    "Separate explicit Stripe Live modification approval",
+    "Sandbox tests for each applicable link"
+  ],
+  "operations": [
+    {
+      "sku": "AUDIT-150",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UV74WBzdKYgwVw6EYEHxMeJ",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    },
+    {
+      "sku": "BASE-BASIC-NR-75",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UVAC5BzdKYgwVw6aKsnuS6z",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    },
+    {
+      "sku": "BASE-BASIC-R-75",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UVAGtBzdKYgwVw6WTiViWrl",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    },
+    {
+      "sku": "BASE-DETAIL-NR-200",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UVAElBzdKYgwVw6DvU7Biee",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    },
+    {
+      "sku": "BASE-DETAIL-R-200",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UVAJ4BzdKYgwVw6nVq5vgGQ",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    },
+    {
+      "sku": "UPDATE-NR-200",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UVAL1BzdKYgwVw6uosQvzep",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    },
+    {
+      "sku": "UPDATE-R-200",
+      "method": "POST",
+      "path": "/v1/payment_links/plink_1UVAMfBzdKYgwVw6pow909cB",
+      "form": {
+        "consent_collection[terms_of_service]": "required"
+      },
+      "executed": false
+    }
+  ]
+}

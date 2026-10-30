@@ -32,3 +32,5 @@
 @media(max-width:1099px){.primary-nav>a{font-size:16px}.brand-wordmark{font-size:21px}.brand-mark{width:64px;height:64px}}
 @media(max-width:767px){.brand{gap:8px}.brand-mark{width:56px;height:56px;padding:2px}.brand-wordmark{font-size:18px}.brand-wordmark small{font-size:8px;max-width:170px;line-height:1.4}.menu-toggle{padding-inline:10px;gap:8px}}
 @media(max-width:374px){.brand-mark{width:46px;height:46px}.brand-wordmark{font-size:16px}.brand-wordmark small{font-size:8px;max-width:145px}.menu-toggle{font-size:12px;padding-inline:8px}}
+
+.legal-table{overflow-x:auto;margin-block:2rem}.legal-table table{border-collapse:collapse;width:100%;font-size:.95rem}.legal-table th,.legal-table td{padding:.8rem;text-align:left;border-bottom:1px solid #8a9aaa;vertical-align:top}

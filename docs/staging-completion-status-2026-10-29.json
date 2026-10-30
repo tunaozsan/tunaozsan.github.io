@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-29",
+  "stage": "complete-staging-request",
+  "checks": [
+    {
+      "name": "OAuth whoami",
+      "status": "FAIL",
+      "detail": "Cloudflare API timeout; not proof of invalid login"
+    },
+    {
+      "name": "Access application list",
+      "status": "PASS",
+      "detail": "OAuth GET succeeded; no exact staging domain match"
+    },
+    {
+      "name": "Create staging Access application",
+      "status": "FAIL",
+      "detail": "POST /accounts/.../access/apps returned HTTP 403, code 1010, auth.forbidden"
+    },
+    {
+      "name": "New staging ACCESS_AUD",
+      "status": "NOT RUN",
+      "detail": "Application creation denied"
+    },
+    {
+      "name": "Turnstile widget and real hostname/action checks",
+      "status": "NOT RUN",
+      "detail": "Stopped at required Access authorization gate"
+    },
+    {
+      "name": "Generate and store RATE_LIMIT_SALT",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "Runtime Stripe account and Sandbox connection",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "Acacia REST / Endive Snapshot real compatibility",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "Checkout, webhook, D1 payment, PDF invoice, authenticated admin",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "12h real cutoff and physical Cron deletion",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "Re-close intake after completed tests",
+      "status": "NOT RUN",
+      "detail": "Intake was never enabled in this run"
+    },
+    {
+      "name": "Production unchanged, no secret exposure or resource recreation",
+      "status": "PASS"
+    }
+  ],
+  "required_permission": "Access: Apps and Policies Write",
+  "account_id": "fc9c616595b1d9b6edb82fca91501e47",
+  "remote_mutations_succeeded": false,
+  "portal_enabled_this_run": false,
+  "historicalOnly": true,
+  "supersededBy": "HANDOFF.md: Güncel staging sonucu — 29 Ekim 2026"
+}

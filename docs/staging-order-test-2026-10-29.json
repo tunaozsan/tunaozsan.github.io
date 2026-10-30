@@ -1,0 +1,20 @@
+{
+  "orders": [
+    {
+      "kind": "paid-test",
+      "orderId": "966850e0-bace-4638-9440-b14524e5ce6f",
+      "fileId": "8ddad3b7-0766-400a-a6d3-bacedc163c66",
+      "expiresAt": 1793323140,
+      "uploadStatus": 201
+    },
+    {
+      "kind": "unpaid-ttl",
+      "orderId": "039d322c-c207-4824-87bc-810d5e41de20",
+      "fileId": "8ca7e27f-4bf1-4ab2-8842-4d075c1ae550",
+      "expiresAt": 1793323160,
+      "uploadStatus": 201
+    }
+  ],
+  "checkoutStatus": 200,
+  "checkoutHost": "checkout.stripe.com"
+}

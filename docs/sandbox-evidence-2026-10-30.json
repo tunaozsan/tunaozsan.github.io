@@ -1,0 +1,35 @@
+{
+  "action": "evidence",
+  "checkedAt": "2026-10-30T12:15:04.410Z",
+  "results": [
+    {
+      "http": 200,
+      "result": {
+        "order": "e2cdcb02-14bd-4ee4-909a-1d050daacaf6",
+        "status": "EXPIRED_UNPAID",
+        "paid_at": null,
+        "total": null,
+        "acceptance": {
+          "agreement_version": "service-terms-2026-10-30-v1",
+          "agreement_sha256": "879b2b5523360d2ed69d78facab8dd377ebd7f63780d2d37c14c762835005876",
+          "scope_json": "{\"cart\":{\"sku\":\"p6_audit\",\"activities\":150,\"revisions\":0,\"materials\":[],\"existingResources\":false},\"lines\":[{\"sku\":\"p6_audit\",\"name\":\"Primavera P6 Schedule Audit\",\"unit\":19900,\"quantity\":1}],\"total\":19900,\"currency\":\"usd\",\"required\":[\"xer\"]}",
+          "stripe_terms_status": "PENDING",
+          "stripe_session_id": "cs_test_a1X2Fv17amtpyjCi2yeugiOrWS2jD0Xh0fOHwOoBHSV2Qov9wYHwhKy79W"
+        },
+        "session": {
+          "id": "cs_test_a1X2Fv17amtpyjCi2yeugiOrWS2jD0Xh0fOHwOoBHSV2Qov9wYHwhKy79W",
+          "status": "expired",
+          "payment_status": "unpaid",
+          "amount_total": 19900
+        },
+        "lines": [
+          {
+            "price": "price_1UVrQdBxU4PsnoX0jOEmafZV",
+            "quantity": 1,
+            "amount_total": 19900
+          }
+        ]
+      }
+    }
+  ]
+}
