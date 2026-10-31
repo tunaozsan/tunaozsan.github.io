@@ -1,3 +1,31 @@
+# Güncel devam durumu — 31 Ekim 2026 (Asia/Samarkand)
+
+**Canlı Checkout hâlâ açılmadı. Aşağıdaki düzeltme yerelde tamamlandı; bu tur production yayını doğrulanmadı.** Önceki yayın onayı geçerlidir; yeni owner onayı istenmedi.
+
+Kullanıcının ödeme yerine sürekli “tax review” görmesi incelendi. Production giriş noktası Checkout ve dosya alımını açıkça kapatıyor; başvuru endpointi ise işlem bazında bir vergi hesabı yapmadan her kayda `TAX_REVIEW_REQUIRED` yazıyordu. Bu nedenle ekrandaki mesaj, gerçek teknik engeli doğru anlatmıyordu.
+
+- Yerel düzeltme: yeni başvurular `PAYMENT_SETUP_PENDING`; mesaj, ödeme sayfasının geçici olarak kullanılamadığını ve formun ödeme almadığını açıklar. Admin inbox ve hizmet FAQ metni uyumlu hale getirildi. Eski başvurular, kabul zamanları ve immutable sözleşme/kapsam kayıtları değiştirilmedi.
+- Yeni durumun 90 gün sonrası unpaid metadata temizliği eski durumla birlikte desteklenir; explicit hold ve converted kayıtlar korunur. R2'nin 12 saatlik TTL'sine veya Cron tanımına değişiklik yok. Migration gerekmiyor.
+- Son başarılı production envanterinde `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` ve merchant account ID eksikti. Bu tur güncel secret adlarını tekrar okuma denemeleri ağ zaman aşımıyla sonuçlandı; güncel envanter doğrulanmış sayılmadı. API secret değerleri okunmadı veya görüntülenmedi.
+- Cloudflare API (Node ve Python), ana site ve GitHub API HTTPS bağlantıları zaman aşımına uğradı. HTTP 403 veya Cloudflare yetki hata kodu alınmadı. Buna bir izin/vergi hatası denmedi.
+- Mevcut Audit Payment Link tarayıcıda açıldı; sayfa yükleme iskeletinde kaldığından aktif Checkout/tutar doğrulaması PASS değildir. Yedi eski link değiştirilmedi. Bu yol D1'e bağlı yeni portal Checkout'u sayılmaz.
+- V2 sözleşme ve hash aynı. Vergi muafiyeti, evrensel sıfır vergi veya bağımsız uzman onayı üretilmedi. Mercury, DNS, Apple yolları ve production kaynakları bu tur değiştirilmedi.
+
+| Kontrol | Sonuç | Kanıt / sınır |
+|---|---|---|
+| Worker testleri | PASS | 72/72; yeni başvuru durumu, geçmiş durum temizliği, hold ve converted korunması dahil |
+| Typecheck ve değişen dosyalarda format | PASS | Worker ve frontend TypeScript; Prettier |
+| Site testleri ve production asset build | PASS | 1111 assertion / 23 sayfa |
+| Production secret adları yeniden kontrolü | FAIL | HTTPS bağlantısı zaman aşımı; değer okunmadı, izin sonucu bilinmiyor |
+| Cloudflare / GitHub uzak erişim | FAIL | HTTP yanıtı alınamadı; ağ zaman aşımı |
+| Düzeltmenin Worker/GitHub Pages yayını | NOT RUN | Uzak erişim doğrulanmadan yayın yapılmadı |
+| Gerçek Live Checkout/webhook/ödeme | NOT RUN | Entegre Live bağlantısı henüz tamamlanmadı; gerçek kartla işlem yok |
+| Eski Audit bağlantısının ödeme formu | NOT RUN | URL açıldı, yükleme ekranından ilerlemedi |
+
+**Somut sonraki adım:** Ağ erişimi geri geldiğinde mevcut production envanterini tekrar doğrula. `STRIPE_SECRET_KEY` eksikse yalnız production Worker Secrets alanına güvenli olarak eklenmesi gerekiyor; bunun için kullanıcıya tek erişim isteği gönderildi, değer sohbetten istenmedi. Ardından mevcut merchant/katalog/webhook/işlem-vergi ayarlarını doğrulayarak D1 kabulü ve immutable kapsamla bağlı Checkout'u tamamla. Yalnız bayrak değiştirerek ödeme veya doğrulanmamış fulfillment açma; eski Payment Link'i entegre ödeme diye sunma.
+
+---
+
 # FINAL LAUNCH RESULT — 2026-10-30 UTC
 
 **Sınırlı açılış: ana site ve production başvuru portalı AÇIK; canlı tahsilat ve dosya intake KAPALI.** İşletme sahibinin son yayın talimatı önceki preparation-only kısıtını kaldırdı. Aşağıdaki eski kayıtlar tarihsel kanıttır; güncel durum bu bölümdür.

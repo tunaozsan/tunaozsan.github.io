@@ -313,7 +313,7 @@ async function start() {
             },
           });
           notice(
-            `Application ${r.applicationId} received for scope and tax review. No payment has been taken. Please keep this reference. We will contact you at the supplied email.`,
+            `Request ${r.applicationId} saved. Online checkout is temporarily unavailable, so no payment has been taken. Please keep this reference. We will contact you at the supplied email.`,
           );
           $("configure-form").hidden = true;
           $("portal-notice").scrollIntoView({
@@ -519,7 +519,7 @@ async function start() {
       if (applicationMode && $("configure-form")) {
         $("application-fields").hidden = false;
         $("application-fields").disabled = false;
-        $("create-order").textContent = "Submit scope for review ↗";
+        $("create-order").textContent = "Save request — no payment ↗";
         $("business-use").addEventListener("change", () => {
           $("application-fields").querySelector(
             '[name="businessName"]',
@@ -531,7 +531,7 @@ async function start() {
           steps.replaceChildren(
             el("li", "01 · Select scope"),
             el("li", "02 · Billing & project facts"),
-            el("li", "03 · Submit for review"),
+            el("li", "03 · Save request"),
           );
       }
       if (applicationMode && $("load-admin")) {
@@ -542,7 +542,7 @@ async function start() {
       }
       notice(
         applicationMode
-          ? "Applications are open. Scope and transaction tax are reviewed before payment. File uploads and Checkout are currently unavailable."
+          ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable."
           : enabled
             ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
             : $("load-admin")

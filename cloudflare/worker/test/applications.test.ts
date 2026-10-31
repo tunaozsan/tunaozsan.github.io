@@ -102,8 +102,14 @@ test("application persists immutable scope and separate acceptance, never PAID o
   assert.equal(r.status, 201);
   const result: any = await r.json();
   assert.equal(result.charged, false);
-  assert.equal(result.status, "TAX_REVIEW_REQUIRED");
+  assert.equal(result.status, "PAYMENT_SETUP_PENDING");
+  assert.equal(result.filesEnabled, false);
+  assert.doesNotMatch(
+    JSON.stringify(result.reviewReasons),
+    /transaction-tax|tax review/i,
+  );
   const row = await e.DB.prepare("SELECT * FROM service_applications").first();
+  assert.equal(row.status, "PAYMENT_SETUP_PENDING");
   assert.equal(row.terms_sha256, AGREEMENT_HASH);
   assert.equal(row.accepted_at, now);
   assert.equal(row.expires_at, now + 30 * 86400);
@@ -205,6 +211,13 @@ test("production payment/upload remain closed even if old environment gate accid
 });
 test("90-day unpaid application minimization respects explicit hold, without deleting payment evidence", async () => {
   await app.fetch(request(await body()), e);
+  for (const status of ["TAX_REVIEW_REQUIRED", "CONVERTED"]) {
+    const r = await app.fetch(request(await body()), e);
+    const { applicationId } = (await r.json()) as any;
+    await e.DB.prepare("UPDATE service_applications SET status=? WHERE id=?")
+      .bind(status, applicationId)
+      .run();
+  }
   now += 120 * 86400;
   await e.DB.prepare(
     "UPDATE service_applications SET hold_reason='Synthetic documented incident'",
@@ -213,14 +226,19 @@ test("90-day unpaid application minimization respects explicit hold, without del
   assert.equal(
     (await e.DB.prepare("SELECT COUNT(*) n FROM service_applications").first())
       .n,
-    1,
+    3,
   );
   await e.DB.prepare("UPDATE service_applications SET hold_reason=NULL").run();
   await applicationCleanup(e, d);
   assert.equal(
     (await e.DB.prepare("SELECT COUNT(*) n FROM service_applications").first())
       .n,
-    0,
+    1,
+  );
+  assert.equal(
+    (await e.DB.prepare("SELECT status FROM service_applications").first())
+      .status,
+    "CONVERTED",
   );
   now -= 120 * 86400;
 });

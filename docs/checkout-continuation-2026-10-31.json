@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-31T02:47:42.262029+00:00",
+  "timezone": "Asia/Samarkand",
+  "localCorrection": "PASS",
+  "workerTests": {
+    "result": "PASS",
+    "passed": 72,
+    "failed": 0
+  },
+  "siteTests": {
+    "result": "PASS",
+    "assertions": 1111,
+    "pages": 23
+  },
+  "typecheck": "PASS",
+  "productionAssetsBuild": "PASS",
+  "remoteChecks": [
+    {
+      "target": "Cloudflare Worker secret names",
+      "result": "FAIL",
+      "authType": "X-Auth-Key + X-Auth-Email via bluefin-cf",
+      "error": "Connection timeout; no HTTP response",
+      "secretValuesRead": false
+    },
+    {
+      "target": "bluefintuna.life",
+      "result": "FAIL",
+      "error": "SSL connection timeout"
+    },
+    {
+      "target": "GitHub API",
+      "result": "FAIL",
+      "error": "Connection timeout; HTTP 000"
+    },
+    {
+      "target": "existing Audit Payment Link",
+      "result": "NOT RUN",
+      "detail": "Opened URL; payment form remained loading"
+    }
+  ],
+  "deployment": "NOT RUN",
+  "livePayment": "NOT RUN",
+  "productionMutations": false,
+  "newApplicationStatus": "PAYMENT_SETUP_PENDING",
+  "historicalApplicationRecordsModified": false,
+  "agreementVersion": "service-terms-2026-10-30-v2",
+  "agreementHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+}

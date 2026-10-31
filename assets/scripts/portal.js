@@ -875,7 +875,7 @@ async function start() {
             }
           });
           notice(
-            `Application ${r2.applicationId} received for scope and tax review. No payment has been taken. Please keep this reference. We will contact you at the supplied email.`
+            `Request ${r2.applicationId} saved. Online checkout is temporarily unavailable, so no payment has been taken. Please keep this reference. We will contact you at the supplied email.`
           );
           $("configure-form").hidden = true;
           $("portal-notice").scrollIntoView({
@@ -1072,7 +1072,7 @@ async function start() {
       if (applicationMode && $("configure-form")) {
         $("application-fields").hidden = false;
         $("application-fields").disabled = false;
-        $("create-order").textContent = "Submit scope for review \u2197";
+        $("create-order").textContent = "Save request \u2014 no payment \u2197";
         $("business-use").addEventListener("change", () => {
           $("application-fields").querySelector(
             '[name="businessName"]'
@@ -1084,7 +1084,7 @@ async function start() {
           steps.replaceChildren(
             el2("li", "01 \xB7 Select scope"),
             el2("li", "02 \xB7 Billing & project facts"),
-            el2("li", "03 \xB7 Submit for review")
+            el2("li", "03 \xB7 Save request")
           );
       }
       if (applicationMode && $("load-admin")) {
@@ -1094,7 +1094,7 @@ async function start() {
         $("load-admin").before(button2);
       }
       notice(
-        applicationMode ? "Applications are open. Scope and transaction tax are reviewed before payment. File uploads and Checkout are currently unavailable." : enabled ? `${health.mode === "test" ? "TEST MODE \xB7 synthetic data only. " : "Portal available. "}Files are private and time-limited.` : $("load-admin") ? "Customer orders and payments are closed. Authorized administrators can connect Drive below." : "The secure portal is not enabled. Uploads and payments remain unavailable."
+        applicationMode ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable." : enabled ? `${health.mode === "test" ? "TEST MODE \xB7 synthetic data only. " : "Portal available. "}Files are private and time-limited.` : $("load-admin") ? "Customer orders and payments are closed. Authorized administrators can connect Drive below." : "The secure portal is not enabled. Uploads and payments remain unavailable."
       );
       if (enabled && $("configure-form") && TURNSTILE_SITE_KEY) {
         const script = document.createElement("script");

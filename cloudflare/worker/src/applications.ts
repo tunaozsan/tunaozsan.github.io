@@ -146,8 +146,10 @@ export async function applications(
     challenge.action !== "create-order"
   )
     throw new Problem(403, "challenge_failed");
+  // This endpoint only records enquiries. It has not evaluated a transaction's
+  // tax treatment and must not label every enquiry as an individual tax hold.
   const reasons = [
-    "Applicable transaction-tax rule and billing/project facts require review.",
+    "Integrated online Checkout is not available; payment setup is pending.",
     ...q.scopeReview,
   ];
   if (!customer.businessUse)
@@ -157,7 +159,7 @@ export async function applications(
   const reference = id(),
     now = d.now();
   await e.DB.prepare(
-    "INSERT INTO service_applications(id,customer_json,scope_json,quote_sha256,terms_version,terms_sha256,accepted_at,created_at,expires_at,review_reasons_json) VALUES (?,?,?,?,?,?,?,?,?,?)",
+    "INSERT INTO service_applications(id,customer_json,scope_json,quote_sha256,terms_version,terms_sha256,accepted_at,created_at,expires_at,status,review_reasons_json) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
   )
     .bind(
       reference,
@@ -169,13 +171,14 @@ export async function applications(
       now,
       now,
       now + 30 * 86400,
+      "PAYMENT_SETUP_PENDING",
       JSON.stringify(reasons),
     )
     .run();
   return Response.json(
     {
       applicationId: reference,
-      status: "TAX_REVIEW_REQUIRED",
+      status: "PAYMENT_SETUP_PENDING",
       quote: q,
       termsVersion: AGREEMENT_VERSION,
       termsHash: AGREEMENT_HASH,
@@ -191,7 +194,7 @@ export async function applicationCleanup(e: ApplicationEnv, d: Deps) {
   // Application validity: 30 days. Minimize 90 days AFTER expiry; documented holds prevent deletion.
   // Never delete orders/financial or accepted payment records here.
   await e.DB.prepare(
-    "DELETE FROM service_applications WHERE expires_at+7776000<=? AND status='TAX_REVIEW_REQUIRED' AND hold_reason IS NULL",
+    "DELETE FROM service_applications WHERE expires_at+7776000<=? AND status IN ('TAX_REVIEW_REQUIRED','PAYMENT_SETUP_PENDING') AND hold_reason IS NULL",
   )
     .bind(d.now())
     .run();
