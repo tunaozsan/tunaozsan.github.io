@@ -1,0 +1,77 @@
+{
+  "checkedAt": "2026-10-31T04:47:45+00:00",
+  "source": "Authenticated production admin UI, Stripe runtime API, Cloudflare settings API; no session credentials exported",
+  "merchant": "acct_1UV444BzdKYgwVw6",
+  "chargesEnabled": true,
+  "webhook": {
+    "id": "we_1UWTAyBzdKYgwVw6TrMDvijt",
+    "status": "enabled",
+    "version": "2025-02-24.acacia",
+    "events": [
+      "checkout.session.completed",
+      "checkout.session.async_payment_succeeded",
+      "checkout.session.async_payment_failed",
+      "checkout.session.expired",
+      "charge.refunded"
+    ],
+    "result": "PASS",
+    "secretUnchanged": true
+  },
+  "catalog": {
+    "products": 21,
+    "prices": 21,
+    "missingSku": "EXTRA-50-UPDATE-R",
+    "amount": 15000,
+    "currency": "usd",
+    "createProduct": "FAIL",
+    "http": 403,
+    "createPrice": "NOT RUN",
+    "partialProductCreated": false,
+    "inventoryRechecked": true
+  },
+  "tax": {
+    "settings": "pending",
+    "registrations": [],
+    "defaultTaxCode": null,
+    "defaultTaxBehavior": null,
+    "applicableRuleProvided": false
+  },
+  "google": {
+    "publicClientIdConfigured": true,
+    "secretBindingProtected": true,
+    "secretValueOutput": false,
+    "oauthAttempt": "FAIL",
+    "googleError": "redirect_uri_mismatch",
+    "providerHTTP": 400,
+    "oauthStatus": "NOT_CONNECTED",
+    "privateProductionRoot": "NOT RUN",
+    "productionRefresh": "NOT RUN",
+    "consoleCorrection": "NOT RUN: existing Cloud Console project selected, client list remained loading"
+  },
+  "localTests": {
+    "worker": {
+      "result": "PASS",
+      "passed": 90,
+      "failed": 0
+    },
+    "typecheck": "PASS",
+    "site": {
+      "result": "PASS",
+      "assertions": 1111,
+      "pages": 23
+    },
+    "realLivePayment": "NOT RUN: no artificial real-card or self-payment"
+  },
+  "temporaryMaintenanceWindowRemoved": true,
+  "productionCollectionsEnabled": false,
+  "unchanged": [
+    "Mercury payout",
+    "corporate tax classification",
+    "DNS",
+    "Apple routes",
+    "R2 43200 second TTL",
+    "Cron */15",
+    "staging resources",
+    "7 original Payment Links"
+  ]
+}

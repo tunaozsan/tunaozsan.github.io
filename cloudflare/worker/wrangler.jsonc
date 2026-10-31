@@ -40,7 +40,11 @@
     "TAX_MODE": "unconfigured",
     "INVOICE_CREATION": "false",
     "APPLICATIONS_ENABLED": "true",
-    "TURNSTILE_SITE_KEY": "0x4AAAAAAFqzcQjgbI_eP7Le"
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFqzcQjgbI_eP7Le",
+    "GOOGLE_CLIENT_ID": "986883109083-q4ur31d3ale1up2irpiprj84ed9gmsps.apps.googleusercontent.com",
+    "DRIVE_ENABLED": "true",
+    "DELIVERY_ENABLED": "true",
+    "DELIVERY_POLICY_APPROVED": "true"
   },
   "observability": {
     "enabled": false

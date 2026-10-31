@@ -10,6 +10,7 @@ import {
   type Env,
 } from "./security";
 import { Problem } from "./catalog";
+import { LIVE_ACCOUNT_ID } from "./live-catalog";
 export type DriveEnv = Env & {
   DRIVE_ENABLED?: string;
   DELIVERY_ENABLED?: string;
@@ -27,8 +28,18 @@ const hex = (b: Uint8Array) =>
   Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
 const b64 = (b: Uint8Array) => btoa(String.fromCharCode(...b));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+export function driveEnvironmentAllowed(e: DriveEnv) {
+  return (
+    e.APP_ENV === "test" ||
+    (e.APP_ENV === "production" &&
+      e.LEGAL_APPROVED === "true" &&
+      e.STRIPE_ACCOUNT_ID === LIVE_ACCOUNT_ID &&
+      e.PUBLIC_SITE_ORIGIN ===
+        "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev")
+  );
+}
 export function driveEnabled(e: DriveEnv) {
-  return e.APP_ENV === "test" && e.DRIVE_ENABLED === "true";
+  return driveEnvironmentAllowed(e) && e.DRIVE_ENABLED === "true";
 }
 export function driveConfig(e: DriveEnv) {
   if (
@@ -391,8 +402,10 @@ export async function project(
   const root = await node(
     e,
     t,
-    "staging-root",
-    "Bluefin Tuna Staging Client Projects",
+    e.APP_ENV === "production" ? "production-root" : "staging-root",
+    e.APP_ENV === "production"
+      ? "Bluefin Tuna Client Projects"
+      : "Bluefin Tuna Staging Client Projects",
     null,
     folderMime,
     d,
@@ -636,7 +649,9 @@ export async function verifiedTransferPayment(
     !payer?.paid_at ||
     !payer.stripe_session_id ||
     payer.paid_total !== o.paid_total ||
-    !e.STRIPE_SECRET_KEY?.startsWith("sk_test_")
+    !new RegExp(
+      `^(sk|rk)_${e.APP_ENV === "production" ? "live" : "test"}_[A-Za-z0-9]+$`,
+    ).test(e.STRIPE_SECRET_KEY?.trim() || "")
   )
     throw new Problem(403, "verified_payment_required");
   await requireFulfillmentConsent(e, order);
@@ -649,7 +664,7 @@ export async function verifiedTransferPayment(
     "checkout/sessions/" + encodeURIComponent(payer.stripe_session_id),
   );
   if (
-    session.livemode !== false ||
+    session.livemode !== (e.APP_ENV === "production") ||
     session.payment_status !== "paid" ||
     session.status !== "complete" ||
     session.metadata?.order_id !== payer.id ||
@@ -674,7 +689,9 @@ export async function verifiedTransferPayment(
       : null;
   if (
     !charge ||
-    charge.livemode !== false ||
+    charge.livemode !== (e.APP_ENV === "production") ||
+    charge.id !== intent.latest_charge ||
+    charge.payment_intent !== session.payment_intent ||
     charge.refunded ||
     charge.disputed ||
     charge.amount_refunded > 0

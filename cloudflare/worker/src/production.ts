@@ -1,4 +1,6 @@
-import portal from "./index";
+import { app } from "./index";
+import { deliveryRoute, deliveryMaintenance } from "./delivery";
+import { type DriveEnv } from "./drive";
 import {
   applications,
   applicationsReady,
@@ -10,10 +12,14 @@ import { Problem } from "./catalog";
 import { AGREEMENT_HASH, AGREEMENT_VERSION } from "./agreement";
 import { liveReadiness } from "./live-readiness";
 import { setupLiveWebhook, type LiveSetupEnv } from "./live-webhook-setup";
-type ProductionEnv = ApplicationEnv & LiveSetupEnv & { ASSETS: Fetcher };
+import { liveMaintenance } from "./live-maintenance";
+type ProductionEnv = ApplicationEnv &
+  LiveSetupEnv &
+  DriveEnv & { ASSETS: Fetcher };
 // Deliberately no staging tooling or synthetic-payment overrides in this build.
 // File intake and Checkout remain closed until real merchant/tax/Drive prerequisites pass.
 export function production(d: Deps = defaults) {
+  const portal = app(d);
   return {
     async fetch(req: Request, e: ProductionEnv): Promise<Response> {
       if (e.APP_ENV !== "production")
@@ -43,6 +49,8 @@ export function production(d: Deps = defaults) {
           response = await liveReadiness(req, e, d);
         else if (path === "/api/v1/admin/stripe-webhook-setup")
           response = await setupLiveWebhook(req, e, d);
+        else if (path === "/api/v1/admin/stripe-maintenance")
+          response = await liveMaintenance(req, e, d);
         else if (
           path === "/api/v1/applications" ||
           path === "/api/v1/admin/applications"
@@ -50,6 +58,14 @@ export function production(d: Deps = defaults) {
           response = await applications(req, e, d);
         else if (path.includes("/staging-") || path.includes("/sandbox-"))
           throw new Problem(404, "not_found");
+        else if (
+          path.startsWith("/api/v1/delivery/") ||
+          path.startsWith("/api/v1/admin/drive/") ||
+          /^\/api\/v1\/admin\/orders\/[a-f0-9-]{36}\/delivery(?:\/|$)/.test(
+            path,
+          )
+        )
+          response = await deliveryRoute(req, e, d);
         else if (path === "/api/v1/admin")
           response = Response.redirect(
             e.PUBLIC_SITE_ORIGIN + "/api/v1/admin/applications",
@@ -99,6 +115,7 @@ export function production(d: Deps = defaults) {
         throw Error("Production configuration required");
       await portal.scheduled(event, e, ctx);
       ctx.waitUntil(applicationCleanup(e, d));
+      ctx.waitUntil(deliveryMaintenance(e, d));
     },
   };
 }

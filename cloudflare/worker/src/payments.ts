@@ -307,7 +307,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     throw new Problem(400, "wrong_environment");
   if (event.account && event.account !== e.STRIPE_ACCOUNT_ID)
     throw new Problem(400, "wrong_account");
-  if (e.APP_ENV === "test" && event.type === "charge.refunded")
+  if (event.type === "charge.refunded")
     return refundEvent(e, d, event);
   if (
     ![

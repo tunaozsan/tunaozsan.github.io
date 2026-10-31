@@ -541,13 +541,15 @@ async function start() {
         $("load-admin").before(button);
       }
       notice(
-        applicationMode
-          ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable."
-          : enabled
-            ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
-            : $("load-admin")
-              ? "Customer orders and payments are closed. Authorized administrators can connect Drive below."
-              : "The secure portal is not enabled. Uploads and payments remain unavailable.",
+        applicationMode && $("load-admin")
+          ? "Project requests are open. Customer payments and file intake are closed. Protected administration and Drive setup remain available."
+          : applicationMode
+            ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable."
+            : enabled
+              ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
+              : $("load-admin")
+                ? "Customer orders and payments are closed. Authorized administrators can connect Drive below."
+                : "The secure portal is not enabled. Uploads and payments remain unavailable.",
       );
       if (enabled && $("configure-form") && TURNSTILE_SITE_KEY) {
         const script = document.createElement("script");

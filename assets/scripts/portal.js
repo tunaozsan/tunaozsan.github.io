@@ -22,7 +22,7 @@ async function api(origin, path, body) {
     );
   });
   if (!r.headers.get("Content-Type")?.includes("application/json"))
-    throw Error("Sign in to the staging Access application first.");
+    throw Error("Sign in to this portal's Access application first.");
   const data = await r.json();
   if (!r.ok)
     throw Error(String(data.error || "request_failed").replaceAll("_", " "));
@@ -55,7 +55,10 @@ function setupDriveAdmin(origin, parent) {
   const section = el("section", "");
   section.className = "portal-panel";
   section.id = "drive-connection";
-  const message = el("p", "Drive workspace is staged separately from intake.");
+  const message = el(
+    "p",
+    "Private working storage and customer intake are controlled separately."
+  );
   message.setAttribute("role", "status");
   section.append(el("h2", "Private working storage"), message);
   const login = el("a", "Sign in / renew admin session");
@@ -67,7 +70,7 @@ function setupDriveAdmin(origin, parent) {
       "Check Drive connection",
       async () => {
         const r = await api(origin, "/api/v1/admin/drive/status");
-        message.textContent = `OAuth: ${r.oauth.status}. Drive enabled: ${r.enabled}. Delivery enabled: ${r.deliveryEnabled}. Synthetic staging policy gate: ${r.policyApproved} (not production legal approval).`;
+        message.textContent = `OAuth: ${r.oauth.status}. Drive enabled: ${r.enabled}. Delivery enabled: ${r.deliveryEnabled}. ${r.mode === "production" ? "Owner-approved retention policy" : "Synthetic staging policy gate (not production legal approval)"}: ${r.policyApproved}.`;
         for (const old of section.querySelectorAll("[data-transfer-alert]"))
           old.remove();
         for (const alert of r.alerts || []) {
@@ -1094,7 +1097,7 @@ async function start() {
         $("load-admin").before(button2);
       }
       notice(
-        applicationMode ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable." : enabled ? `${health.mode === "test" ? "TEST MODE \xB7 synthetic data only. " : "Portal available. "}Files are private and time-limited.` : $("load-admin") ? "Customer orders and payments are closed. Authorized administrators can connect Drive below." : "The secure portal is not enabled. Uploads and payments remain unavailable."
+        applicationMode && $("load-admin") ? "Project requests are open. Customer payments and file intake are closed. Protected administration and Drive setup remain available." : applicationMode ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable." : enabled ? `${health.mode === "test" ? "TEST MODE \xB7 synthetic data only. " : "Portal available. "}Files are private and time-limited.` : $("load-admin") ? "Customer orders and payments are closed. Authorized administrators can connect Drive below." : "The secure portal is not enabled. Uploads and payments remain unavailable."
       );
       if (enabled && $("configure-form") && TURNSTILE_SITE_KEY) {
         const script = document.createElement("script");

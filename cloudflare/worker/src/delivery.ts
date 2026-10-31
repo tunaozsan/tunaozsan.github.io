@@ -16,6 +16,7 @@ import {
   access,
   cookie,
   driveEnabled,
+  driveEnvironmentAllowed,
   google,
   metadata,
   node,
@@ -37,7 +38,7 @@ const fail = (code: string, status = 400): never => {
   throw new Problem(status, code);
 };
 const enabled = (e: DriveEnv) => {
-  if (e.APP_ENV !== "test" || e.DELIVERY_ENABLED !== "true" || !driveEnabled(e))
+  if (e.DELIVERY_ENABLED !== "true" || !driveEnabled(e))
     fail("delivery_not_enabled", 503);
 };
 const asBody = async (req: Request) => {
@@ -170,7 +171,8 @@ export async function deliveryRoute(
 ): Promise<Response> {
   let response: Response;
   try {
-    if (e.APP_ENV !== "test") fail("staging_only", 503);
+    if (!driveEnvironmentAllowed(e))
+      fail("delivery_environment_not_allowed", 503);
     const url = new URL(req.url),
       path = url.pathname;
     if (
@@ -197,6 +199,7 @@ export async function deliveryRoute(
         "SELECT state,COUNT(*) AS count FROM drive_jobs GROUP BY state",
       ).all();
       response = Response.json({
+        mode: e.APP_ENV,
         enabled: driveEnabled(e),
         deliveryEnabled: e.DELIVERY_ENABLED === "true",
         policyApproved: e.DELIVERY_POLICY_APPROVED === "true",
@@ -570,7 +573,7 @@ export async function deliveryRoute(
                 encodeURIComponent(payer.stripe_session_id),
             );
             if (
-              paidSession.livemode !== false ||
+              paidSession.livemode !== (e.APP_ENV === "production") ||
               paidSession.payment_status !== "paid" ||
               paidSession.status !== "complete" ||
               paidSession.metadata?.order_id !== payer.id ||
@@ -590,7 +593,7 @@ export async function deliveryRoute(
               "charges/" + encodeURIComponent(intent.latest_charge),
             );
             if (
-              charge.livemode !== false ||
+              charge.livemode !== (e.APP_ENV === "production") ||
               charge.refunded ||
               charge.disputed ||
               charge.amount_refunded > 0

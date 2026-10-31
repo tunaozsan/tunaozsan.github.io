@@ -1,0 +1,180 @@
+{
+  "d1": [
+    {
+      "orders_count": 0,
+      "acceptances_count": 0,
+      "applications_count": 2,
+      "reviews_count": 0,
+      "migration_applied": 1,
+      "cleanup_heartbeat": "{\"completedAt\":1793420144,\"scanned\":0,\"deleteFailures\":0,\"orphanDeleteFailures\":0,\"sessionFailures\":0}"
+    }
+  ],
+  "at": "2026-10-31T04:29:04.363158+00:00",
+  "worker": "bluefin-project-portal-api",
+  "secretNames": [
+    "DRIVE_TOKEN_KEY",
+    "RATE_LIMIT_SALT",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "TURNSTILE_SECRET_KEY"
+  ],
+  "googleClientIdConfigured": true,
+  "googleClientSecretConfigured": false,
+  "temporarySetupRemoved": true,
+  "account": "acct_1UV444BzdKYgwVw6",
+  "deployments": [
+    {
+      "id": "e45302a1-530d-46d2-a969-b34c89f21889",
+      "created_on": "2026-10-31T04:27:17.723612Z",
+      "versions": [
+        {
+          "version_id": "b1d12d39-0579-4157-9bff-86a254023605",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "3fc428ab-98c6-413e-82ee-ace0e4a10e41",
+      "created_on": "2026-10-31T04:26:16.296366Z",
+      "versions": [
+        {
+          "version_id": "271a627b-902f-4da7-89f7-9be286953015",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "b1f5dbd9-ee74-4759-8736-f4cae2280f28",
+      "created_on": "2026-10-31T04:19:36.090168Z",
+      "versions": [
+        {
+          "version_id": "dd2b8090-9b2c-4a8f-9d88-65f392d9c8f1",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "d46ef0cb-1bbc-4205-acb4-3041b027f87c",
+      "created_on": "2026-10-31T04:16:26.496555Z",
+      "versions": [
+        {
+          "version_id": "80fa7bd3-3dcd-4950-899c-3a3ab750b590",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "d169cdb4-dfb5-4e71-a7ca-81de33e87d77",
+      "created_on": "2026-10-31T04:15:03.87305Z",
+      "versions": [
+        {
+          "version_id": "891b80d4-ed4a-486a-ba6b-2df087b3b33e",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "db370a88-a2fc-4209-8dc8-629e8b1dd9c3",
+      "created_on": "2026-10-31T03:41:23.123186Z",
+      "versions": [
+        {
+          "version_id": "40bd75db-ef7a-431d-9cf0-03783ad96da9",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "d7a4f96a-e46c-409a-a334-bc8b96415929",
+      "created_on": "2026-10-31T03:32:28.382951Z",
+      "versions": [
+        {
+          "version_id": "38de7dbb-fdbb-4f02-8ad9-c15ad84b181c",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "ba458745-dba6-4643-a237-419f0e8cd772",
+      "created_on": "2026-10-31T03:27:15.724762Z",
+      "versions": [
+        {
+          "version_id": "0c8b6038-09ac-4c41-8c24-5ff57e9d961a",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "9bc06d79-d7d2-487d-9ce1-c16209d59cb8",
+      "created_on": "2026-10-31T03:22:42.889749Z",
+      "versions": [
+        {
+          "version_id": "7592e5a2-fec2-4621-85cb-1d301f623120",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "76cda0af-dbcf-4f19-be49-36e53f0ddd05",
+      "created_on": "2026-10-31T03:20:16.597511Z",
+      "versions": [
+        {
+          "version_id": "68124f7b-698e-410c-80e8-43d7b4d41c7a",
+          "percentage": 100
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "health",
+      "http": 200,
+      "data": {
+        "service": "bluefin-project-portal",
+        "mode": "production",
+        "enabled": false,
+        "applicationsEnabled": true,
+        "checkoutEnabled": false,
+        "filesEnabled": false,
+        "termsVersion": "service-terms-2026-10-30-v2",
+        "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+      }
+    },
+    {
+      "name": "unsigned_webhook",
+      "http": 400,
+      "error": "invalid_signature"
+    },
+    {
+      "name": "anonymous_admin",
+      "http": 302
+    },
+    {
+      "name": "wrong_origin",
+      "http": 403,
+      "error": "origin_denied"
+    },
+    {
+      "name": "closed_intake",
+      "http": 503,
+      "error": "portal_not_enabled"
+    },
+    {
+      "name": "setup_page_removed",
+      "http": 404
+    },
+    {
+      "name": "apple_privacy",
+      "http": 200
+    },
+    {
+      "name": "apple_support",
+      "http": 200
+    },
+    {
+      "name": "apple_contact",
+      "http": 200,
+      "contact_anchor_present": true
+    }
+  ],
+  "productionBindingsPreserved": true
+}

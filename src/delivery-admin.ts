@@ -17,7 +17,7 @@ async function api(origin: string, path: string, body?: unknown) {
     );
   });
   if (!r.headers.get("Content-Type")?.includes("application/json"))
-    throw Error("Sign in to the staging Access application first.");
+    throw Error("Sign in to this portal's Access application first.");
   const data = await r.json();
   if (!r.ok)
     throw Error(String(data.error || "request_failed").replaceAll("_", " "));
@@ -51,7 +51,10 @@ export function setupDriveAdmin(origin: string, parent: HTMLElement) {
   const section = el("section", "");
   section.className = "portal-panel";
   section.id = "drive-connection";
-  const message = el("p", "Drive workspace is staged separately from intake.");
+  const message = el(
+    "p",
+    "Private working storage and customer intake are controlled separately.",
+  );
   message.setAttribute("role", "status");
   section.append(el("h2", "Private working storage"), message);
   const login = el("a", "Sign in / renew admin session") as HTMLAnchorElement;
@@ -63,7 +66,7 @@ export function setupDriveAdmin(origin: string, parent: HTMLElement) {
       "Check Drive connection",
       async () => {
         const r = await api(origin, "/api/v1/admin/drive/status");
-        message.textContent = `OAuth: ${r.oauth.status}. Drive enabled: ${r.enabled}. Delivery enabled: ${r.deliveryEnabled}. Synthetic staging policy gate: ${r.policyApproved} (not production legal approval).`;
+        message.textContent = `OAuth: ${r.oauth.status}. Drive enabled: ${r.enabled}. Delivery enabled: ${r.deliveryEnabled}. ${r.mode === "production" ? "Owner-approved retention policy" : "Synthetic staging policy gate (not production legal approval)"}: ${r.policyApproved}.`;
         for (const old of section.querySelectorAll("[data-transfer-alert]"))
           old.remove();
         for (const alert of r.alerts || []) {

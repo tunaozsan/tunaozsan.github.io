@@ -1,13 +1,22 @@
 import { applyRefund, checkRefund, reconcileRefunds } from "../src/refunds";
 import { webhook } from "../src/payments";
 import staging from "../src/staging";
+import { production } from "../src/production";
+import { LIVE_ACCOUNT_ID } from "../src/live-catalog";
 import { test, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { Miniflare } from "miniflare";
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from "jose";
 import { deliveryRoute, deliveryMaintenance } from "../src/delivery";
-import { access, enqueue, seal, unseal, transfer } from "../src/drive";
+import {
+  access,
+  enqueue,
+  seal,
+  unseal,
+  transfer,
+  verifiedTransferPayment,
+} from "../src/drive";
 import { digest } from "../src/security";
 let mf: any,
   e: any,
@@ -44,7 +53,7 @@ async function fakeFetch(input: any, options: any = {}) {
   }
   if (u.hostname === "api.stripe.com") {
     if (u.pathname === "/v1/account")
-      return Response.json({ id: "acct_fixture" });
+      return Response.json({ id: e.STRIPE_ACCOUNT_ID });
     const id = u.pathname.split("/").pop()!;
     if (u.pathname === "/v1/checkout/sessions") {
       const order = u.searchParams.get("payment_intent")!.slice(3);
@@ -54,7 +63,7 @@ async function fakeFetch(input: any, options: any = {}) {
           {
             id: "cs_" + order,
             payment_intent: "pi_" + order,
-            livemode: false,
+            livemode: e.APP_ENV === "production",
             metadata: { order_id: order, quote_hash: "fixture-quote" },
             amount_subtotal: 19900,
             currency: "usd",
@@ -66,7 +75,7 @@ async function fakeFetch(input: any, options: any = {}) {
       const order = id.slice(3);
       return Response.json({
         id,
-        livemode: false,
+        livemode: e.APP_ENV === "production",
         payment_status: "paid",
         status: "complete",
         metadata: { order_id: order, quote_hash: "fixture-quote" },
@@ -81,7 +90,7 @@ async function fakeFetch(input: any, options: any = {}) {
       return Response.json({ latest_charge: "ch_" + id.slice(3) });
     if (u.pathname.includes("charges/"))
       return Response.json({
-        livemode: false,
+        livemode: e.APP_ENV === "production",
         id,
         payment_intent: "pi_" + id.slice(3),
         currency: "usd",
@@ -177,10 +186,10 @@ const call = (
   headers: any = {},
 ) =>
   deliveryRoute(
-    new Request(site + path, {
+    new Request(e.PUBLIC_SITE_ORIGIN + path, {
       method,
       headers: {
-        Origin: site,
+        Origin: e.PUBLIC_SITE_ORIGIN,
         ...(admin ? { "Cf-Access-Jwt-Assertion": jwt } : {}),
         ...(cookie ? { Cookie: cookie } : {}),
         ...(body && typeof body !== "string" && !(body instanceof Uint8Array)
@@ -349,6 +358,14 @@ before(async () => {
 after(async () => await mf.dispose());
 beforeEach(async () => {
   now = realNow;
+  Object.assign(e, {
+    APP_ENV: "test",
+    PUBLIC_SITE_ORIGIN: site,
+    ALLOWED_ORIGINS: site,
+    STRIPE_ACCOUNT_ID: "acct_fixture",
+    STRIPE_SECRET_KEY: "sk_test_fixture",
+    LEGAL_APPROVED: "false",
+  });
   files = new Map();
   serial = 0;
   invalidGrant = false;
@@ -1160,113 +1177,118 @@ test("historical PAID without D1 consent cannot enqueue or upload deliverables",
   assert.equal(r.status, 403);
 });
 
-test("signed refund webhook revokes sessions and invites idempotently without changing retention or consent", async () => {
-  const id = await order(),
-    f = await final(id);
-  await approve(id, f);
-  const inv = await publish(id, f);
-  const active = await activate(inv);
-  const cookie = active.headers.get("set-cookie")!.split(";")[0];
-  const before: any = await e.DB.prepare(
-    "SELECT retention_at FROM drive_projects WHERE order_id=?",
-  )
-    .bind(id)
-    .first();
-  const release: any = await e.DB.prepare(
-    "SELECT version FROM deliveries WHERE order_id=?",
-  )
-    .bind(id)
-    .first();
-  refunded = true;
-  e.STRIPE_WEBHOOK_SECRET = "fixture-webhook-secret";
-  const event = {
-    id: "evt_refund_fixture",
-    type: "charge.refunded",
-    livemode: false,
-    data: { object: { id: "ch_" + id } },
-  };
-  const raw = JSON.stringify(event);
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(e.STRIPE_WEBHOOK_SECRET),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const sig = Buffer.from(
-    await crypto.subtle.sign(
-      "HMAC",
-      key,
-      new TextEncoder().encode(now + "." + raw),
-    ),
-  ).toString("hex");
-  const request = (signature: string) =>
-    new Request(site + "/api/v1/stripe/webhook", {
-      method: "POST",
-      headers: { "stripe-signature": signature },
-      body: raw,
-    });
-  await assert.rejects(() => webhook(request("t=" + now + ",v1=bad"), e, d));
-  const run = () => webhook(request("t=" + now + ",v1=" + sig), e, d);
-  assert.equal((await run()).refundOrders, 1);
-  await run();
-  assert.equal(
-    (
-      await call(
-        "/api/v1/delivery/files/" + f.id + "/download",
-        "GET",
-        undefined,
-        false,
-        cookie,
-      )
-    ).status,
-    401,
-  );
-  assert.equal((await activate(inv)).status, 401);
-  assert.equal(
-    (
-      await e.DB.prepare("SELECT version FROM deliveries WHERE order_id=?")
-        .bind(id)
-        .first()
-    ).version,
-    release.version + 1,
-  );
-  assert.equal(
-    (
-      await e.DB.prepare(
-        "SELECT retention_at FROM drive_projects WHERE order_id=?",
-      )
-        .bind(id)
-        .first()
-    ).retention_at,
-    before.retention_at,
-  );
-  assert.equal(
-    (await e.DB.prepare("SELECT count(*) n FROM payment_refund_events").first())
-      .n,
-    1,
-  );
-  assert.equal(
-    (
-      await e.DB.prepare(
-        "SELECT stripe_terms_status FROM agreement_acceptances WHERE order_id=?",
-      )
-        .bind(id)
-        .first()
-    ).stripe_terms_status,
-    "ACCEPTED",
-  );
-  assert.equal(
-    (
-      await call(
-        "/api/v1/admin/orders/" + id + "/delivery/regenerate",
-        "POST",
-        { passcode: true },
-      )
-    ).status,
-    403,
-  );
-});
+for (const mode of ["test", "production"])
+  test(`${mode} signed refund webhook revokes sessions and invites idempotently without changing retention or consent`, async () => {
+    if (mode === "production") liveFixture();
+    const id = await order(),
+      f = await final(id);
+    await approve(id, f);
+    const inv = await publish(id, f);
+    const active = await activate(inv);
+    const cookie = active.headers.get("set-cookie")!.split(";")[0];
+    const before: any = await e.DB.prepare(
+      "SELECT retention_at FROM drive_projects WHERE order_id=?",
+    )
+      .bind(id)
+      .first();
+    const release: any = await e.DB.prepare(
+      "SELECT version FROM deliveries WHERE order_id=?",
+    )
+      .bind(id)
+      .first();
+    refunded = true;
+    e.STRIPE_WEBHOOK_SECRET = "fixture-webhook-secret";
+    const event = {
+      id: "evt_refund_fixture",
+      type: "charge.refunded",
+      livemode: mode === "production",
+      data: { object: { id: "ch_" + id } },
+    };
+    const raw = JSON.stringify(event);
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(e.STRIPE_WEBHOOK_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"],
+    );
+    const sig = Buffer.from(
+      await crypto.subtle.sign(
+        "HMAC",
+        key,
+        new TextEncoder().encode(now + "." + raw),
+      ),
+    ).toString("hex");
+    const request = (signature: string) =>
+      new Request(site + "/api/v1/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": signature },
+        body: raw,
+      });
+    await assert.rejects(() => webhook(request("t=" + now + ",v1=bad"), e, d));
+    const run = () => webhook(request("t=" + now + ",v1=" + sig), e, d);
+    assert.equal((await run()).refundOrders, 1);
+    await run();
+    assert.equal(
+      (
+        await call(
+          "/api/v1/delivery/files/" + f.id + "/download",
+          "GET",
+          undefined,
+          false,
+          cookie,
+        )
+      ).status,
+      401,
+    );
+    assert.equal((await activate(inv)).status, 401);
+    assert.equal(
+      (
+        await e.DB.prepare("SELECT version FROM deliveries WHERE order_id=?")
+          .bind(id)
+          .first()
+      ).version,
+      release.version + 1,
+    );
+    assert.equal(
+      (
+        await e.DB.prepare(
+          "SELECT retention_at FROM drive_projects WHERE order_id=?",
+        )
+          .bind(id)
+          .first()
+      ).retention_at,
+      before.retention_at,
+    );
+    assert.equal(
+      (
+        await e.DB.prepare(
+          "SELECT count(*) n FROM payment_refund_events",
+        ).first()
+      ).n,
+      1,
+    );
+    assert.equal(
+      (
+        await e.DB.prepare(
+          "SELECT stripe_terms_status FROM agreement_acceptances WHERE order_id=?",
+        )
+          .bind(id)
+          .first()
+      ).stripe_terms_status,
+      "ACCEPTED",
+    );
+    assert.equal(
+      (
+        await call(
+          "/api/v1/admin/orders/" + id + "/delivery/regenerate",
+          "POST",
+          { passcode: true },
+        )
+      ).status,
+      403,
+    );
+  });
 test("refund fallback blocks existing download without webhook; Stripe outage releases no file bytes", async () => {
   const id = await order(),
     f = await final(id);
@@ -1377,5 +1399,192 @@ test("refund hold prevents stale publish race and late paid snapshot from restor
         .first()
     ).status,
     "REVOKED",
+  );
+});
+
+const liveSite =
+  "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev";
+function liveFixture() {
+  Object.assign(e, {
+    APP_ENV: "production",
+    PUBLIC_SITE_ORIGIN: liveSite,
+    ALLOWED_ORIGINS: liveSite,
+    STRIPE_ACCOUNT_ID: LIVE_ACCOUNT_ID,
+    STRIPE_SECRET_KEY: "rk_live_fixture",
+    LEGAL_APPROVED: "true",
+  });
+}
+test("production Drive OAuth routes preserve Access, same-origin, state and PKCE while intake stays closed", async () => {
+  liveFixture();
+  const api = production(d);
+  const req = (
+    path: string,
+    method = "GET",
+    body?: unknown,
+    cookie = "",
+    signed = true,
+  ) =>
+    new Request(liveSite + path, {
+      method,
+      headers: {
+        ...(signed ? { "Cf-Access-Jwt-Assertion": jwt } : {}),
+        ...(method === "POST"
+          ? { Origin: liveSite, "Content-Type": "application/json" }
+          : {}),
+        ...(cookie ? { Cookie: cookie } : {}),
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  assert.equal(
+    (
+      await api.fetch(
+        req("/api/v1/admin/drive/status", "GET", undefined, "", false),
+        e,
+      )
+    ).status,
+    401,
+  );
+  const status: any = await (
+    await api.fetch(req("/api/v1/admin/drive/status"), e)
+  ).json();
+  assert.equal(status.mode, "production");
+  assert.equal(status.configured, true);
+  const start = await api.fetch(
+    req("/api/v1/admin/drive/oauth/start", "POST", {}),
+    e,
+  );
+  assert.equal(start.status, 200);
+  const url = new URL(((await start.json()) as any).authorizationUrl);
+  assert.equal(
+    url.searchParams.get("redirect_uri"),
+    liveSite + "/api/v1/admin/drive/oauth/callback",
+  );
+  assert.equal(
+    url.searchParams.get("scope"),
+    "https://www.googleapis.com/auth/drive.file",
+  );
+  assert.equal(url.searchParams.get("code_challenge_method"), "S256");
+  const callback =
+    "/api/v1/admin/drive/oauth/callback?code=fixture&state=" +
+    url.searchParams.get("state");
+  const cookie = start.headers.get("set-cookie")!.split(";")[0];
+  assert.equal(
+    (await api.fetch(req(callback, "GET", undefined, cookie), e)).status,
+    303,
+  );
+  assert.equal(
+    (await api.fetch(req(callback, "GET", undefined, cookie), e)).status,
+    403,
+  );
+  assert.equal(
+    (await api.fetch(req("/api/v1/orders", "POST", {}), e)).status,
+    503,
+  );
+  const wrong = { ...e, STRIPE_ACCOUNT_ID: "acct_1UVrQ3BxU4PsnoX0" };
+  assert.equal(
+    (await api.fetch(req("/api/v1/admin/drive/status"), wrong)).status,
+    503,
+  );
+});
+test("production transfer uses Live merchant/mode and private production root, preserving R2 TTL and one-use customer delivery", async () => {
+  liveFixture();
+  const id = await order(),
+    src = await source(id);
+  await assert.rejects(
+    verifiedTransferPayment(
+      { ...e, STRIPE_SECRET_KEY: "sk_test_fixture" },
+      id,
+      d,
+    ),
+    /verified_payment_required/,
+  );
+  const wrongMode = {
+    ...d,
+    fetch: async (u: any, o: any) => {
+      const r = await fakeFetch(u, o);
+      if (String(u).includes("/checkout/sessions/")) {
+        const s: any = await r.json();
+        s.livemode = false;
+        return Response.json(s);
+      }
+      return r;
+    },
+  };
+  await assert.rejects(
+    verifiedTransferPayment(e, id, wrongMode),
+    /verified_payment_required/,
+  );
+  await transfer(e, d);
+  const job = await e.DB.prepare("SELECT * FROM drive_jobs").first();
+  assert.equal(job.state, "VERIFIED");
+  assert.equal(job.sha256, await sha(src.body));
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT COUNT(*) n FROM drive_nodes WHERE node_key='production-root'",
+      ).first()
+    ).n,
+    1,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT COUNT(*) n FROM drive_nodes WHERE node_key='staging-root'",
+      ).first()
+    ).n,
+    0,
+  );
+  const finalFile = await final(id);
+  await approve(id, finalFile);
+  const inv = await publish(id, finalFile);
+  const activated = await activate(inv);
+  assert.equal(activated.status, 200);
+  assert.equal((await activate(inv)).status, 401);
+  const cookie = activated.headers.get("set-cookie")!.split(";")[0];
+  const download = await call(
+    "/api/v1/delivery/files/" + finalFile.id + "/download",
+    "GET",
+    undefined,
+    false,
+    cookie,
+  );
+  assert.equal(download.status, 200);
+  assert.equal(
+    await sha(new Uint8Array(await download.arrayBuffer())),
+    finalFile.sha256,
+  );
+  const listing = await call(
+    "/api/v1/delivery/files",
+    "GET",
+    undefined,
+    false,
+    cookie,
+  );
+  assert.doesNotMatch(
+    await listing.text(),
+    /drive_id|googleapis|drive\.google|refresh_token/,
+  );
+  refunded = true;
+  assert.equal(
+    (
+      await call(
+        "/api/v1/delivery/files/" + finalFile.id + "/download",
+        "GET",
+        undefined,
+        false,
+        cookie,
+      )
+    ).status,
+    403,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT expires_at-created_at n FROM orders WHERE id=?",
+      )
+        .bind(id)
+        .first()
+    ).n,
+    43200,
   );
 });
