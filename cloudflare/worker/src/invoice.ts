@@ -179,7 +179,7 @@ export async function renderInvoice(
 }
 export async function invoiceResponse(e: Env, orderId: string) {
   const row = await e.DB.prepare(
-    "SELECT i.*,o.status,o.paid_at,o.stripe_session_id AS bound_session FROM order_invoices i JOIN orders o ON o.id=i.order_id WHERE i.order_id=?",
+    "SELECT i.*,o.status,o.paid_at,o.stripe_session_id AS bound_session,EXISTS(SELECT 1 FROM payment_refund_holds h WHERE h.order_id=COALESCE(o.parent_id,o.id)) AS refund_hold FROM order_invoices i JOIN orders o ON o.id=i.order_id WHERE i.order_id=?",
   )
     .bind(orderId)
     .first<any>();
@@ -193,7 +193,7 @@ export async function invoiceResponse(e: Env, orderId: string) {
   const bytes = await renderInvoice(
     row,
     new Uint8Array(await font.arrayBuffer()),
-    row.status,
+    row.refund_hold ? "REFUND_REVIEW_REQUIRED" : row.status,
   );
   return new Response(bytes as BodyInit, {
     headers: {
