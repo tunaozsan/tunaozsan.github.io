@@ -382,6 +382,18 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
   const now = d.now();
   if (url.pathname === "/api/v1/admin/operations" && req.method === "GET")
     return json(await operations(e, d));
+  if (
+    url.pathname === "/api/v1/admin/payment-reviews" &&
+    req.method === "GET" &&
+    e.APP_ENV === "production"
+  )
+    return json({
+      reviews: (
+        await e.DB.prepare(
+          "SELECT event_id,session_id,payment_intent_id,claimed_order_id,reason,amount_total,currency,payment_status,stripe_event_created_at,recorded_at,state FROM payment_reviews WHERE state='OPEN' ORDER BY recorded_at DESC LIMIT 100",
+        ).all()
+      ).results,
+    });
   if (url.pathname === "/api/v1/admin/orders" && req.method === "GET") {
     const before = Number(url.searchParams.get("before") || now + 1);
     if (!Number.isSafeInteger(before)) throw new Problem(400, "invalid_cursor");

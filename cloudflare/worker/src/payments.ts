@@ -1,5 +1,7 @@
 import { refundEvent } from "./refunds";
 import { sandboxPrices } from "./stripe-catalog";
+import { livePrices, LIVE_ACCOUNT_ID } from "./live-catalog";
+import { retainRejectedPayment } from "./payment-review";
 import { AGREEMENT_HASH, AGREEMENT_STATUS } from "./agreement";
 import { Problem, quote, TERMS } from "./catalog";
 import { type Env, type Deps, digest, signature, bounded } from "./security";
@@ -201,7 +203,9 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     const mapped =
       e.APP_ENV === "test" && e.STRIPE_ACCOUNT_ID === "acct_1UVrQ3BxU4PsnoX0"
         ? sandboxPrices[l.sku]
-        : undefined;
+        : e.APP_ENV === "production" && e.STRIPE_ACCOUNT_ID === LIVE_ACCOUNT_ID
+          ? livePrices[l.sku]
+          : undefined;
     const result = mapped
       ? {
           data: [
@@ -268,6 +272,18 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   return { url: session.url };
 }
 export async function webhook(req: Request, e: Env, d: Deps) {
+  if (e.APP_ENV !== "production") return verifiedWebhook(req, e, d);
+  const evidence = req.clone();
+  try {
+    return await verifiedWebhook(req, e, d);
+  } catch (error) {
+    await retainRejectedPayment(evidence, e, d, error);
+    // Preserve the retry for Checkout-persistence races. The review queue is
+    // idempotent and does not claim that an unbound payment is a paid order.
+    throw error;
+  }
+}
+async function verifiedWebhook(req: Request, e: Env, d: Deps) {
   if (!e.STRIPE_WEBHOOK_SECRET || !e.STRIPE_SECRET_KEY)
     throw new Problem(503, "webhook_not_configured");
   const raw = new TextDecoder().decode(await bounded(req, 262144));

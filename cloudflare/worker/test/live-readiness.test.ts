@@ -140,7 +140,7 @@ test("Live diagnostic pins Acacia, redacts provider objects and does not imply p
   assert.equal(body.registrations.result, "PASS");
   assert.deepEqual(body.registrations.data, []);
   assert.doesNotMatch(JSON.stringify(body), /never_return|sk_live|Bearer/);
-  assert.equal(calls.length, 6);
+  assert.equal(calls.length, 7);
 });
 test("Live diagnostics support restricted Live keys and safely distinguish wrong key types", async () => {
   const { app, calls } = fixture();

@@ -9,7 +9,8 @@ import { defaults, type Deps } from "./security";
 import { Problem } from "./catalog";
 import { AGREEMENT_HASH, AGREEMENT_VERSION } from "./agreement";
 import { liveReadiness } from "./live-readiness";
-type ProductionEnv = ApplicationEnv & { ASSETS: Fetcher };
+import { setupLiveWebhook, type LiveSetupEnv } from "./live-webhook-setup";
+type ProductionEnv = ApplicationEnv & LiveSetupEnv & { ASSETS: Fetcher };
 // Deliberately no staging tooling or synthetic-payment overrides in this build.
 // File intake and Checkout remain closed until real merchant/tax/Drive prerequisites pass.
 export function production(d: Deps = defaults) {
@@ -40,6 +41,8 @@ export function production(d: Deps = defaults) {
           });
         else if (path === "/api/v1/admin/stripe-readiness")
           response = await liveReadiness(req, e, d);
+        else if (path === "/api/v1/admin/stripe-webhook-setup")
+          response = await setupLiveWebhook(req, e, d);
         else if (
           path === "/api/v1/applications" ||
           path === "/api/v1/admin/applications"

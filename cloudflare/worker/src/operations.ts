@@ -24,6 +24,13 @@ export async function operations(e: Env, d: Deps) {
     .first<any>();
   const telegramEnabled = !!(e.TELEGRAM_BOT_TOKEN && e.TELEGRAM_CHAT_ID);
   const alerts = [];
+  const paymentReviews =
+    e.APP_ENV === "production"
+      ? await e.DB.prepare(
+          "SELECT COUNT(*) pending FROM payment_reviews WHERE state='OPEN'",
+        ).first<{ pending: number }>()
+      : null;
+  if (paymentReviews?.pending) alerts.push("paid_sessions_require_review");
   if (!cleanup || now - cleanup.completedAt > 1800)
     alerts.push("cleanup_heartbeat_missing_or_stale");
   if (files.overdue || cleanup?.deleteFailures || cleanup?.orphanDeleteFailures)
@@ -40,5 +47,6 @@ export async function operations(e: Env, d: Deps) {
     files,
     notifications: { ...notifications, enabled: telegramEnabled },
     retrieval,
+    paymentReviews,
   };
 }

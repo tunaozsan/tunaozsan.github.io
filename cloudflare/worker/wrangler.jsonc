@@ -36,7 +36,7 @@
     "ACCESS_ISSUER": "https://proud-voice-6952.cloudflareaccess.com",
     "ACCESS_AUD": "e711d1ed5278a9e0f4777aa2b66106f0f862606175cc16073f2abef965c59fa0",
     "ADMIN_EMAILS": "ozsan_tuna@yahoo.com.tr",
-    "STRIPE_ACCOUNT_ID": "",
+    "STRIPE_ACCOUNT_ID": "acct_1UV444BzdKYgwVw6",
     "TAX_MODE": "unconfigured",
     "INVOICE_CREATION": "false",
     "APPLICATIONS_ENABLED": "true",

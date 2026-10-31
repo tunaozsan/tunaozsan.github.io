@@ -64,8 +64,21 @@ export async function liveReadiness(req: Request, e: Env, d: Deps) {
       };
     }
   };
-  const [prices, registrations, taxSettings, webhooks, links] =
+  const [products, prices, registrations, taxSettings, webhooks, links] =
     await Promise.all([
+      read(async () =>
+        (await list("products")).map((p) => ({
+          id: p.id,
+          name: p.name,
+          active: p.active,
+          livemode: p.livemode,
+          sku: p.metadata?.sku || null,
+          default_price:
+            typeof p.default_price === "string"
+              ? p.default_price
+              : p.default_price?.id || null,
+        })),
+      ),
       read(async () =>
         (await list("prices")).map((p) => ({
           id: p.id,
@@ -155,6 +168,7 @@ export async function liveReadiness(req: Request, e: Env, d: Deps) {
     },
     webhookSecretConfigured: !!e.STRIPE_WEBHOOK_SECRET,
     checkoutEnabled: false,
+    products,
     prices,
     registrations,
     taxSettings,
