@@ -329,6 +329,35 @@ test("incompatible addons, extra fields, duplicates rejected; update materials r
   );
 });
 test("development/production missing approvals fail closed", async () => {
+  assert.equal(
+    ready({ ...e, STRIPE_SECRET_KEY: "rk_test_SYNTHETIC0000" }),
+    true,
+  );
+  assert.equal(
+    ready({ ...e, STRIPE_SECRET_KEY: "pk_test_SYNTHETIC0000" }),
+    false,
+  );
+  assert.equal(
+    ready({ ...e, STRIPE_SECRET_KEY: "rk_live_SYNTHETIC0000" }),
+    false,
+  );
+  assert.equal(
+    ready({
+      ...e,
+      APP_ENV: "production",
+      STRIPE_SECRET_KEY: "rk_live_SYNTHETIC0000",
+    }),
+    true,
+  );
+  assert.equal(
+    ready({
+      ...e,
+      APP_ENV: "production",
+      STRIPE_SECRET_KEY: "rk_live_SYNTHETIC0000",
+      PORTAL_ENABLED: "false",
+    }),
+    false,
+  );
   assert.equal(ready({ ...e, APP_ENV: "development" }), false);
   assert.equal(ready({ ...e, APP_ENV: "production" }), false);
   assert.equal(ready({ ...e, ACCESS_AUD: "" }), false);

@@ -13,7 +13,7 @@ export async function stripe(
   const r = await d.fetch("https://api.stripe.com/v1/" + path, {
     method: body ? "POST" : "GET",
     headers: {
-      Authorization: `Bearer ${e.STRIPE_SECRET_KEY}`,
+      Authorization: `Bearer ${e.STRIPE_SECRET_KEY?.trim()}`,
       "Stripe-Version": "2025-02-24.acacia",
       ...(key ? { "Idempotency-Key": key } : {}),
     },

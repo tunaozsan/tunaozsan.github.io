@@ -63,8 +63,8 @@ export function ready(e: Env) {
     e.PORTAL_ENABLED === "true" &&
     e.LEGAL_APPROVED === "true" &&
     authConfigured(e) &&
-    new RegExp(`^sk_${live ? "live" : "test"}_[A-Za-z0-9]{8,}$`).test(
-      e.STRIPE_SECRET_KEY || "",
+    new RegExp(`^(sk|rk)_${live ? "live" : "test"}_[A-Za-z0-9]{8,}$`).test(
+      e.STRIPE_SECRET_KEY?.trim() || "",
     ) &&
     /^whsec_.{8,}$/.test(e.STRIPE_WEBHOOK_SECRET || "") &&
     /^acct_[A-Za-z0-9]+$/.test(e.STRIPE_ACCOUNT_ID) &&
