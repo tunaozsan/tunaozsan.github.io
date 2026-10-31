@@ -1,3 +1,66 @@
+# Güncel sonuç — 31 Ekim 2026: Live anahtar ve webhook bağlı, tahsilat henüz kapalı
+
+Bu bölüm aşağıdaki tarihsel raporların güncel durumunu değiştirir. **Yanlış publishable-key engeli çözüldü.** Kullanıcının eklediği sunucu anahtarı çalışan production Worker içinde doğrulandı; değeri görüntülenmedi. **Site ve başvurular açık; entegre canlı tahsilat/dosya intake henüz AÇILMADI.** Owner yayın yetkisi mevcut; yeniden genel yayın onayı gerekmiyor.
+
+- Site: https://bluefintuna.life/
+- Portal: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/project-portal/
+- Merchant: `acct_1UV444BzdKYgwVw6`, Bluefin Tuna LLC, US, Stripe `charges_enabled=true`; çalışan Worker hesabı eşleşiyor. Bu değer tek başına Checkout/fulfillment hazırlığı değildir.
+- Kod commit'i: `fd607a1`; production Worker sürümü `dd2b8090-9b2c-4a8f-9d88-65f392d9c8f1`. Mevcut Worker/D1/R2 korundu; yeni platform/kaynak oluşturulmadı.
+- Webhook: `we_1UWTAyBzdKYgwVw6TrMDvijt`, `https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/stripe/webhook`; dört Checkout event'i, Acacia `2025-02-24.acacia`. Stripe API endpointi **enabled** olarak döndürdü. REST sürümü yükseltilmedi.
+- `STRIPE_WEBHOOK_SECRET` sadece production Worker Secrets'a eklendi; mevcut `STRIPE_SECRET_KEY` değiştirilmedi. Signing secret, Worker'da operatorün geçici RSA-OAEP public key'i ile şifrelenip yerelde bellek içinde Secrets API'ye aktarıldı. Sır sohbet/Git/loglarda yok. İşlem sonunda geçici private key silindi; kurulum değişkenleri ve sayfası yayından kaldırıldı. İndirmenin bildirim API'si timeout verdi; dosyanın gerçekten oluştuğu doğrulanarak tekrar endpoint yaratılmadan tamamlandı.
+- D1 `0007_payment_review.sql` yedek sonrası eklemeli uygulandı. Eski kayıtlar değiştirilmedi. Yeni `payment_reviews`, imzası ve Stripe Session sorgusu doğrulanmış fakat sipariş/kabul ilişkisi eksik Live ödemeleri ayrı finansal inceleme kaydı olarak tutar. `orders.PAID`, geriye dönük kabul veya Drive işi oluşturmaz. Event ID ile tekrar kayıt önlenir. `/api/v1/admin/payment-reviews` ve operations `paid_sessions_require_review` alarmı mevcut Access/JWT/allowlist arkasındadır. Bağlama yarışlarında Stripe retry korunur; bu kayıt yeni siparişin otomatik kabulü değildir.
+- V2 sözleşme aynı: `service-terms-2026-10-30-v2`; hash `85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c`; efektif tarih 2026-10-30 UTC. Owner publication approval korunuyor; bağımsız avukat/mali müşavir incelemesi **NOT_PERFORMED**.
+
+| Kontrol | Sonuç | Kanıt ve kapsam |
+|---|---|---|
+| Gerçek Live sunucu anahtarı/merchant | PASS | Yetkili admin oturumunda Stripe API; account/config eşleşmesi |
+| Products/Prices tam Live envanteri | PASS | 21 mevcut Product + Price, aktif/one-time/USD; server eşlemesi kodda, her Checkout'ta tutar/merchant/env/product yeniden doğrulanır |
+| 22. ürün `EXTRA-50-UPDATE-R` / $150 | FAIL — eksik | Tam Products ve Prices listesinde bulunmadı; tahmini ID veya mükerrer ürün yaratılmadı |
+| Production webhook oluşturma/secret aktarımı | PASS | Gerçek Live endpoint enabled; yalnız mevcut dört Checkout event'i |
+| Signing-secret yapılandırma kontrolü | PASS | Doğru HMAC ile **sentetik ve etkisiz** `bluefin.configuration_check` olayı HTTP 200; para/sipariş oluşturmadı |
+| Gerçek Stripe-delivered ödeme olayı / Live Checkout / Live PDF invoice | NOT RUN | Gerçek müşteri ödemesi yapılmadı; yukarıdaki HMAC kontrolü bu testlerin yerine geçmez |
+| İmzasız webhook | PASS | Gerçek HTTP 400 `invalid_signature`; önceki 503 missing-secret engeli çözüldü |
+| Access / yanlış origin / kapalı intake | PASS | Anonim admin 302; yanlış origin 403; müşteri sipariş alımı 503 |
+| Geçici kurulum yüzeyini kapatma | PASS | Setup vars yok; `/admin/stripe-setup/` HTTP 404; private transfer key yok |
+| D1 yedek/migration | PASS | Export SQLite'a geri okunarak doğrulandı; yalnız 0007 eklendi; son okumada 0 orders, 0 order acceptances, 2 başvuru, 0 ödeme inceleme kaydı |
+| Eşleşmeyen ödenmiş işlem güvenliği | PASS — yerel | İmzalı/Stripe doğrulamalı fixture, tekrar event, yanlış account, unpaid/mode mismatch; sipariş/kabul/Drive işi oluşmadı |
+| Gerçek unbound Live ödeme kaydı | NOT RUN | Sahte gerçek kart/self-payment yapılmadı |
+| Worker regresyonu | PASS | 83/83; önceki consent/refund/upload/Drive kontrolleri korunuyor |
+| Typecheck / site / diff / sır taraması | PASS | TypeScript; 1111 assertion/23 sayfa; secret taraması temiz, özel yedekler ignore |
+| Apple Privacy/Support/Contact | PASS | Gerçek HTTP 200; ana sayfa contact anchor mevcut, eski uygulama metinleri yerel testte korunuyor |
+| Stripe Tax mevcut durumunu okuma | PASS | Settings pending, varsayılan tax code/behavior boş, registrations boş; bu gözlem muafiyet kararı değildir |
+| Production vergi kuralı ve uygun sipariş tahsilatı | NOT RUN | Onaylı, konum/kapsam/quote'a bağlanan uygulanabilir vergi dayanağı sağlanmadı; global sıfır vergi kuralı kurulmadı |
+| Production Drive bağlantısı / özel root / teslim | NOT RUN | Production GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET mevcut değil; staging token/klasör kopyalanmadı |
+| Production Cron | PASS | Doğal cleanup heartbeat 2026-10-31 04:15:44 UTC; delete/orphan/session hata sayıları 0 |
+| Gerçek 30/90 günlük bekleme | NOT RUN | Önceki simülasyon kanıtı korunur; yeni genel yayın engeli yapılmadı |
+
+## Kalan insan bilgileri ve izinleri — tek liste
+
+1. **İlk uygun işlem için mevcut vergi dayanağı:** hangi fatura ülke/eyaleti, proje ülkesi ve insan planlama hizmetini kapsadığı; kayıt/istisna/reverse-charge/no-registration kararının dayanağı, durumu ve uygulanma tarihi. Yeni vergi tescili veya uzman onayı uydurulmaz. Aktif Stripe Tax kaydı tek zorunlu yol değildir; geçerli dayanaklı manuel karar da değerlendirilebilir. Henüz hiçbir işlem için yeterli temel bulunmadığı için tahsilat açılmadı.
+2. **Production Drive OAuth:** mevcut uygun Google OAuth istemcisinin `GOOGLE_CLIENT_ID` ve `GOOGLE_CLIENT_SECRET` yapılandırması; redirect `https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/admin/drive/oauth/callback`; Drive API ve yalnız `drive.file`. Secret yalnız Worker Secrets'a girilmeli. Gerçek Google consent/2FA adımını kullanıcı tamamlar; uygulama yayın durumu/refresh ömrü ayrıca doğrulanır. Yeni Google platformu zorunlu değil, staging bağlantısı kopyalanmaz.
+3. **Yalnız eksik $150 eklentisi için:** `Additional 50 Activities — Update With MH & Cost` Product + Price gerçekten eksik. Mevcut önerilen restricted key kapsamı Products/Prices Read idi; bu tek kaydı oluşturmak için Write gerekir. Bu tur katalog yazma isteği denenmedi; 403 alınmış gibi raporlanmıyor. Bu eklentinin eksikliği, diğer 21 ürünün bilinmediği veya tüm katalog için yeni ürün gerektiği anlamına gelmez.
+
+## Kalan teknik işler — tamamlandı sayılmıyor
+
+Bunlar kullanıcıdan yeniden genel onay isteme gerekçesi değildir; eksik vergi/Google bilgileri geldikten sonra uygulama ve test sorumluluğu devam eder:
+
+- Mevcut production giriş noktası bilinçli olarak Checkout/intake'ı kapalı tutuyor. Sadece `PORTAL_ENABLED=true` yazmak tahsilatı açmaz. Onaylı başvurudan capability korumalı siparişe geçiş, quote'a/fatura-proje konumuna bağlı vergi onayı ve adres değişirse yeniden değerlendirme henüz production'da tamamlanmış değil.
+- Drive/Delivery kodundaki test-only ortam kontrolleri ve `sk_test_` doğrulamaları, doğrulanmış Live merchant/mode ile test edilerek uyarlanmalı; production callback, ayrı private root, queue reconciliation ve final indirme yolları devreye alınmalı. Google secret eklemek bu kod işinin bittiği anlamına gelmez.
+- Live Checkout native terms ve public Terms/Privacy ayarları, fatura alanları/PDF ve uygun sipariş uçtan uca doğrulanmalı. `INVOICE_CREATION=false`; makbuz vergi faturası sayılmıyor. Production refund→delivery revoke uyarlaması henüz açık değil; mevcut staging kanıtı production PASS olarak sunulmuyor.
+- Eski açık Checkout Session/ödeme envanteri ve işlem bazında uzlaştırma henüz yapılmadı. Yeni portal hazır olduğunda ilgili yedi link kontrollü kapatılacak; ürün/fiyatlar silinmeyecek.
+
+## Eski linkler / geri dönüş
+
+**Yedi orijinal Payment Link aktif**, hepsinde native required terms consent ve automatic tax kapalı. D1 kabulü ve order bağları doğrulanmış değil. URL/ID gerçek Live envanteri `docs/stripe-live-inventory-2026-10-31.json` içinde. Linkler değiştirilmedi/deactivate edilmedi; ilk geçiş koşulu olan yeni Checkout hazır değil. Bu nedenle “entegre portal tahsilatı kapalı” ifadesi “eski Stripe linklerinden hiç ödeme alınamaz” anlamına gelmez. Önceki tarayıcı not-found sonucu aktiflik kanıtı değildi; gerçek API sonucu onu geçersiz kılıyor.
+
+Geri dönüş noktaları: bu tur öncesi Worker `38de7dbb-fdbb-4f02-8ad9-c15ad84b181c`; kaynak yedeği `.qa/checkout-live-ready-20261031/worker.multipart`, SHA-256 `36701d6e5426f85ea64cf4aa2fc6c092f94dc45d83ffecf7a228a97660b1510f`. D1 export `.qa/checkout-live-ready-20261031/pre-payment-review.sql`, SHA-256 `f58524f4cff05949469f4536461c3d012909844f6c99ea22c3845fc87d83b780`. Mevcut safe-closed kodu korumak ilk tercihtir. Geri dönüş gerekirse secret ve webhook/Cron korunarak eski kaynak yeniden deploy edilir; eski version rollback yeni webhook secret'ını kaybettirebileceği için körlemesine kullanılmaz. D1 geri yüklenmez, yeni finansal/acceptance kayıtları silinmez; eklemeli 0007 yerinde kalabilir.
+
+Mercury payout, vergi sınıflandırması, DNS ve Apple yollarında değişiklik yok. Cron `*/15 * * * *`, R2 TTL 43200 saniye ve mevcut staging kaynakları aynı.
+
+Kanıt dosyaları: `docs/production-live-smoke-2026-10-31.json`, `docs/production-webhook-setup-2026-10-31.json`, `docs/stripe-live-inventory-2026-10-31.json`. Stripe'ın [Tax kurulum açıklaması](https://docs.stripe.com/tax/set-up) ve [webhook API sözleşmesi](https://docs.stripe.com/api/webhook_endpoints/create) kontrol edildi; sıfır otomatik vergi sonucu tek başına yasal dayanak olarak kullanılmadı.
+
+---
+
 # Güncel Stripe Live anahtar doğrulaması — 31 Ekim 2026 (Asia/Samarkand)
 
 **Mesaj düzeltmesi production'da yayımlandı. Başvurular açık, entegre Checkout ve dosya intake kapalı.** Kullanıcının `Live key hazır` bildirimi sonrasında secret adı ve çalışan Worker doğrulandı. Secret alanı mevcut fakat içindeki değer **publishable key** türünde; sunucu API anahtarı değil. Yetkili production Admin API `publishable_key_cannot_create_checkout` yanıtı verdi. Anahtarın gerçek değeri görüntülenmedi, kopyalanmadı veya Git'e alınmadı. Bu hata bir vergi incelemesi veya eksik owner onayı değildir.

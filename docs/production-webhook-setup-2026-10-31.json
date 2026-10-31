@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-31T04:15:05.309Z",
+  "account": "acct_1UV444BzdKYgwVw6",
+  "worker": "bluefin-project-portal-api",
+  "endpoint": "we_1UWTAyBzdKYgwVw6TrMDvijt",
+  "url": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/stripe/webhook",
+  "apiVersion": "2025-02-24.acacia",
+  "events": [
+    "checkout.session.completed",
+    "checkout.session.async_payment_succeeded",
+    "checkout.session.async_payment_failed",
+    "checkout.session.expired"
+  ],
+  "secretStored": true,
+  "existingSecretPreserved": false,
+  "signatureConfigurationProbe": "PASS",
+  "realStripeEvent": "NOT RUN",
+  "realPayment": "NOT RUN",
+  "secretValuePrinted": false
+}

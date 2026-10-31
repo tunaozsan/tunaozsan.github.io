@@ -1,0 +1,279 @@
+{
+  "account": "acct_1UV444BzdKYgwVw6",
+  "checkedAtEpoch": 1793417620,
+  "mode": "live",
+  "source": "Authenticated production Worker read-only Stripe API; full price pagination completed",
+  "prices": [
+    {
+      "sku": "p6_audit",
+      "product_id": "prod_VW9ACK31oDmdvm",
+      "price_id": "price_1UV6sIBzdKYgwVw6fUIJaSf2",
+      "amount": 19900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "baseline_basic_nores",
+      "product_id": "prod_VWBkROf3ChxJ63",
+      "price_id": "price_1UV9NMBzdKYgwVw6fh09VW6M",
+      "amount": 49900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "baseline_basic_withres",
+      "product_id": "prod_VWBmgTL9h3t0Ye",
+      "price_id": "price_1UV9OpBzdKYgwVw6DboBNUZp",
+      "amount": 79900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "baseline_detailed_nores",
+      "product_id": "prod_VWBnGhGnvgdQ7X",
+      "price_id": "price_1UV9PnBzdKYgwVw6YtYKn1Tr",
+      "amount": 99900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "baseline_detailed_withres",
+      "product_id": "prod_VWBoJYaLI90KCI",
+      "price_id": "price_1UV9QVBzdKYgwVw6pJrCk7oX",
+      "amount": 149900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "update_nores",
+      "product_id": "prod_VWBqv5CiNDTTSq",
+      "price_id": "price_1UV9THBzdKYgwVw6ugnWeksX",
+      "amount": 39900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "update_withres",
+      "product_id": "prod_VWBsHQgqNjrfXy",
+      "price_id": "price_1UV9UNBzdKYgwVw6KAvgRBKo",
+      "amount": 64900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "SCHEDULE-SCORE-PILOT",
+      "product_id": "prod_VXH6F0c82itq2v",
+      "price_id": "price_1UWCYgBzdKYgwVw6SMuqf64t",
+      "amount": 100,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "EXTRA-50-NR",
+      "product_id": "prod_VXHalXCm6Xc3x1",
+      "price_id": "price_1UWD1ABzdKYgwVw6Ik8RoeE2",
+      "amount": 10000,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "EXTRA-50-BASE-R",
+      "product_id": "prod_VXHfmXOYAj8g9E",
+      "price_id": "price_1UWD5zBzdKYgwVw6NHVb4W6Z",
+      "amount": 17500,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "REVISION",
+      "product_id": "prod_VXHgHEPwwoxCqM",
+      "price_id": "price_1UWD6hBzdKYgwVw69cJ4Yomi",
+      "amount": 9900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "BASELINE-MAT-CONCRETE",
+      "product_id": "prod_VXHkXG953c7SrS",
+      "price_id": "price_1UWDB5BzdKYgwVw6qExd5saS",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "UPDATE-MAT-CONCRETE",
+      "product_id": "prod_VXHlUjoisbge8K",
+      "price_id": "price_1UWDC3BzdKYgwVw6VcEwuAmP",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "BASELINE-MAT-REBAR",
+      "product_id": "prod_VXHm99MKbjj0oz",
+      "price_id": "price_1UWDCtBzdKYgwVw6GsM49Lxd",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "UPDATE-MAT-REBAR",
+      "product_id": "prod_VXHn94YBPD1JCo",
+      "price_id": "price_1UWDDXBzdKYgwVw6dNbbkK0m",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "BASELINE-MAT-FORMWORK",
+      "product_id": "prod_VXHnB2i7YfA1RI",
+      "price_id": "price_1UWDDuBzdKYgwVw6JhAN6wUf",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "UPDATE-MAT-FORMWORK",
+      "product_id": "prod_VXHoYsHGsnuolI",
+      "price_id": "price_1UWDEQBzdKYgwVw681TYW0sg",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "BASELINE-MAT-STRUCTURAL_STEEL",
+      "product_id": "prod_VXHogd3IRLyNAD",
+      "price_id": "price_1UWDEnBzdKYgwVw6mNXQA3aP",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "UPDATE-MAT-STRUCTURAL_STEEL",
+      "product_id": "prod_VXHoONhnZotnqP",
+      "price_id": "price_1UWDFHBzdKYgwVw6wtkH5gdc",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "BASELINE-MAT-PIPING",
+      "product_id": "prod_VXHq2u46OqIFQZ",
+      "price_id": "price_1UWDGPBzdKYgwVw6KCCnK5Fh",
+      "amount": 24900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    },
+    {
+      "sku": "UPDATE-MAT-PIPING",
+      "product_id": "prod_VXHqjO8qTr0xIU",
+      "price_id": "price_1UWDGeBzdKYgwVw6I5MhJsYX",
+      "amount": 11900,
+      "currency": "usd",
+      "active": true,
+      "tax_behavior": "unspecified"
+    }
+  ],
+  "missing_price_skus": [
+    "EXTRA-50-UPDATE-R"
+  ],
+  "product_without_price_inventory": "PASS: Full Live products inventory contains 21 products, each with a verified price. Additional 50 Activities — Update With MH & Cost product and price are absent.",
+  "tax": {
+    "settings": "pending",
+    "registrations": []
+  },
+  "webhook_at_check": [],
+  "missing_product_skus": [
+    "EXTRA-50-UPDATE-R"
+  ],
+  "legacy_payment_links": [
+    {
+      "id": "plink_1UV74WBzdKYgwVw6EYEHxMeJ",
+      "url": "https://buy.stripe.com/00weVcbpf19k0BUbJ82Nq00",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    },
+    {
+      "id": "plink_1UVAC5BzdKYgwVw6aKsnuS6z",
+      "url": "https://buy.stripe.com/cNi4gy50R6tE0BU3cC2Nq02",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    },
+    {
+      "id": "plink_1UVAGtBzdKYgwVw6WTiViWrl",
+      "url": "https://buy.stripe.com/cNidR8fFv4lwbgybJ82Nq04",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    },
+    {
+      "id": "plink_1UVAElBzdKYgwVw6DvU7Biee",
+      "url": "https://buy.stripe.com/cNi6oGbpff0a98q7sS2Nq03",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    },
+    {
+      "id": "plink_1UVAJ4BzdKYgwVw6nVq5vgGQ",
+      "url": "https://buy.stripe.com/5kQeVcctj8BMckC6oO2Nq05",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    },
+    {
+      "id": "plink_1UVAL1BzdKYgwVw6uosQvzep",
+      "url": "https://buy.stripe.com/aFaaEW3WN6tE2K2fZo2Nq06",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    },
+    {
+      "id": "plink_1UVAMfBzdKYgwVw6pow909cB",
+      "url": "https://buy.stripe.com/5kQ28q3WN7xI4Sa3cC2Nq07",
+      "active": true,
+      "terms_required": false,
+      "automatic_tax": false,
+      "d1_order_binding": "NOT VERIFIED; independent Payment Link",
+      "deactivated": false
+    }
+  ],
+  "products_count": 21,
+  "missing_product_price_name": "Additional 50 Activities — Update With MH & Cost",
+  "missing_product_price_amount": 15000,
+  "missing_product_price_currency": "usd",
+  "live_catalog_write_attempted": false
+}
