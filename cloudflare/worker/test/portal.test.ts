@@ -32,6 +32,8 @@ const fakeFetch = async (url: any, opt: any = {}) => {
     telegramCalls++;
     return Response.json({ ok: true });
   }
+  if (String(url).endsWith("/tax/settings"))
+    return Response.json({ status: "active", livemode: false });
   if (String(url).endsWith("/account"))
     return Response.json({ id: "acct_test" });
   if (String(url).includes("/prices?")) {
@@ -60,7 +62,13 @@ const fakeFetch = async (url: any, opt: any = {}) => {
           active: true,
           type: "one_time",
           livemode: false,
-          product: { id: "prod_fixture", active: true, livemode: false },
+          tax_behavior: "exclusive",
+          product: {
+            id: "prod_fixture",
+            active: true,
+            livemode: false,
+            tax_code: "txcd_20060048",
+          },
         },
       ],
     });
@@ -91,6 +99,15 @@ const fakeFetch = async (url: any, opt: any = {}) => {
       consent_collection: {
         terms_of_service: b.get("consent_collection[terms_of_service]"),
       },
+      automatic_tax: {
+        enabled: b.get("automatic_tax[enabled]") === "true",
+        status: null,
+      },
+      billing_address_collection: b.get("billing_address_collection"),
+      tax_id_collection: {
+        enabled: b.get("tax_id_collection[enabled]") === "true",
+        required: b.get("tax_id_collection[required]"),
+      },
       currency: "usd",
       amount_subtotal: total,
       amount_total: total,
@@ -103,7 +120,7 @@ const fakeFetch = async (url: any, opt: any = {}) => {
     sessions[s.id] = s;
     return Response.json(s);
   }
-  const sid = String(url).split("/").pop();
+  const sid = new URL(String(url)).pathname.split("/").pop();
   const session = sessions[sid!];
   if (session?.payment_status === "paid" && !("consent" in session))
     session.consent = { terms_of_service: "accepted" };
@@ -251,6 +268,8 @@ beforeEach(async () => {
   stripeCalls = [];
   telegramCalls = 0;
   for (const table of [
+    "payment_tax_evidence",
+    "checkout_tax_requirements",
     "notifications",
     "payment_events",
     "agreement_acceptances",
@@ -1660,3 +1679,243 @@ test("missing or changed Catalog price fails closed without dynamic product crea
   }
   assert.equal(stripeCalls.length, 0);
 });
+
+function paidAutomatic(s: any, tax = 1234, reason = "standard_rated") {
+  Object.assign(s, {
+    status: "complete",
+    payment_status: "paid",
+    amount_total: s.amount_subtotal + tax,
+    customer_details: {
+      address: {
+        country: "US",
+        state: tax ? "SD" : "OR",
+        line1: "Synthetic fixture",
+        postal_code: tax ? "57104" : "97205",
+      },
+    },
+    automatic_tax: { enabled: true, status: "complete" },
+    total_details: {
+      amount_tax: tax,
+      amount_discount: 0,
+      amount_shipping: 0,
+      breakdown: {
+        taxes: [
+          {
+            amount: tax,
+            taxable_amount: s.amount_subtotal,
+            taxability_reason: reason,
+            rate: {
+              id: "txr_fixture",
+              livemode: false,
+              inclusive: false,
+              country: "US",
+              state: tax ? "SD" : "OR",
+              percentage: tax ? 6.2 : 0,
+              tax_type: "sales_tax",
+            },
+          },
+        ],
+      },
+    },
+  });
+  return {
+    id: "evt_tax_" + s.id,
+    type: "checkout.session.completed",
+    livemode: false,
+    data: { object: s },
+  };
+}
+test("automatic Tax uses exclusive consulting Catalog prices, required address and optional tax ID", async () => {
+  e.TAX_MODE = "automatic";
+  const o = await create();
+  await pay(o);
+  const b = stripeCalls[0];
+  assert.equal(b.get("automatic_tax[enabled]"), "true");
+  assert.equal(b.get("adaptive_pricing[enabled]"), "false");
+  assert.equal(b.get("billing_address_collection"), "required");
+  assert.equal(b.get("tax_id_collection[enabled]"), "true");
+  assert.equal(b.get("tax_id_collection[required]"), "never");
+  assert.equal(b.get("consent_collection[terms_of_service]"), "required");
+  const r: any = await e.DB.prepare(
+    "SELECT * FROM checkout_tax_requirements WHERE order_id=?",
+  )
+    .bind(o.orderId)
+    .first();
+  assert.equal(r.mode, "automatic");
+  assert.equal(r.stripe_session_id, "cs_test_" + o.orderId);
+});
+for (const reason of ["standard_rated", "not_collecting", "not_subject_to_tax"])
+  test("verified Tax receipt persists actual reason: " + reason, async () => {
+    e.TAX_MODE = "automatic";
+    const o = await create(),
+      s = await pay(o),
+      event = paidAutomatic(s, reason === "standard_rated" ? 1234 : 0, reason);
+    e.TAX_MODE = "unconfigured";
+    e.PORTAL_ENABLED = "false";
+    try {
+      assert.equal((await signed(event)).status, 200);
+      assert.equal((await signed(event)).status, 200);
+      const r: any = await e.DB.prepare(
+        "SELECT * FROM payment_tax_evidence WHERE order_id=?",
+      )
+        .bind(o.orderId)
+        .first();
+      assert.equal(r.total, s.amount_total);
+      assert.equal(r.subtotal, s.amount_subtotal);
+      assert.equal(r.tax, s.total_details.amount_tax);
+      assert.equal(JSON.parse(r.breakdown_json)[0].taxability_reason, reason);
+      assert.equal(
+        (
+          await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+            .bind(o.orderId)
+            .first()
+        ).status,
+        "PAID",
+      );
+      await assert.rejects(
+        e.DB.prepare("UPDATE payment_tax_evidence SET tax=0 WHERE order_id=?")
+          .bind(o.orderId)
+          .run(),
+        /immutable_tax_evidence/,
+      );
+    } finally {
+      e.PORTAL_ENABLED = "true";
+    }
+  });
+for (const failure of [
+  "failed",
+  "requires_location_inputs",
+  "missing_amount",
+  "missing_reason",
+  "missing_address",
+  "inclusive",
+  "wrong_sum",
+  "disabled",
+])
+  test("automatic Tax fails closed before PAID: " + failure, async () => {
+    e.TAX_MODE = "automatic";
+    const o = await create(),
+      s = await pay(o),
+      event = paidAutomatic(s);
+    if (["failed", "requires_location_inputs"].includes(failure))
+      s.automatic_tax.status = failure;
+    if (failure === "missing_amount") delete s.total_details.amount_tax;
+    if (failure === "missing_reason")
+      delete s.total_details.breakdown.taxes[0].taxability_reason;
+    if (failure === "missing_address") s.customer_details.address = null;
+    if (failure === "inclusive")
+      s.total_details.breakdown.taxes[0].rate.inclusive = true;
+    if (failure === "wrong_sum") s.total_details.breakdown.taxes[0].amount++;
+    if (failure === "disabled") s.automatic_tax.enabled = false;
+    assert.notEqual((await signed(event)).status, 200);
+    const row: any = await e.DB.prepare("SELECT paid_at FROM orders WHERE id=?")
+      .bind(o.orderId)
+      .first();
+    assert.equal(row.paid_at, null);
+    assert.equal(
+      await e.DB.prepare("SELECT * FROM payment_tax_evidence WHERE order_id=?")
+        .bind(o.orderId)
+        .first(),
+      null,
+    );
+  });
+for (const failure of [
+  "settings_pending",
+  "settings_http_error",
+  "inclusive_price",
+  "wrong_code",
+])
+  test(
+    "automatic Tax blocks Checkout configuration failure: " + failure,
+    async () => {
+      e.TAX_MODE = "automatic";
+      d.fetch = async (url: any, opt: any) => {
+        if (String(url).endsWith("/tax/settings"))
+          return failure === "settings_http_error"
+            ? new Response("{}", { status: 503 })
+            : Response.json({
+                status: failure === "settings_pending" ? "pending" : "active",
+                livemode: false,
+              });
+        const r = await fakeFetch(url, opt);
+        if (String(url).includes("/prices?")) {
+          const j: any = await r.json();
+          if (failure === "inclusive_price")
+            j.data[0].tax_behavior = "inclusive";
+          if (failure === "wrong_code")
+            j.data[0].product.tax_code = "txcd_00000000";
+          return Response.json(j);
+        }
+        return r;
+      };
+      const o = await create();
+      await file(o);
+      const q: any = await (
+        await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+      ).json();
+      const r = await api(
+        `/api/v1/orders/${o.orderId}/checkout`,
+        "POST",
+        { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+        o.token,
+      );
+      assert.equal(r.status, failure === "settings_http_error" ? 502 : 503);
+      assert.equal(stripeCalls.length, 0);
+    },
+  );
+test("expired unpaid automatic Tax session needs no completed tax calculation and creates no tax evidence", async () => {
+  e.TAX_MODE = "automatic";
+  const o = await create(),
+    s = await pay(o);
+  s.status = "expired";
+  s.automatic_tax.status = "requires_location_inputs";
+  const r = await signed({
+    id: "evt_tax_cancel",
+    type: "checkout.session.expired",
+    livemode: false,
+    data: { object: s },
+  });
+  assert.equal(r.status, 200);
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).status,
+    "EXPIRED_UNPAID",
+  );
+  assert.equal(
+    await e.DB.prepare("SELECT * FROM payment_tax_evidence WHERE order_id=?")
+      .bind(o.orderId)
+      .first(),
+    null,
+  );
+});
+
+for (const tax_behavior of ["exclusive", "inferred_by_currency"])
+  test(
+    "automatic Tax verifies inherited consulting/USD defaults: " + tax_behavior,
+    async () => {
+      e.TAX_MODE = "automatic";
+      d.fetch = async (url: any, opt: any) => {
+        if (String(url).endsWith("/tax/settings"))
+          return Response.json({
+            status: "active",
+            livemode: false,
+            defaults: { tax_code: "txcd_20060048", tax_behavior },
+          });
+        const r = await fakeFetch(url, opt);
+        if (String(url).includes("/prices?")) {
+          const j: any = await r.json();
+          j.data[0].tax_behavior = "unspecified";
+          j.data[0].product.tax_code = null;
+          return Response.json(j);
+        }
+        return r;
+      };
+      const o = await create(),
+        s = await pay(o);
+      assert.equal(s.automatic_tax.enabled, true);
+      assert.equal(stripeCalls.length, 1);
+    },
+  );

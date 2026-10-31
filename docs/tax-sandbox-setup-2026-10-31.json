@@ -1,0 +1,27 @@
+{
+  "http": 200,
+  "account": "acct_1UVrQ3BxU4PsnoX0",
+  "mode": "test",
+  "settings": {
+    "status": "active",
+    "defaults": {
+      "provider": "stripe",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    }
+  },
+  "registrations": [
+    {
+      "id": "taxreg_1UWVNHBxU4PsnoX0BVIXe9TF",
+      "country": "US",
+      "options": {
+        "us": {
+          "state": "SD",
+          "type": "state_sales_tax"
+        }
+      },
+      "status": "active",
+      "livemode": false
+    }
+  ]
+}

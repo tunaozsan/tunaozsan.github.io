@@ -1,3 +1,10 @@
+import {
+  CONSULTING_TAX_CODE,
+  STRIPE_REST_VERSION,
+  checkTaxPrice,
+  checkAutomaticSession,
+  taxStatement,
+} from "./tax";
 import { refundEvent } from "./refunds";
 import { sandboxPrices } from "./stripe-catalog";
 import { livePrices, LIVE_ACCOUNT_ID } from "./live-catalog";
@@ -16,7 +23,7 @@ export async function stripe(
     method: body ? "POST" : "GET",
     headers: {
       Authorization: `Bearer ${e.STRIPE_SECRET_KEY?.trim()}`,
-      "Stripe-Version": "2025-02-24.acacia",
+      "Stripe-Version": STRIPE_REST_VERSION,
       ...(key ? { "Idempotency-Key": key } : {}),
     },
     body,
@@ -28,11 +35,20 @@ export async function stripe(
 export async function checkout(e: Env, d: Deps, o: any, body: any) {
   if (e.APP_ENV === "production" && AGREEMENT_STATUS !== "APPROVED")
     throw new Problem(503, "agreement_not_approved");
+  if (e.APP_ENV === "production" && e.TAX_MODE !== "automatic")
+    throw new Problem(503, "automatic_tax_required");
   if (o.paid_at) throw new Problem(409, "already_paid");
   if (o.expires_at - d.now() < 1860)
     throw new Problem(409, "too_late_for_checkout");
   if (body.consent !== true || body.termsVersion !== TERMS)
     throw new Problem(400, "consent_required");
+  const taxRequirement = await e.DB.prepare(
+    "SELECT * FROM checkout_tax_requirements WHERE order_id=?",
+  )
+    .bind(o.id)
+    .first<any>();
+  if (taxRequirement && taxRequirement.quote_sha256 !== o.quote_hash)
+    throw new Problem(409, "tax_quote_mismatch");
   if (o.stripe_session_id && o.checkout_url) {
     const evidence = await e.DB.prepare(
       "SELECT * FROM agreement_acceptances WHERE order_id=?",
@@ -58,6 +74,11 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
       existing.consent_collection?.terms_of_service !== "required"
     )
       throw new Problem(409, "checkout_no_longer_open");
+    if (taxRequirement || e.TAX_MODE === "automatic") {
+      if (!taxRequirement || taxRequirement.stripe_session_id !== existing.id)
+        throw new Problem(409, "tax_session_not_bound");
+      checkAutomaticSession(existing);
+    }
     return { url: o.checkout_url };
   }
   if (
@@ -94,6 +115,18 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   const account = await stripe(e, d, "account");
   if (account.id !== e.STRIPE_ACCOUNT_ID)
     throw new Problem(503, "merchant_not_verified");
+  if (taxRequirement && e.TAX_MODE !== "automatic")
+    throw new Problem(409, "tax_mode_changed");
+  let taxDefaults: any;
+  if (e.TAX_MODE === "automatic") {
+    const settings = await stripe(e, d, "tax/settings");
+    taxDefaults = settings.defaults;
+    if (
+      settings.status !== "active" ||
+      settings.livemode !== (e.APP_ENV === "production")
+    )
+      throw new Problem(503, "tax_settings_not_ready");
+  }
   const requiredSQL = q.required
     .map(
       () =>
@@ -165,6 +198,7 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     throw new Problem(409, "agreement_changed_review_again");
   const b = new URLSearchParams({
     mode: "payment",
+    "adaptive_pricing[enabled]": "false",
     client_reference_id: o.id,
     "metadata[order_id]": o.id,
     "metadata[quote_hash]": o.quote_hash,
@@ -190,6 +224,12 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     "invoice_creation[enabled]": String(e.INVOICE_CREATION === "true"),
     "consent_collection[terms_of_service]": "required",
   });
+  if (e.TAX_MODE === "automatic") {
+    b.set("tax_id_collection[enabled]", "true");
+    b.set("tax_id_collection[required]", "never");
+    b.set("metadata[tax_mode]", "automatic");
+    b.set("metadata[tax_code]", CONSULTING_TAX_CODE);
+  }
   if (e.INVOICE_CREATION === "true") {
     b.set("customer_creation", "always");
     b.set("invoice_creation[invoice_data][metadata][order_id]", o.id);
@@ -241,8 +281,16 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
       p.product?.livemode !== p.livemode
     )
       throw new Problem(503, "catalog_price_missing_or_mismatched");
+    if (e.TAX_MODE === "automatic") checkTaxPrice(p, taxDefaults);
     b.set(`line_items[${i}][price]`, p.id);
     b.set(`line_items[${i}][quantity]`, String(l.quantity));
+  }
+  if (e.TAX_MODE === "automatic") {
+    await e.DB.prepare(
+      "INSERT OR IGNORE INTO checkout_tax_requirements(order_id,quote_sha256,mode,tax_code,tax_behavior,created_at) VALUES (?,?,'automatic',?,'exclusive',?)",
+    )
+      .bind(o.id, o.quote_hash, CONSULTING_TAX_CODE, d.now())
+      .run();
   }
   const session = await stripe(
     e,
@@ -261,7 +309,15 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     !/^https:\/\/checkout\.stripe\.com\//.test(session.url || "")
   )
     throw new Problem(502, "invalid_checkout_response");
+  if (e.TAX_MODE === "automatic") checkAutomaticSession(session);
   await e.DB.batch([
+    ...(e.TAX_MODE === "automatic"
+      ? [
+          e.DB.prepare(
+            "UPDATE checkout_tax_requirements SET stripe_session_id=? WHERE order_id=? AND stripe_session_id IS NULL",
+          ).bind(session.id, o.id),
+        ]
+      : []),
     e.DB.prepare(
       "UPDATE orders SET stripe_session_id=?,checkout_url=? WHERE id=? AND stripe_session_id IS NULL",
     ).bind(session.id, session.url, o.id),
@@ -307,8 +363,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     throw new Problem(400, "wrong_environment");
   if (event.account && event.account !== e.STRIPE_ACCOUNT_ID)
     throw new Problem(400, "wrong_account");
-  if (event.type === "charge.refunded")
-    return refundEvent(e, d, event);
+  if (event.type === "charge.refunded") return refundEvent(e, d, event);
   if (
     ![
       "checkout.session.completed",
@@ -329,7 +384,26 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     .bind(event.id)
     .first();
   if (seen) return { received: true, duplicate: true };
-  const s = await stripe(e, d, "checkout/sessions/" + encodeURIComponent(x.id));
+  const taxRequirement = await e.DB.prepare(
+    "SELECT * FROM checkout_tax_requirements WHERE order_id=?",
+  )
+    .bind(o.id)
+    .first<any>();
+  const s = await stripe(
+    e,
+    d,
+    "checkout/sessions/" +
+      encodeURIComponent(x.id) +
+      (taxRequirement ? "?expand[]=total_details.breakdown" : ""),
+  );
+  if (
+    taxRequirement &&
+    (taxRequirement.stripe_session_id !== s.id ||
+      taxRequirement.quote_sha256 !== o.quote_hash)
+  )
+    throw new Problem(409, "tax_session_not_bound");
+  if (s.automatic_tax?.enabled && !taxRequirement)
+    throw new Problem(409, "tax_requirement_missing");
   if (
     s.id !== o.stripe_session_id ||
     s.livemode !== (e.APP_ENV === "production") ||
@@ -337,11 +411,11 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     s.metadata?.quote_hash !== o.quote_hash ||
     s.metadata?.order_id !== o.id ||
     !Number.isSafeInteger(s.amount_total) ||
-    !Number.isSafeInteger(s.total_details?.amount_tax ?? 0) ||
-    (s.total_details?.amount_tax ?? 0) < 0 ||
+    !Number.isSafeInteger(s.total_details?.amount_tax) ||
+    s.total_details?.amount_tax < 0 ||
     s.currency !== "usd" ||
     s.amount_subtotal !== o.subtotal ||
-    s.amount_total !== s.amount_subtotal + (s.total_details?.amount_tax ?? 0) ||
+    s.amount_total !== s.amount_subtotal + s.total_details?.amount_tax ||
     s.total_details?.amount_discount ||
     s.total_details?.amount_shipping
   )
@@ -365,6 +439,9 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     throw new Problem(409, "stripe_consent_not_verified");
   if (!paid && event.type === "checkout.session.async_payment_succeeded")
     throw new Problem(400, "payment_not_paid");
+  // Validation happens before any PAID/consent/fulfillment mutation; intent survives intake closure.
+  const taxRecord =
+    paid && taxRequirement ? taxStatement(e, d, s, o, event) : null;
   const state = paid
     ? d.now() >= o.expires_at
       ? "PAID_FILES_EXPIRED"
@@ -375,6 +452,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
         ? "CANCELLED"
         : "PAYMENT_PROCESSING";
   await e.DB.batch([
+    ...(taxRecord ? [taxRecord] : []),
     ...(acceptance && paid
       ? [
           e.DB.prepare(
@@ -399,7 +477,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
       paid ? 1 : 0,
       s.amount_total,
       paid ? 1 : 0,
-      s.total_details?.amount_tax ?? 0,
+      s.total_details?.amount_tax,
       paid && typeof s.invoice === "string" ? s.invoice : null,
       d.now(),
       o.id,

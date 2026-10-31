@@ -1,0 +1,17 @@
+{
+  "callbackSaved": true,
+  "stagingCallbackPreserved": true,
+  "newSecretCreated": false,
+  "status": {
+    "mode": "production",
+    "enabled": true,
+    "deliveryEnabled": true,
+    "policyApproved": true,
+    "oauth": {
+      "status": "NOT_CONNECTED"
+    },
+    "jobs": [],
+    "alerts": [],
+    "configured": true
+  }
+}

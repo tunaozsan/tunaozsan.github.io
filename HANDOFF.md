@@ -1,3 +1,32 @@
+# Güncel sonuç — 31 Ekim 2026: Stripe Tax Basic staging testleri tamamlandı; production deployment yapılmadı
+
+Bu bölüm aşağıdaki tarihsel raporlardan önceliklidir. **Stripe Tax Basic entegrasyonu yalnız staging'de uygulandı. Production tahsilatı açılmadı.** Branch `codex/stripe-tax-basic`; son staging Worker `aa274a7e-b188-4d60-8120-e124c2878328`. Production Worker `ea542759-f4af-42c7-ab3f-a538d89486de` değişmedi.
+
+| Kontrol | Sonuç | Kanıt |
+|---|---|---|
+| Gerçek vergili Sandbox Checkout/webhook/D1 | PASS | $199.00 + $12.34 = $211.34; standard_rated; order d28bc192-a5e6-48c5-8a08-0301d985f030 |
+| Gerçek sıfır vergili Sandbox Checkout/webhook/D1 | PASS | $199.00 + $0.00 = $199.00; Stripe not_subject_to_tax; order a06d2c86-81cf-49f5-b89f-390328ec076f |
+| Eksik adres / cancel / expire webhook | PASS | requires_location_inputs, unpaid; expire sonrası EXPIRED_UNPAID; ödeme/vergi kaydı yok |
+| Vergi dahil ve sıfır vergili tam refund | PASS | İki ödeme de Sandbox'ta tamamen iade; gerçek webhook D1 refund hold'ları oluşturdu; ilk tax receipt'ler değişmedi |
+| Zorunlu adres, optional tax ID, required terms, USD exclusive | PASS | Stripe Session cevabı ve Checkout; 22 mevcut Sandbox fiyatının tutarı/ID'si korundu; adaptive pricing kapalı |
+| Tax API hatasında sıfıra düşmeme / eksik gerekçe / tutar / duplicate | PASS — yerel | PAID/fulfillment geçişi fail-closed; gerçek sağlayıcı kesintisi NOT RUN |
+| Regresyon / typecheck / Apple site kontrolleri | PASS | 112/112 Worker; typecheck; 1111 assertion / 23 sayfa |
+| Public intake ve geçici test aracı kapanışı | PASS | PORTAL_ENABLED=false, LEGAL_APPROVED=false, STAGING_TAX_TEST_UNTIL=0; authenticated UI test_window_closed; webhook ve Cron korunuyor |
+| Gerçek 12 saat / 30–90 gün / yeni public Turnstile E2E | NOT RUN — bu tur | Önceki kanıtlar korunuyor; yeni gerçek süre gözlemi veya müşteri intake testi olarak sunulmuyor |
+| Yeni production deployment/migration/ödeme | NOT RUN — talimat gereği | Live ürünler/fiyatlar, 8 aktif Payment Link, Mercury, DNS ve Apple yolları değiştirilmedi |
+
+Checkout automatic_tax=true, billing_address_collection=required, optional tax ID ve native terms required kullanır. D1 0008, order/quote/Session'a bağlı tax gereksinimi ve değiştirilemez Stripe subtotal/tax/total/taxability_reason kaydı ekler. Kayıtlar kart veya tax ID içermez. Intake kapalıyken webhook vergi doğrulaması sürer. Hesap varsayılanları sunucudan doğrulanır; Product/Price override'ı yoksa doğru Consulting Services + USD exclusive varsayılanı desteklenir, gereksiz Live ürün değişikliği istenmez.
+
+**Yeni salt okunur Live kanıtı:** Tax settings artık **active**, default `txcd_20060048`, `inferred_by_currency` (USD exclusive); eski pending bilgisi güncel değildir. **Registrations=[]**; NM head office tescil kanıtı değildir. 8 aktif Live Link ve 21 Live Price görüldü, hiçbiri değiştirilmedi. $150 EXTRA-50-UPDATE-R hâlâ eksik; bu tek eklentiye özel eksiktir. Tax Basic dışında abonelik veya New Mexico registration oluşturulmadı.
+
+**Kalan somut işler:** (1) NM GRT ve ilk satış kapsamına uygulanabilir tescil/tahsil etmeme dayanağının doğrulanması; (2) mevcut production application→uygun order/Checkout yolunun kontrollü teknik açılışı ve yedek sonrası 0008 migration — bu tur yapılmadı; (3) production Google kullanıcı onayı ve bağlantı E2E; (4) eksik $150 eklentisinin tamamlanması veya kapalı kalması. Sonraki deployment bu rapordan önce yapılmadı. Owner onayı, bağımsız avukat/mali müşavir onayı değildir.
+
+**Google ekranı düzeltildi:** Callback yanlış JavaScript origins alanından kaldırılıp Authorized redirect URIs alanına kaydedildi; staging callback korundu, “OAuth client saved” görüldü. Yeni secret/client/scope oluşturulmadı. Production Drive gerçek durum sorgusu hâlâ NOT_CONNECTED; Admin'deki Connect personal Drive ile son kullanıcı izni gerekir. Callback'in kaydı PASS; gerçek OAuth tamamlanması NOT RUN.
+
+Ayrıntılı test matrisi, kanıt dosyaları, sınırlar ve rollback: [Stripe Tax Basic staging raporu](docs/stripe-tax-basic-staging-2026-10-31.md). Son kapanış kanıtı: [staging final](docs/tax-staging-final-2026-10-31.json). Live salt okunur envanter: [Live Tax](docs/tax-live-readonly-2026-10-31.json). Özel yedek `.qa/tax-basic-20261031/`; eski finansal kayıtlar/migration'lar silinmez; rollback'te vergi/refund webhook'u ve Cron korunur. Sözleşme v2/hash ve owner adoption değişmedi; bağımsız hukuk/vergi incelemesi NOT_PERFORMED.
+
+---
+
 # Güncel sonuç — 31 Ekim 2026 04:51 UTC: production Drive/refund kodu yayımlandı; tahsilat kapalı
 
 Bu bölüm aşağıdaki tarihsel özetlerden önceliklidir. Kullanıcının son “hazır” yanıtı üzerine production yapılandırması tekrar kontrol edildi. **Live Stripe sunucu anahtarı ve merchant doğrulandı; site ve başvuru alımı açık. Canlı Checkout ve müşteri dosya intake açılmadı.** “Hazır” ifadesi uygulanabilir bir işlem-vergi kuralı veya tamamlanmış Google consent kanıtı olarak kaydedilmedi. Önceki owner go-live yetkisi devam ediyor; yeniden genel yayın onayı gerekmiyor.

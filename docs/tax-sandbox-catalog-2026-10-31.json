@@ -1,0 +1,182 @@
+{
+  "http": 200,
+  "existingPrices": [
+    {
+      "price": "price_1UWEbJBxU4PsnoX0BUQsDUpd",
+      "product": "prod_VXJDpYXEUxydPR",
+      "amount": 11900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEbGBxU4PsnoX0T3xzinsL",
+      "product": "prod_VXJDVTATVqc7JY",
+      "amount": 11900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEbFBxU4PsnoX0lzWD9DQJ",
+      "product": "prod_VXJDwUjjHBMP0Y",
+      "amount": 11900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEbDBxU4PsnoX0KOY8X2to",
+      "product": "prod_VXJDYLxsoJXvFN",
+      "amount": 11900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEbCBxU4PsnoX0MQUMvYjG",
+      "product": "prod_VXJD87aMKHQ6VH",
+      "amount": 11900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEbBBxU4PsnoX09YL7cZw4",
+      "product": "prod_VXJD3nfSymbKoN",
+      "amount": 24900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEbABxU4PsnoX02nfCqJPB",
+      "product": "prod_VXJDNcrc3vqCQa",
+      "amount": 24900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEb8BxU4PsnoX0m2yxcZgx",
+      "product": "prod_VXJDcZ4zKQuUBH",
+      "amount": 24900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEb7BxU4PsnoX0BNfgEyUP",
+      "product": "prod_VXJDugEhKimUGt",
+      "amount": 24900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEb6BxU4PsnoX0veeCQRYF",
+      "product": "prod_VXJD5FCJN1M9Os",
+      "amount": 24900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEb5BxU4PsnoX08EMb5dmN",
+      "product": "prod_VXJDYfri3kZ5kX",
+      "amount": 9900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEb3BxU4PsnoX0KNLoBLVL",
+      "product": "prod_VXJDFDDlD2ZJfh",
+      "amount": 15000,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEazBxU4PsnoX0vdXrDmMe",
+      "product": "prod_VXJDuoUs2oh88J",
+      "amount": 17500,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEawBxU4PsnoX0k0IW1oY3",
+      "product": "prod_VXJD4fcBNCaraT",
+      "amount": 10000,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UWEavBxU4PsnoX0obx745nP",
+      "product": "prod_VXJDLMwfYnnJaR",
+      "amount": 100,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQgBxU4PsnoX0CekdoUq0",
+      "product": "prod_VWBoJYaLI90KCI",
+      "amount": 149900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQdBxU4PsnoX05ksKEZ8a",
+      "product": "prod_VWBkROf3ChxJ63",
+      "amount": 49900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQdBxU4PsnoX0xkiA8soq",
+      "product": "prod_VWBsHQgqNjrfXy",
+      "amount": 64900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQdBxU4PsnoX0jOEmafZV",
+      "product": "prod_VW9ACK31oDmdvm",
+      "amount": 19900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQdBxU4PsnoX0drjlBZPi",
+      "product": "prod_VWBnGhGnvgdQ7X",
+      "amount": 99900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQdBxU4PsnoX0yZz0EQlv",
+      "product": "prod_VWBqv5CiNDTTSq",
+      "amount": 39900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    },
+    {
+      "price": "price_1UVrQdBxU4PsnoX0mnRJSdEp",
+      "product": "prod_VWBmgTL9h3t0Ye",
+      "amount": 79900,
+      "currency": "usd",
+      "tax_behavior": "exclusive",
+      "tax_code": "txcd_20060048"
+    }
+  ],
+  "noProductsOrPricesCreated": true
+}

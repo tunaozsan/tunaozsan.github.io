@@ -1,0 +1,103 @@
+{
+  "http": 200,
+  "order": {
+    "id": "a06d2c86-81cf-49f5-b89f-390328ec076f",
+    "status": "PAID",
+    "paid_at": 1793427001,
+    "subtotal": 19900,
+    "tax": 0,
+    "total": 19900
+  },
+  "session": {
+    "id": "cs_test_a1wWUjRptEQixJVaj4R8z5XzxVJykCCEbIVOFPFbjstgCqJ8rVhEL28D8Y",
+    "livemode": false,
+    "status": "complete",
+    "payment_status": "paid",
+    "automatic_tax": {
+      "enabled": true,
+      "liability": {
+        "type": "self"
+      },
+      "provider": "stripe",
+      "status": "complete"
+    },
+    "billing_address_collection": "required",
+    "tax_id_collection": {
+      "enabled": true,
+      "required": "never"
+    },
+    "subtotal": 19900,
+    "total": 19900,
+    "total_details": {
+      "amount_discount": 0,
+      "amount_shipping": 0,
+      "amount_tax": 0,
+      "breakdown": {
+        "discounts": [],
+        "taxes": [
+          {
+            "amount": 0,
+            "rate": {
+              "id": "txr_1UWVU8BxU4PsnoX0rRmNCQzA",
+              "object": "tax_rate",
+              "active": false,
+              "country": "US",
+              "created": 1793426988,
+              "description": null,
+              "display_name": "",
+              "effective_percentage": 0,
+              "flat_amount": null,
+              "inclusive": false,
+              "jurisdiction": "Oregon",
+              "jurisdiction_level": null,
+              "livemode": false,
+              "metadata": {},
+              "percentage": 0,
+              "rate_type": null,
+              "state": "OR",
+              "tax_type": null
+            },
+            "taxability_reason": "not_subject_to_tax",
+            "taxable_amount": 0
+          }
+        ]
+      }
+    },
+    "invoice": "in_1UWVUIBxU4PsnoX0mN3gTGpO"
+  },
+  "taxEvidence": {
+    "order_id": "a06d2c86-81cf-49f5-b89f-390328ec076f",
+    "stripe_session_id": "cs_test_a1wWUjRptEQixJVaj4R8z5XzxVJykCCEbIVOFPFbjstgCqJ8rVhEL28D8Y",
+    "stripe_event_id": "evt_1UWVULBxU4PsnoX01aIy4Fvi",
+    "stripe_account_id": "acct_1UVrQ3BxU4PsnoX0",
+    "rest_version": "2025-02-24.acacia",
+    "verified_at": 1793427001,
+    "currency": "usd",
+    "subtotal": 19900,
+    "tax": 0,
+    "total": 19900,
+    "tax_status": "complete",
+    "tax_code": "txcd_20060048",
+    "tax_behavior": "exclusive",
+    "billing_country": "US",
+    "billing_state": "OR",
+    "breakdown_json": "[{\"amount\":0,\"taxability_reason\":\"not_subject_to_tax\",\"taxable_amount\":0,\"rate_id\":\"txr_1UWVU8BxU4PsnoX0rRmNCQzA\",\"country\":\"US\",\"state\":\"OR\",\"percentage\":0,\"tax_type\":null}]"
+  },
+  "events": [
+    {
+      "id": "evt_1UWVULBxU4PsnoX01aIy4Fvi",
+      "event_type": "checkout.session.completed",
+      "order_id": "a06d2c86-81cf-49f5-b89f-390328ec076f",
+      "created_at": 1793427001,
+      "status": "PROCESSED"
+    }
+  ],
+  "refund": {
+    "order_id": "a06d2c86-81cf-49f5-b89f-390328ec076f",
+    "charge_id": "ch_3UWVUHBxU4PsnoX00huBH9yu",
+    "amount_refunded": 19900,
+    "currency": "usd",
+    "first_seen_at": 1793427079,
+    "updated_at": 1793427079
+  }
+}

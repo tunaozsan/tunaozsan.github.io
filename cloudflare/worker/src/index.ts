@@ -429,6 +429,11 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
       paidTotal: o.paid_total,
       paidTax: o.paid_tax,
       invoiceId: o.stripe_invoice_id,
+      taxEvidence: await e.DB.prepare(
+        "SELECT stripe_session_id,verified_at,currency,subtotal,tax,total,tax_status,tax_code,tax_behavior,billing_country,billing_state,breakdown_json FROM payment_tax_evidence WHERE order_id=?",
+      )
+        .bind(o.id)
+        .first(),
       retrievedAt: o.retrieved_at,
       parentId: o.parent_id,
       customer: JSON.parse(o.customer),

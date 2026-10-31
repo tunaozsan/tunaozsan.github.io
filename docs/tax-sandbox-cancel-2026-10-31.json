@@ -1,0 +1,53 @@
+{
+  "http": 200,
+  "order": {
+    "id": "e598f07f-1b14-425c-bcdf-463abfaa60e3",
+    "status": "EXPIRED_UNPAID",
+    "paid_at": null,
+    "subtotal": 19900,
+    "tax": null,
+    "total": null
+  },
+  "session": {
+    "id": "cs_test_a1EoqAU6gy8dEY2h8aSh8ZqcboA61vk39EmjDXqqixtoBMgpW1bWnmpNL7",
+    "livemode": false,
+    "status": "expired",
+    "payment_status": "unpaid",
+    "automatic_tax": {
+      "enabled": true,
+      "liability": {
+        "type": "self"
+      },
+      "provider": "stripe",
+      "status": "requires_location_inputs"
+    },
+    "billing_address_collection": "required",
+    "tax_id_collection": {
+      "enabled": true,
+      "required": "never"
+    },
+    "subtotal": 19900,
+    "total": 19900,
+    "total_details": {
+      "amount_discount": 0,
+      "amount_shipping": 0,
+      "amount_tax": 0,
+      "breakdown": {
+        "discounts": [],
+        "taxes": []
+      }
+    },
+    "invoice": null
+  },
+  "taxEvidence": null,
+  "events": [
+    {
+      "id": "evt_1UWVQLBxU4PsnoX0bAvn71WA",
+      "event_type": "checkout.session.expired",
+      "order_id": "e598f07f-1b14-425c-bcdf-463abfaa60e3",
+      "created_at": 1793426754,
+      "status": "PROCESSED"
+    }
+  ],
+  "refund": null
+}

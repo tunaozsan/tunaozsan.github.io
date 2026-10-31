@@ -1,3 +1,4 @@
+import { stagingTaxTools } from "./staging-tax-tools";
 import { sandboxCatalogTools } from "./sandbox-catalog-tools";
 import { deliveryRoute, deliveryMaintenance } from "./delivery";
 import { driveEnabled, type DriveEnv } from "./drive";
@@ -9,6 +10,7 @@ import { Problem } from "./catalog";
 
 type StagingEnv = DriveEnv & {
   ASSETS: Fetcher;
+  STAGING_TAX_TEST_UNTIL?: string;
   SANDBOX_CATALOG_TEST_UNTIL?: string;
   STAGING_REUPLOAD_TEST_ORDER?: string;
   STAGING_REUPLOAD_TEST_UNTIL?: string;
@@ -31,6 +33,8 @@ export default {
       };
     }
     const path = new URL(req.url).pathname;
+    if (path.startsWith("/api/v1/admin/tax-test/"))
+      return stagingTaxTools(req, env);
     if (path.startsWith("/api/v1/admin/sandbox-catalog-test/"))
       return sandboxCatalogTools(req, env);
     if (path.startsWith("/api/v1/admin/staging-validation/"))
