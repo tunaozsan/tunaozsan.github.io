@@ -142,6 +142,29 @@ test("Live diagnostic pins Acacia, redacts provider objects and does not imply p
   assert.doesNotMatch(JSON.stringify(body), /never_return|sk_live|Bearer/);
   assert.equal(calls.length, 6);
 });
+test("Live diagnostics support restricted Live keys and safely distinguish wrong key types", async () => {
+  const { app, calls } = fixture();
+  for (const [key, code] of [
+    ["", "live_stripe_key_missing"],
+    ["pk_live_fixture", "publishable_key_cannot_create_checkout"],
+    ["rk_test_fixture", "sandbox_key_cannot_access_live"],
+    ["not_an_api_key", "invalid_stripe_live_key_format"],
+  ]) {
+    const r = await app.fetch(request(), { ...env, STRIPE_SECRET_KEY: key });
+    assert.equal(r.status, 503);
+    assert.equal(((await r.json()) as any).error, code);
+  }
+  assert.equal(calls.length, 0);
+  assert.equal(
+    (
+      await app.fetch(request(), {
+        ...env,
+        STRIPE_SECRET_KEY: "  rk_live_syntheticFixtureOnly\n",
+      })
+    ).status,
+    200,
+  );
+});
 test("Live diagnostic distinguishes provider permission failures, incomplete pagination and merchant mismatch", async () => {
   const { app } = fixture((path) =>
     path.endsWith("/tax/registrations")

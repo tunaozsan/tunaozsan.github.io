@@ -6,15 +6,19 @@ import { Problem } from "./catalog";
 export async function liveReadiness(req: Request, e: Env, d: Deps) {
   await admin(req, e, d);
   if (req.method !== "GET") throw new Problem(405, "method_not_allowed");
-  if (
-    e.APP_ENV !== "production" ||
-    !/^sk_live_[A-Za-z0-9]+$/.test(e.STRIPE_SECRET_KEY || "")
-  )
-    throw new Problem(503, "live_stripe_key_required");
+  if (e.APP_ENV !== "production") throw new Problem(503, "production_required");
+  const key = e.STRIPE_SECRET_KEY?.trim() || "";
+  if (!key) throw new Problem(503, "live_stripe_key_missing");
+  if (/^pk_/.test(key))
+    throw new Problem(503, "publishable_key_cannot_create_checkout");
+  if (/^(sk|rk)_test_/.test(key))
+    throw new Problem(503, "sandbox_key_cannot_access_live");
+  if (!/^(sk|rk)_live_[A-Za-z0-9]+$/.test(key))
+    throw new Problem(503, "invalid_stripe_live_key_format");
   const get = async (path: string) => {
     const r = await d.fetch("https://api.stripe.com/v1/" + path, {
       headers: {
-        Authorization: `Bearer ${e.STRIPE_SECRET_KEY}`,
+        Authorization: `Bearer ${key}`,
         "Stripe-Version": "2025-02-24.acacia",
       },
       signal: AbortSignal.timeout(15000),
