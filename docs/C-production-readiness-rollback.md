@@ -1,3 +1,15 @@
+# C — Teknik production yayın PASS; canlı tahsilat henüz açık değil
+
+31 Ekim 2026: Worker 6a2c82f4-ed4d-489a-a3ca-d4fa1e7dd13b; kod 9351dd4; migrations 0008/0009/0010 uygulanmış, ledger 0001–0010. Google refresh/private production root PASS; 22 Live Product/Price, public legal URL'ler ve v2 owner adoption doğrulandı. 128 Worker testi, 1111 site assertion; gerçek reviewed Sandbox capture/address-rejection/PDF/refund PASS. [Tam güncel rapor](production-tax-release-2026-10-31.md).
+
+Kalan teknik izin: Live anahtar Payment Intents Read; capture/cancel için Write gereklidir, değişiklik özel onay bekliyor. Secret değiştirilmedi.
+
+Kalan ticari dayanak: formation sağlayıcısından NM BTIN/kayıt durumunun teyidi ve ilk müşteri/proje konumuna uygulanabilir belgeli işlem-vergi değerlendirmesi. Owner beyanı uzman görüşü/muafiyet değildir. Hiçbir doğrulanmış kapsam yok; PORTAL_ENABLED=false, APPROVED_ORDERS_ENABLED=false. Eski Draft/onay bekliyor ifadeleri owner v2 için tarihseldir; bağımsız hukuk/vergi onayı hâlâ NOT_PERFORMED.
+
+Rollback: önceki kapalı Worker 294827b4-4a4c-40a0-b151-f30baef179f4, özel D1 yedekleri HANDOFF'ta. Yeni D1 tablolarını/finansal kayıtları silmeyin; webhook/refund/Cron ve 12h TTL'yi koruyun; legacy Link'leri otomatik açmayın. Aşağıdaki bölümler tarihsel kanıttır.
+
+---
+
 # C — Production readiness ve rollback (NO GO)
 
 Production izni verilmez. Draft yürürlükte değildir; owner/legal onayı açık. Stripe Live, Mercury, DNS ve Apple yolları değişmedi.

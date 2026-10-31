@@ -1,3 +1,11 @@
+# B — Geçiş uygulandı: 8 eski Link kapalı, başvuru/Portal yolu mevcut
+
+31 Ekim 2026: yedi orijinal Link ve Schedule Score pilot Link'i kontrol edildi. Toplam 16 açık unpaid Session expire edildi; 8 Link inactive, open=0, pending=0, paid=0. [Kesin URL/ID ve link bazında kanıt](legacy-links-retired-2026-10-31.json). Yeni ödeme ürün/link kopyası, geçmiş ödeme silme veya geriye dönük D1 consent yok.
+
+Inactive message müşteriyi https://bluefintuna.life/project-portal/ adresine yönlendirir. Bu yol şu anda başvuru alır. Onaylı immutable kapsam + belgeli vergi değerlendirmesi + tek kullanımlık davet + gerçek yeni portal kabulü ile order/Checkout yolu teknik olarak yayımlandı. Henüz doğrulanmış müşteri kapsamı yok; tahsilat kapalı. Eski Link'leri geri açmak rollback'in otomatik parçası değildir. Aşağıdaki uygulanmadı/aktif ifadeleri tarihsel raporlardır ve bu bölümle güncellenmiştir.
+
+---
+
 # B — Payment Link → Portal Checkout geçiş planı (UYGULANMADI)
 
 Yeni satın alma yolu: Portal → Package → Add-ons → Project Reference → server Scope/Quote → boş başlayan zorunlu kabul → Catalog Price ile Checkout → doğrulanmış webhook → D1 PAID → R2/Drive → teslimat.

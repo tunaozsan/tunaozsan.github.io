@@ -1,0 +1,93 @@
+{
+  "http": 200,
+  "approval": {
+    "id": "40ff31b7-98df-433c-a0bc-6f1959c2317c",
+    "application_id": "e0119bae-d764-4904-af70-99bae60db806",
+    "revoked_at": 1793430044,
+    "invalid_reason": "approval_expired_or_revoked",
+    "redeemed_at": 1793429929
+  },
+  "authorization": {
+    "status": "canceled",
+    "captureMethod": "manual",
+    "amount": 21134,
+    "received": 0,
+    "capturable": 0
+  },
+  "order": {
+    "id": "d3b29586-8b3a-446a-86a6-61b69c0a2151",
+    "status": "TAX_REVIEW_REQUIRED",
+    "paid_at": null,
+    "subtotal": 19900,
+    "tax": null,
+    "total": null
+  },
+  "session": {
+    "id": "cs_test_a1twMWJICCqamSG8r5FEF1N5dUi113polhGcQgIVPlGtvBTUirNwkJlza1",
+    "livemode": false,
+    "status": "complete",
+    "payment_status": "unpaid",
+    "automatic_tax": {
+      "enabled": true,
+      "liability": {
+        "type": "self"
+      },
+      "provider": "stripe",
+      "status": "complete"
+    },
+    "billing_address_collection": "required",
+    "tax_id_collection": {
+      "enabled": true,
+      "required": "never"
+    },
+    "subtotal": 19900,
+    "total": 21134,
+    "total_details": {
+      "amount_discount": 0,
+      "amount_shipping": 0,
+      "amount_tax": 1234,
+      "breakdown": {
+        "discounts": [],
+        "taxes": [
+          {
+            "amount": 1234,
+            "rate": {
+              "id": "txr_1UWVRPBxU4PsnoX0KmL5YEMD",
+              "object": "tax_rate",
+              "active": false,
+              "country": "US",
+              "created": 1793426819,
+              "description": null,
+              "display_name": "Sales Tax",
+              "effective_percentage": 6.2,
+              "flat_amount": null,
+              "inclusive": false,
+              "jurisdiction": "South Dakota",
+              "jurisdiction_level": "multiple",
+              "livemode": false,
+              "metadata": {},
+              "percentage": 6.2,
+              "rate_type": "percentage",
+              "state": "SD",
+              "tax_type": "sales_tax"
+            },
+            "taxability_reason": "standard_rated",
+            "taxable_amount": 19900
+          }
+        ]
+      }
+    },
+    "invoice": null
+  },
+  "taxEvidence": null,
+  "events": [],
+  "portalInvoice": null,
+  "refund": {
+    "order_id": "d3b29586-8b3a-446a-86a6-61b69c0a2151",
+    "charge_id": "ch_3UWWHNBxU4PsnoX003UwTRw9",
+    "amount_refunded": 21134,
+    "currency": "usd",
+    "first_seen_at": 1793430046,
+    "updated_at": 1793430046
+  }
+}

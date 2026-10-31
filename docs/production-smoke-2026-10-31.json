@@ -1,0 +1,117 @@
+{
+  "checkedAt": "2026-10-31T07:08:10.386140+00:00",
+  "checks": [
+    {
+      "path": "/health",
+      "expected": 200,
+      "actual": 200,
+      "result": "PASS",
+      "health": {
+        "service": "bluefin-project-portal",
+        "mode": "production",
+        "enabled": false,
+        "applicationsEnabled": true,
+        "checkoutEnabled": false,
+        "filesEnabled": false,
+        "reviewedOrdersEnabled": false,
+        "unavailableSkus": [],
+        "termsVersion": "service-terms-2026-10-30-v2",
+        "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+      }
+    },
+    {
+      "path": "/project-portal/",
+      "expected": 200,
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "path": "/api/v1/admin/operations",
+      "expected": 302,
+      "actual": 302,
+      "result": "PASS"
+    },
+    {
+      "path": "/api/v1/stripe/webhook",
+      "expected": 400,
+      "actual": 400,
+      "result": "PASS"
+    },
+    {
+      "path": "/api/v1/orders",
+      "expected": 503,
+      "actual": 503,
+      "result": "PASS"
+    },
+    {
+      "path": "/api/v1/approved-orders/redeem",
+      "expected": 503,
+      "actual": 503,
+      "result": "PASS"
+    },
+    {
+      "path": "/admin/stripe-maintenance/",
+      "expected": 404,
+      "actual": 404,
+      "result": "PASS"
+    },
+    {
+      "path": "/api/v1/admin/stripe-maintenance",
+      "expected": 302,
+      "actual": 302,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/privacy.html",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/support",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/support/",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/support.html",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/company.html",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/service-terms.html",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/refund-policy.html",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/project-portal/",
+      "actual": 200,
+      "result": "PASS"
+    },
+    {
+      "publicPath": "/",
+      "actual": 200,
+      "result": "PASS",
+      "contactAnchorPresent": true
+    }
+  ],
+  "downloadedSandboxInvoice": {
+    "bytes": 12284,
+    "sha256": "a840b1e884a96af7f72c2304da4732055246a238bdb75950aad1b766d12f3fb9",
+    "pdfHeaderValid": true,
+    "renderedAndVisuallyChecked": true
+  }
+}

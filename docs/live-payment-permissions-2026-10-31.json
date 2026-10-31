@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-31",
+  "environment": "production",
+  "source": "Authenticated Stripe Live Dashboard API key permissions summary; no secret read or reveal",
+  "keyName": "Secret Key For Claudfare",
+  "permissions": {
+    "Payment Intents": "Read",
+    "Checkout Sessions": "Write",
+    "Customers": "Write",
+    "Charges and Refunds": "Read",
+    "Payment Links": "Write",
+    "Products": "Read",
+    "Prices": "Read",
+    "Webhook Endpoints, Event Destinations": "Write"
+  },
+  "requiredChange": {
+    "Payment Intents": "Write"
+  },
+  "changeStatus": "NOT RUN \u2014 explicit permission expansion approval requested; no change made",
+  "liveCaptureTest": "NOT RUN \u2014 no eligible genuine order; no live test payment created",
+  "intakeEnabled": false
+}

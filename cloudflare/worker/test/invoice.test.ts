@@ -243,10 +243,32 @@ test("customer invoice remains private when intake closed; wrong capability deni
   assert.equal((await invoiceResponse(e, id)).status, 200);
 });
 
-test('refund hold changes the downloadable status without changing the original invoice snapshot',async()=>{
- const before=Buffer.from(await (await invoiceResponse(e,id)).arrayBuffer());
- const original:any=await e.DB.prepare('SELECT snapshot_sha256 FROM order_invoices WHERE order_id=?').bind(id).first();
- await e.DB.prepare("INSERT INTO payment_refund_holds(order_id,charge_id,amount_refunded,currency,first_seen_at,updated_at) VALUES (?,'ch_fixture',21134,'usd',?,?)").bind(id,now,now).run();
- const refunded=Buffer.from(await (await invoiceResponse(e,id)).arrayBuffer());assert.notDeepEqual(refunded,before);
- assert.equal((await e.DB.prepare('SELECT snapshot_sha256 FROM order_invoices WHERE order_id=?').bind(id).first()).snapshot_sha256,original.snapshot_sha256);
+test("refund hold changes the downloadable status without changing the original invoice snapshot", async () => {
+  const before = Buffer.from(
+    await (await invoiceResponse(e, id)).arrayBuffer(),
+  );
+  const original: any = await e.DB.prepare(
+    "SELECT snapshot_sha256 FROM order_invoices WHERE order_id=?",
+  )
+    .bind(id)
+    .first();
+  await e.DB.prepare(
+    "INSERT INTO payment_refund_holds(order_id,charge_id,amount_refunded,currency,first_seen_at,updated_at) VALUES (?,'ch_fixture',21134,'usd',?,?)",
+  )
+    .bind(id, now, now)
+    .run();
+  const refunded = Buffer.from(
+    await (await invoiceResponse(e, id)).arrayBuffer(),
+  );
+  assert.notDeepEqual(refunded, before);
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT snapshot_sha256 FROM order_invoices WHERE order_id=?",
+      )
+        .bind(id)
+        .first()
+    ).snapshot_sha256,
+    original.snapshot_sha256,
+  );
 });

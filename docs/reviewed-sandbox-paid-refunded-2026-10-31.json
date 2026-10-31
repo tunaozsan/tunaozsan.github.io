@@ -1,0 +1,124 @@
+{
+  "http": 200,
+  "approval": {
+    "id": "f3d2b5c2-6aec-47c8-bd4f-7de83d170f5f",
+    "application_id": "7139d59f-de38-4d9b-bf46-86f8a64cb927",
+    "revoked_at": null,
+    "invalid_reason": null,
+    "redeemed_at": 1793428933
+  },
+  "authorization": {
+    "status": "succeeded",
+    "captureMethod": "manual",
+    "amount": 21134,
+    "received": 21134,
+    "capturable": 0
+  },
+  "order": {
+    "id": "f0fee6a1-3a6f-4e33-8f90-bfd2292cddd6",
+    "status": "PAID",
+    "paid_at": 1793429912,
+    "subtotal": 19900,
+    "tax": 1234,
+    "total": 21134
+  },
+  "session": {
+    "id": "cs_test_a19zhUa2mGIC3Awi14MDjThosLgXZ5FrOB1DBCacHixKkc5e7lH8DIzJDv",
+    "livemode": false,
+    "status": "complete",
+    "payment_status": "paid",
+    "automatic_tax": {
+      "enabled": true,
+      "liability": {
+        "type": "self"
+      },
+      "provider": "stripe",
+      "status": "complete"
+    },
+    "billing_address_collection": "required",
+    "tax_id_collection": {
+      "enabled": true,
+      "required": "never"
+    },
+    "subtotal": 19900,
+    "total": 21134,
+    "total_details": {
+      "amount_discount": 0,
+      "amount_shipping": 0,
+      "amount_tax": 1234,
+      "breakdown": {
+        "discounts": [],
+        "taxes": [
+          {
+            "amount": 1234,
+            "rate": {
+              "id": "txr_1UWVRPBxU4PsnoX0KmL5YEMD",
+              "object": "tax_rate",
+              "active": false,
+              "country": "US",
+              "created": 1793426819,
+              "description": null,
+              "display_name": "Sales Tax",
+              "effective_percentage": 6.2,
+              "flat_amount": null,
+              "inclusive": false,
+              "jurisdiction": "South Dakota",
+              "jurisdiction_level": "multiple",
+              "livemode": false,
+              "metadata": {},
+              "percentage": 6.2,
+              "rate_type": "percentage",
+              "state": "SD",
+              "tax_type": "sales_tax"
+            },
+            "taxability_reason": "standard_rated",
+            "taxable_amount": 19900
+          }
+        ]
+      }
+    },
+    "invoice": null
+  },
+  "taxEvidence": {
+    "order_id": "f0fee6a1-3a6f-4e33-8f90-bfd2292cddd6",
+    "stripe_session_id": "cs_test_a19zhUa2mGIC3Awi14MDjThosLgXZ5FrOB1DBCacHixKkc5e7lH8DIzJDv",
+    "stripe_event_id": "evt_1UWWFGBxU4PsnoX0Fr14LvM1",
+    "stripe_account_id": "acct_1UVrQ3BxU4PsnoX0",
+    "rest_version": "2025-02-24.acacia",
+    "verified_at": 1793429912,
+    "currency": "usd",
+    "subtotal": 19900,
+    "tax": 1234,
+    "total": 21134,
+    "tax_status": "complete",
+    "tax_code": "txcd_20060048",
+    "tax_behavior": "exclusive",
+    "billing_country": "US",
+    "billing_state": "SD",
+    "breakdown_json": "[{\"amount\":1234,\"taxability_reason\":\"standard_rated\",\"taxable_amount\":19900,\"rate_id\":\"txr_1UWVRPBxU4PsnoX0KmL5YEMD\",\"country\":\"US\",\"state\":\"SD\",\"percentage\":6.2,\"tax_type\":\"sales_tax\"}]"
+  },
+  "events": [
+    {
+      "id": "evt_1UWWFGBxU4PsnoX0Fr14LvM1",
+      "event_type": "checkout.session.completed",
+      "order_id": "f0fee6a1-3a6f-4e33-8f90-bfd2292cddd6",
+      "created_at": 1793429912,
+      "status": "PROCESSED"
+    }
+  ],
+  "portalInvoice": {
+    "sequence": 1,
+    "order_id": "f0fee6a1-3a6f-4e33-8f90-bfd2292cddd6",
+    "stripe_session_id": "cs_test_a19zhUa2mGIC3Awi14MDjThosLgXZ5FrOB1DBCacHixKkc5e7lH8DIzJDv",
+    "issued_at": 1793429912,
+    "snapshot_sha256": "c19189d167cd38c5ae795d83438c62c2a162ba05f0820dffb77c0afe0a4d312b"
+  },
+  "refund": {
+    "order_id": "f0fee6a1-3a6f-4e33-8f90-bfd2292cddd6",
+    "charge_id": "ch_3UWWFFBxU4PsnoX00YwFC9uc",
+    "amount_refunded": 21134,
+    "currency": "usd",
+    "first_seen_at": 1793430307,
+    "updated_at": 1793430307
+  }
+}

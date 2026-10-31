@@ -1,0 +1,195 @@
+{
+  "checkedAt": "2026-10-31T07:11:01.242093+00:00",
+  "authType": "authorized Keychain helper, Global API Key; value not logged",
+  "environments": {
+    "production": {
+      "bindings": {
+        "APP_ENV": "production",
+        "APPLICATIONS_ENABLED": "true",
+        "APPROVED_ORDERS_ENABLED": "false",
+        "DELIVERY_ENABLED": "true",
+        "DELIVERY_POLICY_APPROVED": "true",
+        "DRIVE_ENABLED": "true",
+        "INVOICE_CREATION": "true",
+        "LEGAL_APPROVED": "true",
+        "PORTAL_ENABLED": "false",
+        "REVIEWED_INVOICE_MODE": "portal_pdf",
+        "STRIPE_ACCOUNT_ID": "acct_1UV444BzdKYgwVw6",
+        "TAX_MODE": "automatic",
+        "UNAVAILABLE_SKUS": "",
+        "UPLOAD_SESSION_TTL_SECONDS": "43200"
+      },
+      "secretNamesOnly": [
+        "DRIVE_TOKEN_KEY",
+        "GOOGLE_CLIENT_SECRET",
+        "RATE_LIMIT_SALT",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "TURNSTILE_SECRET_KEY"
+      ],
+      "ledger": [
+        {
+          "name": "0001_init.sql"
+        },
+        {
+          "name": "0002_release_evidence.sql"
+        },
+        {
+          "name": "0003_drive_delivery.sql"
+        },
+        {
+          "name": "0004_agreement_acceptance.sql"
+        },
+        {
+          "name": "0005_refund_revocation.sql"
+        },
+        {
+          "name": "0006_application_review.sql"
+        },
+        {
+          "name": "0007_payment_review.sql"
+        },
+        {
+          "name": "0008_stripe_tax_evidence.sql"
+        },
+        {
+          "name": "0009_application_orders.sql"
+        },
+        {
+          "name": "0010_order_invoices.sql"
+        }
+      ],
+      "counts": [
+        {
+          "orders": 0,
+          "acceptances": 0,
+          "applications": 2,
+          "invoices": 0,
+          "approvals": 0,
+          "driveConnected": 1,
+          "productionRoot": 1,
+          "stagingRoot": 0
+        }
+      ],
+      "schedules": {
+        "schedules": [
+          {
+            "cron": "*/15 * * * *",
+            "created_on": "2026-10-30T14:16:44.297484Z",
+            "modified_on": "2026-10-30T14:16:44.297484Z"
+          }
+        ]
+      },
+      "version": [
+        {
+          "version_id": "6a2c82f4-ed4d-489a-a3ca-d4fa1e7dd13b",
+          "percentage": 100
+        }
+      ]
+    },
+    "staging": {
+      "bindings": {
+        "APP_ENV": "test",
+        "APPROVED_ORDERS_ENABLED": "false",
+        "DELIVERY_ENABLED": "true",
+        "DELIVERY_POLICY_APPROVED": "true",
+        "DRIVE_ENABLED": "true",
+        "INVOICE_CREATION": "false",
+        "LEGAL_APPROVED": "false",
+        "PORTAL_ENABLED": "false",
+        "REVIEWED_INVOICE_MODE": "portal_pdf",
+        "STAGING_TAX_TEST_UNTIL": "0",
+        "STRIPE_ACCOUNT_ID": "acct_1UVrQ3BxU4PsnoX0",
+        "TAX_MODE": "unconfigured",
+        "UPLOAD_SESSION_TTL_SECONDS": "43200"
+      },
+      "secretNamesOnly": [
+        "DRIVE_TOKEN_KEY",
+        "GOOGLE_CLIENT_SECRET",
+        "RATE_LIMIT_SALT",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "TURNSTILE_SECRET_KEY"
+      ],
+      "ledger": [
+        {
+          "name": "0001_init.sql"
+        },
+        {
+          "name": "0002_release_evidence.sql"
+        },
+        {
+          "name": "0003_drive_delivery.sql"
+        },
+        {
+          "name": "0004_agreement_acceptance.sql"
+        },
+        {
+          "name": "0005_refund_revocation.sql"
+        },
+        {
+          "name": "0006_application_review.sql"
+        },
+        {
+          "name": "0007_payment_review.sql"
+        },
+        {
+          "name": "0008_stripe_tax_evidence.sql"
+        },
+        {
+          "name": "0009_application_orders.sql"
+        },
+        {
+          "name": "0010_order_invoices.sql"
+        }
+      ],
+      "counts": [
+        {
+          "orders": 16,
+          "acceptances": 11,
+          "applications": 2,
+          "invoices": 1,
+          "approvals": 2,
+          "driveConnected": 1,
+          "productionRoot": 0,
+          "stagingRoot": 1
+        }
+      ],
+      "schedules": {
+        "schedules": [
+          {
+            "cron": "*/15 * * * *",
+            "created_on": "2026-10-29T13:17:13.833764Z",
+            "modified_on": "2026-10-29T13:17:13.833764Z"
+          }
+        ]
+      },
+      "version": [
+        {
+          "version_id": "307d1b96-c53d-4095-8caa-1d5d4e5fe272",
+          "percentage": 100
+        }
+      ]
+    }
+  },
+  "currentSyntheticTests": [
+    {
+      "id": "d3b29586-8b3a-446a-86a6-61b69c0a2151",
+      "status": "TAX_REVIEW_REQUIRED",
+      "paid_at": null,
+      "invoices": 0,
+      "taxRecords": 0,
+      "refundHolds": 1,
+      "verifiedTransfers": 0
+    },
+    {
+      "id": "f0fee6a1-3a6f-4e33-8f90-bfd2292cddd6",
+      "status": "PAID",
+      "paid_at": 1793429912,
+      "invoices": 1,
+      "taxRecords": 1,
+      "refundHolds": 1,
+      "verifiedTransfers": 1
+    }
+  ]
+}

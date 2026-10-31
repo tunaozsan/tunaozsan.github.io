@@ -1,3 +1,9 @@
+# A — Güncel envanter: 22 Sandbox + 22 Live eşleşti
+
+31 Ekim 2026: gerçekten eksik Product/Price kalmadı. Yalnız EXTRA-50-UPDATE-R $150, mevcut yetkili Live Dashboard ile oluşturuldu: prod_VXbTMNDddMX6Zp / price_1UWWGOBzdKYgwVw67E2P15jO. API read-back active=true, USD exclusive, txcd_20060048. Diğer 21 kayıt korunur. [Güncel makine envanteri](../data/stripe-product-inventory.json). Bu katalog sonucu canlı tahsilatın açık olduğu anlamına gelmez; aşağıdaki eksik listeleri tarihseldir.
+
+---
+
 # A — Eksik Product / Price bilgileri
 
 22 SKU envanteri: [JSON](../data/stripe-product-inventory.json). Tutarlar USD cent cinsindedir ve yerel sunucu fiyatlandırmasından gelir; Stripe fiyatı olarak doğrulanmış değildir. Product, Price ve Payment Link ayrı nesnelerdir.
