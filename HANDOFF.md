@@ -1,3 +1,37 @@
+# Güncel Stripe Live anahtar doğrulaması — 31 Ekim 2026 (Asia/Samarkand)
+
+**Mesaj düzeltmesi production'da yayımlandı. Başvurular açık, entegre Checkout ve dosya intake kapalı.** Kullanıcının `Live key hazır` bildirimi sonrasında secret adı ve çalışan Worker doğrulandı. Secret alanı mevcut fakat içindeki değer **publishable key** türünde; sunucu API anahtarı değil. Yetkili production Admin API `publishable_key_cannot_create_checkout` yanıtı verdi. Anahtarın gerçek değeri görüntülenmedi, kopyalanmadı veya Git'e alınmadı. Bu hata bir vergi incelemesi veya eksik owner onayı değildir.
+
+- Production Worker: `bluefin-project-portal-api`; güncel deploy sürümü `0c8b6038-09ac-4c41-8c24-5ff57e9d961a`. Kod commit'i `abea260`; korumalı tanı ilk commit'i `65d25e4`. Mevcut Worker/D1/R2 binding'leri ve 15 dakikalık Cron korunuyor; migration yapılmadı.
+- GitHub Pages mesaj düzeltmesi: **PASS**, `65d25e4ca3ffd4915115db43d72ed52bb2800b05`, build tamamlandı `2026-10-31T03:21:47Z`. Sonraki sunucu/readiness commit'leri static müşteri görünümünü değiştirmez.
+- `STRIPE_SECRET_KEY` adı **mevcut**. Sunucu anahtarı doğrulaması **FAIL — publishable key**. `STRIPE_WEBHOOK_SECRET` secret adları envanterinde yok. Merchant `acct_` / Live katalog / tax kayıtları / webhook endpoint envanteri **NOT RUN**; yanlış anahtar türüyle Stripe'a istek gönderilmedi.
+- Mevcut Access kullanıcı oturumu ile korumalı tanı endpointi açıldı. Cookie/JWT/session değeri raporlara kaydedilmedi. Tanı yalnız GET, mevcut admin JWT/allowlist ve production ortamı ile çalışır. Raw Stripe nesneleri, müşteri bilgisi, secret veya şirket vergi kimlikleri döndürülmez.
+- Hem Secret hem Restricted Live sunucu anahtarları desteklenir. Publishable/test anahtarları reddedilir; normal readiness ve hard-closed production Checkout korumaları kaldırılmadı. Acacia REST `2025-02-24.acacia` aynı.
+- Başvuru mesajı artık tüm müşterilere yapılmamış bir tax review iddiası sunmaz. Yeni başvurular `PAYMENT_SETUP_PENDING`; eski kabul/scope/başvuru kayıtları değiştirilmedi.
+- V2 sözleşme `service-terms-2026-10-30-v2` ve hash `85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c` aynı. Owner onayı bağımsız uzman onayı olarak sunulmadı.
+
+| Kontrol | Sonuç | Kanıt / sınır |
+|---|---|---|
+| Production secret adı | PASS | Cloudflare API 200; sadece isimler |
+| Çalışan secret'ın sunucu anahtarı türü | FAIL | Admin runtime: `publishable_key_cannot_create_checkout` |
+| Gerçek Access admin oturumu / anonim koruma | PASS | Yetkili tanı yanıtı; anonim istek Access 302 |
+| Yerel Worker testleri | PASS | 76/76; restricted key desteği, ortam ayrımı, kapalı ödeme, redaksiyon |
+| Typecheck / format | PASS | Worker ve frontend TypeScript; değişen kaynaklar Prettier |
+| Site / Apple regresyonu | PASS | 1111 assertion / 23 sayfa; Privacy, Support, Contact canlı HTTP 200 |
+| Worker health ve mesaj asset'i | PASS | HTTP 200; applicationsEnabled=true, checkoutEnabled=false, filesEnabled=false |
+| Origin / eksik webhook doğrulaması | PASS | 403 `origin_denied`; 503 `webhook_not_configured`; imza testi yerine sayılmadı |
+| İlk HTTP smoke denemesi | FAIL | Genel istemci ile 403 yanıtları; kanıt ayrı tutuldu. Tanımlı istemciyle tekrar PASS; erişim politikası değiştirilmedi |
+| Live merchant/katalog/vergi/webhook/invoice/ödeme | NOT RUN | Doğru sunucu anahtarı gerekli; gerçek kart işlemi yapılmadı |
+| Production Drive bağlantısı / yeni dosya alımı | NOT RUN | Bu adımda açılmadı; staging verileri/izinleri kopyalanmadı |
+
+**Kullanıcı işlemi:** Stripe Live sunucu anahtarını yalnız production Worker Secrets `STRIPE_SECRET_KEY` alanına kaydetmek. Kullanıcı Restricted key izinlerini sordu; mevcut kod/izinli yayın kapsamına göre [izin listesi](docs/stripe-live-permissions.md) verildi. Payouts, Transfers, External/Bank Accounts, Refunds ve Connect için izin talep edilmedi. Doğru anahtar eklendikten sonra gerçek merchant/katalog/webhook kontrolleri devam edecek; henüz tamamlandı veya tahsilat açık denmedi.
+
+**Yedek/geri dönüş:** `.qa/checkout-20261031/worker.multipart`, ayar/deployment yedekleri Git dışında. Worker yedek SHA-256 `129e9f064f17357aa6757431815df769201877e8900888eb6eaed04df0ba0424`. Yedek öncesi sürüm `e1ce2141-0622-4338-a5ac-02fd5c348075`. D1/R2 geri yükleme veya kayıt silme yapılmadı. Mercury, Stripe ödeme/payout ayarları, DNS ve Apple yolları değiştirilmedi.
+
+Kanıt: `docs/live-key-smoke-2026-10-31.json`, ilk deneme `docs/live-key-smoke-initial-2026-10-31.json`. Önceki ağ engeli kayıtları tarihsel olarak aşağıda korunur; ağ erişimi bu tur yeniden çalıştı.
+
+---
+
 # Güncel devam durumu — 31 Ekim 2026 (Asia/Samarkand)
 
 **Canlı Checkout hâlâ açılmadı. Aşağıdaki düzeltme yerelde tamamlandı; bu tur production yayını doğrulanmadı.** Önceki yayın onayı geçerlidir; yeni owner onayı istenmedi.

@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-31T03:24:36.994564+00:00",
+  "checks": [
+    {
+      "name": "health",
+      "http": 200,
+      "result": "PASS",
+      "data": {
+        "service": "bluefin-project-portal",
+        "mode": "production",
+        "enabled": false,
+        "applicationsEnabled": true,
+        "checkoutEnabled": false,
+        "filesEnabled": false,
+        "termsVersion": "service-terms-2026-10-30-v2",
+        "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+      }
+    },
+    {
+      "name": "message_correction",
+      "http": 200,
+      "result": "PASS"
+    },
+    {
+      "name": "anonymous_live_admin",
+      "http": 302,
+      "result": "PASS"
+    },
+    {
+      "name": "wrong_origin",
+      "http": 403,
+      "result": "PASS"
+    },
+    {
+      "name": "unconfigured_webhook",
+      "http": 503,
+      "result": "PASS"
+    },
+    {
+      "name": "apple_compatibility/privacy.html",
+      "http": 200,
+      "result": "PASS"
+    },
+    {
+      "name": "apple_compatibility/support/",
+      "http": 200,
+      "result": "PASS"
+    },
+    {
+      "name": "apple_compatibility/contact/",
+      "http": 200,
+      "result": "PASS"
+    }
+  ],
+  "authenticatedAdminResult": {
+    "result": "PASS",
+    "responseError": "publishable_key_cannot_create_checkout",
+    "keyValueExposed": false
+  },
+  "liveMerchantVerification": "NOT RUN",
+  "liveCharge": "NOT RUN"
+}
