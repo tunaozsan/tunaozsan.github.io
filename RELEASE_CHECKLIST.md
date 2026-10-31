@@ -1,3 +1,60 @@
+# Güncel sonuç — 31 Ekim 2026 04:51 UTC: production Drive/refund kodu yayımlandı; tahsilat kapalı
+
+Bu bölüm aşağıdaki tarihsel özetlerden önceliklidir. Kullanıcının son “hazır” yanıtı üzerine production yapılandırması tekrar kontrol edildi. **Live Stripe sunucu anahtarı ve merchant doğrulandı; site ve başvuru alımı açık. Canlı Checkout ve müşteri dosya intake açılmadı.** “Hazır” ifadesi uygulanabilir bir işlem-vergi kuralı veya tamamlanmış Google consent kanıtı olarak kaydedilmedi. Önceki owner go-live yetkisi devam ediyor; yeniden genel yayın onayı gerekmiyor.
+
+- Site: https://bluefintuna.life/ — GitHub Pages `75dc46c2af5274c882e36b36f19a9715decba996` build **built**, 2026-10-31 04:50:46 UTC.
+- Portal: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/project-portal/
+- Admin: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/admin/
+- Kod commit: **75dc46c**. Production Worker version: **ea542759-f4af-42c7-ab3f-a538d89486de**, %100; deployment `0fa42507-47dd-481a-9a43-7669fc85e571`.
+- Migration: bu tur **yok**; mevcut 0001–0007 korundu. Mevcut production Worker/D1/R2 kullanıldı.
+- Sözleşme: `service-terms-2026-10-30-v2`, yayımlanma/yürürlük UTC tarihi 2026-10-30, SHA-256 `85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c`. Owner adoption korunuyor; bağımsız hukuk/vergi incelemesi **NOT_PERFORMED**.
+- Son D1: 2 başvuru; 0 order, 0 order acceptance, 0 payment review, 0 CONNECTED production Drive credential, 0 production root. Staging kayıtları/kaynakları kopyalanmadı veya değiştirilmedi.
+
+## Bu tur uygulananlar ve gerçek test sonuçları
+
+| Kontrol | Sonuç | Kanıt / sınır |
+|---|---|---|
+| Çalışan Live key/merchant | PASS — gerçek API | `acct_1UV444BzdKYgwVw6`, charges_enabled=true; key değeri okunmadı/gösterilmedi |
+| Google secret'ın güvenli türde saklanması | PASS — gerçek Cloudflare API | Kullanıcı `GOOGLE_CLIENT_SECRET` değerini plain_text olarak eklemişti. Değer yalnız bellek içinde secret_text'e taşındı; diğer binding'ler birebir korundu. Client ID public config'te. Token/secret çıktısı veya Git kaydı yok. |
+| Production Drive/delivery uyarlaması | PASS — kod/dağıtım | Exact production origin + Live merchant + owner policy gate; ayrı production root anahtarı/ismi, mevcut D1 lease/retry/SHA-256/consent/PAID kontrolleri; final müşteri sayfası ve Cron maintenance yayımlandı |
+| Access/admin + gerçek OAuth başlangıcı | PASS | Aynı Chrome test oturumunda admin JWT doğrulandı; status NOT_CONNECTED/configured; Google authorization isteği açıldı, yalnız drive.file |
+| Gerçek Google OAuth tamamlanması | FAIL | Google HTTP 400 `redirect_uri_mismatch`. Production callback istemcide kabul edilmiyor; token exchange/refresh ve gerçek özel root oluşturma **NOT RUN**. Google Console'da mevcut Bluefin projesi seçildi ancak istemci listesi loading durumunda kaldı; ayar kaydedilmedi. |
+| Refund production yolu | PASS — yerel | İmzalı Live-mode fixture → kalıcı refund hold, delivery revoke, davet/session iptali, duplicate event, değişmeyen retention/consent; gerçek para iadesi yapılmadı |
+| Live webhook refund aboneliği | PASS — gerçek API | Mevcut `we_1UWTAyBzdKYgwVw6TrMDvijt` endpointine `charge.refunded` eklendi; dört Checkout olayı, URL, signing secret ve `2025-02-24.acacia` korundu; salt okunur tekrar sorguda doğrulandı |
+| Gerçek Live refund olayı / gerçek ödeme / invoice | NOT RUN | Sahte gerçek kart veya self-payment yok; ilk gerçek müşteri ödemesi oluşmadı |
+| 21 mevcut Live Product/Price | PASS — gerçek API | Tutar/aktiflik/ortam envanteri tekrar okundu; kayıtlar değiştirilmedi |
+| Eksik `EXTRA-50-UPDATE-R` $150 oluşturma | FAIL — Stripe HTTP 403 | Product create isteği reddedildi; tekrar tam envanter 21 Product/21 Price ve eksik ürün yokluğunu gösterdi. Kısmi Product yaratılmadı; Price create **NOT RUN**. Gerekli yazma erişimi Products, ardından Prices. Bu tek ek ürün diğer paketlerin genel açılış engeli değildir. |
+| Stripe Tax gözlemi | PASS — salt okunur | 04:47:45 UTC: settings=pending, registrations=[], tax_code/tax_behavior boş. Bu bir muafiyet/dayanak kararı değildir. |
+| Uygulanabilir vergi kararı / uygun sipariş Checkout | NOT RUN | Müşteri-fatura/proje konumu ve hizmete uygulanabilir bir mevcut kural/dayanak verilmedi; global sıfır vergi açılmadı |
+| Yerel regresyon | PASS | **90/90 Worker testi**, typecheck, **1111 site assertion / 23 sayfa**, git diff ve secret pattern taraması |
+| Gerçek production smoke | PASS | Health 200/başvurular açık/Checkout-intake kapalı; unsigned webhook 400; yanlış origin 403; anonim admin/Drive 302; final sayfası 200; oturumsuz final API 401; eski setup ve geçici maintenance sayfaları 404 |
+| Geçici kurulum yetkisinin kaldırılması | PASS | LIVE_MAINTENANCE_UNTIL remote binding'den ve local config'ten kaldırıldı; diğer binding'ler korundu. Kalıcı API varsayılan 404/maintenance_closed; kurulum UI dosyaları yayından kaldırıldı. |
+| Cron / TTL / Apple | PASS | */15 Cron; son doğal cleanup heartbeat 04:45:44 UTC, hata sayıları 0; R2 43200 saniye. Privacy/Support/Contact HTTP 200, contact anchor mevcut; eski Apple metinlerinin yerel testi geçti. |
+| Production R2→Drive, final download E2E; 30/90 gerçek gün | NOT RUN | Google bağlantısı tamamlanmadı, gerçek paid order yok. Önceki gerçek staging ve simülasyon kanıtı korunur; 30/90 gerçek gün yeni genel yayın koşulu yapılmadı. |
+
+İlk Google secret PUT işlemi aynı isimde plain_text binding bulunduğu için **Cloudflare HTTP 400 / 10053** verdi; yetki eksikliği/403 değildi. Belgelenmiş settings PATCH ile yalnız binding türü değiştirildi. Cloudflare kimliği Keychain'deki yetkili `bluefin-cf` Global API Key köprüsüdür. Bir deploy ve ilk geçici-yetki kapatma isteği ağ hatası verdi; aynı işlemlerin kontrollü tekrarları ve son salt okunur smoke başarılı oldu. Sırlar, cookie/JWT ve OAuth code/state raporlanmadı.
+
+Ürün UI işleminin ilk otomatik onay incelemesi eski staging-only kısıtını esas alarak reddetti. Son kullanıcı go-live yetkisi ve benimsenen belgenin 106. satırı (“Eksik ürünü ancak gerçekten yoksa aynı onaylı kapsam/fiyatla oluştur”) ile mevcut envanter kanıtı gösterilince **aynı UI işlemi** izin denetimini geçti. Sonrasında Stripe API'nin verdiği 403 gerçek kalan engeldir; otomatik denetim dolanılmadı.
+
+## Kalan somut insan adımları ve bağlı teknik işler
+
+1. **Google callback:** mevcut OAuth istemcisinin Authorized redirect URIs listesine `https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/admin/drive/oauth/callback` eklenmeli; staging adresi korunmalı. Ardından aynı production Admin sayfasında Connect personal Drive ile kullanıcı Google iznini tamamlamalı. Secret yeniden paylaşılmamalı. OAuth publishing durumu ve refresh ömrü henüz doğrulanmadı; staging tokenı production'a taşınmaz.
+2. **İlk uygun tahsilat için işlem-vergi dayanağı:** kapsadığı müşteri fatura ülke/eyaleti, proje ülkesi/hizmet türü; uygulanacak oran/durum, mevcut tescil veya tahsil etmeme/reverse-charge kararının dayanağı ve geçerlilik tarihi. Aktif Stripe Tax kaydı tek mümkün yol değildir; dayanaklı manuel değerlendirme de mümkün, fakat mevcut pending/boş liste tek başına sıfır vergi gerekçesi değildir. Henüz hiçbir sipariş için yeterli temel yok.
+3. **Yalnız $150 ek ürün:** restricted Live key'in Products ve Prices yazma izinleri gerekli. Ürün oluşturmaya çalışma Stripe Products POST aşamasında 403 verdi; diğer 21 kayıt korunuyor. Secret sohbete yazılmaz; aynı secret güvenli Worker alanında güncellenebilir.
+4. **Stripe public legal ayarları:** mevcut Dashboard test sekmesi login ekranında; Terms/Privacy public-details alanlarının son doğrulaması **NOT RUN**. API native terms=required kodu korunuyor; uygun Checkout'ta fiilen doğrulanması gerekir. Dashboard oturumu yenilenince mevcut public legal URL'ler kontrol edilir; şirket/Mercury/tax sınıflandırması değiştirilmez.
+
+**Bunlar yalnız insan eksikleri değildir:** onaylı başvurunun konum/scope/quote'a bağlı işlem-vergi kararıyla capability korumalı order/Checkout'a dönüşümü henüz production'da uygulanmış değil. Bu tur Drive ve refund kod uyarlaması tamamlandı; application→approved order köprüsü, Checkout'ta adres değişimi/review invalidation ve gerçek invoice/customer mapping doğrulaması hâlâ teknik iş. Vergi yolu netleşmeden koşulsuz global owner_reviewed_manual modu kullanılmayacak. `PORTAL_ENABLED=true` tek başına yeterli değildir; entrypoint Checkout'u halen kapalı tutar. Gerçek belge kabulü açılmadan mevcut kontrollü yerel tarama/operatör prosedürü de doğrulanmalıdır. Owner yayın onayı tekrar istenmeyecek.
+
+## Eski linkler ve rollback
+
+Yedi orijinal Payment Link **aktif ve değişmedi**; native required terms yok, D1 order/kabul bağı doğrulanmış değil. Portal Checkout hazır olmadan kapatılmadılar; açık Session/önceki ödeme uzlaştırması **NOT RUN**. Portal tahsilatının kapalı olması eski bağımsız linklerin ödeme alamadığı anlamına gelmez. Eksik ürün için yeni Payment Link oluşturulmadı.
+
+Bu tur öncesi, Google secret türü güvenli hale getirildikten sonraki geri dönüş yedeği: `.qa/oauth-production-20261031/worker.multipart`, SHA-256 `00b2dae33101df6474b48e2278a9931476fe44b2cb164d05f2fc234f1d2b925f`; yedek settings/deployments aynı özel klasörde. Önceki kaynak kodu `6c10883`; mevcut D1 backup/0007 korunur. Tercih yeni intake/Checkout kapalı kalırken doğrulanmış mevcut sürümü korumaktır. Geri dönüşte güncel Secrets, refund webhook ve Cron korunur; eski sürümle refund kontrolü kaldırılmaz, D1/R2/Drive silinmez ve TTL sıfırlanmaz. Bu tur yeni D1 migration veya restore uygulanmadı.
+
+Mercury payout, şirket vergi sınıflandırması, ana/e-posta DNS ve Apple yollarında değişiklik yok. Kanıtlar: [gerçek entegrasyon sonuçları](docs/production-drive-stripe-integration-2026-10-31.json), [son production smoke](docs/production-drive-live-smoke-2026-10-31.json). `production-oauth-preflight-2026-10-31.json` dönüşüm öncesi tarihsel durumdur; son Secret yapılandırması smoke dosyasında doğrulanır.
+
+---
+
 # Güncel sonuç — 31 Ekim 2026: Live anahtar ve webhook bağlı, tahsilat henüz kapalı
 
 Bu bölüm aşağıdaki tarihsel raporların güncel durumunu değiştirir. **Yanlış publishable-key engeli çözüldü.** Kullanıcının eklediği sunucu anahtarı çalışan production Worker içinde doğrulandı; değeri görüntülenmedi. **Site ve başvurular açık; entegre canlı tahsilat/dosya intake henüz AÇILMADI.** Owner yayın yetkisi mevcut; yeniden genel yayın onayı gerekmiyor.
