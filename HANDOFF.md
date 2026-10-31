@@ -8,7 +8,7 @@ Kullanıcının ödeme yerine sürekli “tax review” görmesi incelendi. Prod
 - Yeni durumun 90 gün sonrası unpaid metadata temizliği eski durumla birlikte desteklenir; explicit hold ve converted kayıtlar korunur. R2'nin 12 saatlik TTL'sine veya Cron tanımına değişiklik yok. Migration gerekmiyor.
 - Son başarılı production envanterinde `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` ve merchant account ID eksikti. Bu tur güncel secret adlarını tekrar okuma denemeleri ağ zaman aşımıyla sonuçlandı; güncel envanter doğrulanmış sayılmadı. API secret değerleri okunmadı veya görüntülenmedi.
 - Cloudflare API (Node ve Python), ana site ve GitHub API HTTPS bağlantıları zaman aşımına uğradı. HTTP 403 veya Cloudflare yetki hata kodu alınmadı. Buna bir izin/vergi hatası denmedi.
-- Mevcut Audit Payment Link tarayıcıda açıldı; sayfa yükleme iskeletinde kaldığından aktif Checkout/tutar doğrulaması PASS değildir. Yedi eski link değiştirilmedi. Bu yol D1'e bağlı yeni portal Checkout'u sayılmaz.
+- Mevcut Audit Payment Link tarayıcıda açıldı; son ekranda Stripe “Something went wrong / The page you were looking for could not be found” mesajı döndürdü. Ödeme formu ve tutar doğrulanamadı; bağlantının devre dışı olduğu API ile doğrulanmış değildir. Yedi eski link değiştirilmedi. Bu yol D1'e bağlı yeni portal Checkout'u sayılmaz.
 - V2 sözleşme ve hash aynı. Vergi muafiyeti, evrensel sıfır vergi veya bağımsız uzman onayı üretilmedi. Mercury, DNS, Apple yolları ve production kaynakları bu tur değiştirilmedi.
 
 | Kontrol | Sonuç | Kanıt / sınır |
@@ -18,9 +18,10 @@ Kullanıcının ödeme yerine sürekli “tax review” görmesi incelendi. Prod
 | Site testleri ve production asset build | PASS | 1111 assertion / 23 sayfa |
 | Production secret adları yeniden kontrolü | FAIL | HTTPS bağlantısı zaman aşımı; değer okunmadı, izin sonucu bilinmiyor |
 | Cloudflare / GitHub uzak erişim | FAIL | HTTP yanıtı alınamadı; ağ zaman aşımı |
+| Git push | FAIL | Yerel düzeltme `7fe2ccb`; Git HTTPS düşük aktarım hızı zaman aşımı (exit 128), remote yayın doğrulanmadı |
 | Düzeltmenin Worker/GitHub Pages yayını | NOT RUN | Uzak erişim doğrulanmadan yayın yapılmadı |
 | Gerçek Live Checkout/webhook/ödeme | NOT RUN | Entegre Live bağlantısı henüz tamamlanmadı; gerçek kartla işlem yok |
-| Eski Audit bağlantısının ödeme formu | NOT RUN | URL açıldı, yükleme ekranından ilerlemedi |
+| Eski Audit bağlantısının ödeme formu | FAIL | Stripe sayfası bulunamadı mesajı; aktiflik API ile doğrulanmadı |
 
 **Somut sonraki adım:** Ağ erişimi geri geldiğinde mevcut production envanterini tekrar doğrula. `STRIPE_SECRET_KEY` eksikse yalnız production Worker Secrets alanına güvenli olarak eklenmesi gerekiyor; bunun için kullanıcıya tek erişim isteği gönderildi, değer sohbetten istenmedi. Ardından mevcut merchant/katalog/webhook/işlem-vergi ayarlarını doğrulayarak D1 kabulü ve immutable kapsamla bağlı Checkout'u tamamla. Yalnız bayrak değiştirerek ödeme veya doğrulanmamış fulfillment açma; eski Payment Link'i entegre ödeme diye sunma.
 

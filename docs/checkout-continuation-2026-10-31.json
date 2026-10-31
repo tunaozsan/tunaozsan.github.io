@@ -34,8 +34,8 @@
     },
     {
       "target": "existing Audit Payment Link",
-      "result": "NOT RUN",
-      "detail": "Opened URL; payment form remained loading"
+      "result": "FAIL",
+      "detail": "Stripe rendered Something went wrong: The page you were looking for could not be found. No payment form; active status not verified through API."
     }
   ],
   "deployment": "NOT RUN",
@@ -44,5 +44,11 @@
   "newApplicationStatus": "PAYMENT_SETUP_PENDING",
   "historicalApplicationRecordsModified": false,
   "agreementVersion": "service-terms-2026-10-30-v2",
-  "agreementHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+  "agreementHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c",
+  "localCodeCommit": "7fe2ccb",
+  "gitPush": {
+    "result": "FAIL",
+    "exit": 128,
+    "error": "Git HTTPS low-speed timeout; remote publication not verified"
+  }
 }
