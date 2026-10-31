@@ -1,5 +1,5 @@
 {
-  "status": "22_SANDBOX_MAPPED_LIVE_NOT_INSPECTED",
+  "status": "22_SANDBOX_AND_22_LIVE_MAPPED_COLLECTION_SEPARATELY_GATED",
   "lookupKeyConvention": "Known Sandbox IDs mapped explicitly; future unmapped SKUs require verified SKU lookup_key, no guessing",
   "products": [
     {
@@ -21,16 +21,19 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VW9ACK31oDmdvm",
+        "price_id": "price_1UV6sIBzdKYgwVw6fUIJaSf2",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 19900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
       "sku": "baseline_basic_nores",
       "display_sku": "BASE-BASIC-NR-75",
-      "name": "Basic Baseline \u2014 Without Resources",
+      "name": "Basic Baseline — Without Resources",
       "product_id": "prod_VWBkROf3ChxJ63",
       "price_id": "price_1UVrQdBxU4PsnoX05ksKEZ8a",
       "amount": 49900,
@@ -46,16 +49,19 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VWBkROf3ChxJ63",
+        "price_id": "price_1UV9NMBzdKYgwVw6fh09VW6M",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 49900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
       "sku": "baseline_basic_withres",
       "display_sku": "BASE-BASIC-R-75",
-      "name": "Basic Baseline \u2014 With Resources",
+      "name": "Basic Baseline — With Resources",
       "product_id": "prod_VWBmgTL9h3t0Ye",
       "price_id": "price_1UVrQdBxU4PsnoX0mnRJSdEp",
       "amount": 79900,
@@ -71,16 +77,19 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VWBmgTL9h3t0Ye",
+        "price_id": "price_1UV9OpBzdKYgwVw6DboBNUZp",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 79900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
       "sku": "baseline_detailed_nores",
       "display_sku": "BASE-DETAIL-NR-200",
-      "name": "Detailed Baseline \u2014 Without Resources",
+      "name": "Detailed Baseline — Without Resources",
       "product_id": "prod_VWBnGhGnvgdQ7X",
       "price_id": "price_1UVrQdBxU4PsnoX0drjlBZPi",
       "amount": 99900,
@@ -96,16 +105,19 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VWBnGhGnvgdQ7X",
+        "price_id": "price_1UV9PnBzdKYgwVw6YtYKn1Tr",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 99900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
       "sku": "baseline_detailed_withres",
       "display_sku": "BASE-DETAIL-R-200",
-      "name": "Detailed Baseline \u2014 With Resources",
+      "name": "Detailed Baseline — With Resources",
       "product_id": "prod_VWBoJYaLI90KCI",
       "price_id": "price_1UVrQgBxU4PsnoX0CekdoUq0",
       "amount": 149900,
@@ -121,16 +133,19 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VWBoJYaLI90KCI",
+        "price_id": "price_1UV9QVBzdKYgwVw6pJrCk7oX",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 149900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
       "sku": "update_nores",
       "display_sku": "UPDATE-NR-200",
-      "name": "Primavera P6 Schedule Update \u2014 Without Resources",
+      "name": "Primavera P6 Schedule Update — Without Resources",
       "product_id": "prod_VWBqv5CiNDTTSq",
       "price_id": "price_1UVrQdBxU4PsnoX0yZz0EQlv",
       "amount": 39900,
@@ -146,16 +161,19 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VWBqv5CiNDTTSq",
+        "price_id": "price_1UV9THBzdKYgwVw6ugnWeksX",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 39900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
       "sku": "update_withres",
       "display_sku": "UPDATE-R-200",
-      "name": "Primavera P6 Schedule Update \u2014 With Resources",
+      "name": "Primavera P6 Schedule Update — With Resources",
       "product_id": "prod_VWBsHQgqNjrfXy",
       "price_id": "price_1UVrQdBxU4PsnoX0xkiA8soq",
       "amount": 64900,
@@ -171,10 +189,13 @@
       },
       "evidence": "Full read-only Sandbox inventory: exact unique service name + product-linked amount/currency, 2026-10-30",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VWBsHQgqNjrfXy",
+        "price_id": "price_1UV9UNBzdKYgwVw6KAvgRBKo",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 64900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -196,10 +217,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXH6F0c82itq2v",
+        "price_id": "price_1UWCYgBzdKYgwVw6SMuqf64t",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 100,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -225,10 +249,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHalXCm6Xc3x1",
+        "price_id": "price_1UWD1ABzdKYgwVw6Ik8RoeE2",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 10000,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -253,10 +280,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHfmXOYAj8g9E",
+        "price_id": "price_1UWD5zBzdKYgwVw6NHVb4W6Z",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 17500,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -280,10 +310,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXbTMNDddMX6Zp",
+        "price_id": "price_1UWWGOBzdKYgwVw67E2P15jO",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 15000,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -312,10 +345,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHgHEPwwoxCqM",
+        "price_id": "price_1UWD6hBzdKYgwVw69cJ4Yomi",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 9900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -340,10 +376,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHkXG953c7SrS",
+        "price_id": "price_1UWDB5BzdKYgwVw6qExd5saS",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 24900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -368,10 +407,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHm99MKbjj0oz",
+        "price_id": "price_1UWDCtBzdKYgwVw6GsM49Lxd",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 24900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -396,10 +438,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHnB2i7YfA1RI",
+        "price_id": "price_1UWDDuBzdKYgwVw6JhAN6wUf",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 24900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -424,10 +469,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHogd3IRLyNAD",
+        "price_id": "price_1UWDEnBzdKYgwVw6mNXQA3aP",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 24900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -452,10 +500,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHq2u46OqIFQZ",
+        "price_id": "price_1UWDGPBzdKYgwVw6KCCnK5Fh",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 24900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -479,10 +530,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHlUjoisbge8K",
+        "price_id": "price_1UWDC3BzdKYgwVw6VcEwuAmP",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 11900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -506,10 +560,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHn94YBPD1JCo",
+        "price_id": "price_1UWDDXBzdKYgwVw6dNbbkK0m",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 11900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -533,10 +590,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHoYsHGsnuolI",
+        "price_id": "price_1UWDEQBzdKYgwVw681TYW0sg",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 11900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -560,10 +620,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHoONhnZotnqP",
+        "price_id": "price_1UWDFHBzdKYgwVw6wtkH5gdc",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 11900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     },
     {
@@ -587,10 +650,13 @@
       },
       "evidence": "Created and verified only in Sandbox, 2026-10-30; sku lookup_key. Pilot/Update scope gates retained.",
       "live": {
-        "product_id": null,
-        "price_id": null,
-        "active": null,
-        "status": "NOT_INSPECTED"
+        "product_id": "prod_VXHqjO8qTr0xIU",
+        "price_id": "price_1UWDGeBzdKYgwVw6I5MhJsYX",
+        "active": true,
+        "status": "VERIFIED_LIVE",
+        "currency": "usd",
+        "amount": 11900,
+        "evidence": "Authenticated Live inventory and existing verified mapping, 2026-10-31; no production payment created"
       }
     }
   ]

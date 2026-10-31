@@ -1,3 +1,4 @@
+import { legacyLinks } from "./legacy-links";
 import { admin, jsonBody, type Env, type Deps } from "./security";
 import { keys, object, Problem } from "./catalog";
 import { LIVE_ACCOUNT_ID } from "./live-catalog";
@@ -28,8 +29,15 @@ export async function liveMaintenance(
   if (req.headers.get("Origin") !== origin)
     throw new Problem(403, "origin_denied");
   const b = object(await jsonBody(req));
-  keys(b, ["action"]);
-  if (!["refund-webhook", "missing-update-addon"].includes(b.action as string))
+  keys(b, ["action", "linkId"]);
+  if (
+    ![
+      "refund-webhook",
+      "missing-update-addon",
+      "inspect-legacy-links",
+      "retire-legacy-links",
+    ].includes(b.action as string)
+  )
     throw new Problem(400, "invalid_action");
   const key = e.STRIPE_SECRET_KEY?.trim() || "";
   if (
@@ -62,6 +70,20 @@ export async function liveMaintenance(
   };
   if ((await api("account")).id !== LIVE_ACCOUNT_ID)
     throw new Problem(503, "merchant_not_verified");
+  if (
+    b.action === "inspect-legacy-links" ||
+    b.action === "retire-legacy-links"
+  ) {
+    if (b.action === "retire-legacy-links" && typeof b.linkId !== "string")
+      throw new Problem(400, "single_link_required");
+    return Response.json(
+      await legacyLinks(
+        api,
+        b.action === "retire-legacy-links",
+        b.linkId as string | undefined,
+      ),
+    );
+  }
   if (b.action === "refund-webhook") {
     const w = await api("webhook_endpoints/" + webhookId);
     const matches = (v: any) =>

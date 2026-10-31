@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-31",
+  "environment": "production",
+  "source": "authenticated production Admin UI; Check Drive connection and Verify refresh and private root",
+  "oauth": "CONNECTED",
+  "refresh": "PASS",
+  "privateProductionRoot": "PASS",
+  "stagingCredentialsCopied": false,
+  "stagingRootCopied": false,
+  "secretsOrDriveIdsIncluded": false,
+  "livePaidOrderTransfer": "NOT RUN"
+}

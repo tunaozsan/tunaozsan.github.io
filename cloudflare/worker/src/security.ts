@@ -1,6 +1,8 @@
 import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from "jose";
 import { Problem } from "./catalog";
 export interface Env {
+  ASSETS?: Fetcher;
+  REVIEWED_INVOICE_MODE?: string;
   DB: D1Database;
   UPLOADS: R2Bucket;
   APP_ENV: string;
@@ -18,6 +20,7 @@ export interface Env {
   RATE_LIMIT_SALT?: string;
   TAX_MODE: string;
   INVOICE_CREATION: string;
+  UNAVAILABLE_SKUS?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
 }

@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "createdVia": "Existing authenticated Stripe Live Dashboard after restricted API Products POST returned 403",
+  "sku": "EXTRA-50-UPDATE-R",
+  "product_id": "prod_VXbTMNDddMX6Zp",
+  "price_id": "price_1UWWGOBzdKYgwVw67E2P15jO",
+  "amount": 15000,
+  "currency": "usd",
+  "active": true,
+  "livemode": true,
+  "tax_behavior": "exclusive",
+  "tax_code": "txcd_20060048",
+  "lookup_key": null,
+  "binding": "explicit verified Product/Price mapping; Product metadata sku",
+  "existing21Changed": false,
+  "paymentLinksCreated": 0,
+  "subscriptionCreated": false
+}

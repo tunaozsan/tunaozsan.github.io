@@ -37,14 +37,17 @@
     "ACCESS_AUD": "e711d1ed5278a9e0f4777aa2b66106f0f862606175cc16073f2abef965c59fa0",
     "ADMIN_EMAILS": "ozsan_tuna@yahoo.com.tr",
     "STRIPE_ACCOUNT_ID": "acct_1UV444BzdKYgwVw6",
-    "TAX_MODE": "unconfigured",
-    "INVOICE_CREATION": "false",
+    "TAX_MODE": "automatic",
+    "INVOICE_CREATION": "true",
     "APPLICATIONS_ENABLED": "true",
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFqzcQjgbI_eP7Le",
     "GOOGLE_CLIENT_ID": "986883109083-q4ur31d3ale1up2irpiprj84ed9gmsps.apps.googleusercontent.com",
     "DRIVE_ENABLED": "true",
     "DELIVERY_ENABLED": "true",
-    "DELIVERY_POLICY_APPROVED": "true"
+    "DELIVERY_POLICY_APPROVED": "true",
+    "APPROVED_ORDERS_ENABLED": "false",
+    "UNAVAILABLE_SKUS": "",
+    "REVIEWED_INVOICE_MODE": "portal_pdf"
   },
   "observability": {
     "enabled": false

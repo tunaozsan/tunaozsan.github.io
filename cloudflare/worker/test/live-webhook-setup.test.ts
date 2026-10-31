@@ -167,8 +167,8 @@ test("Live webhook setup refuses duplicate/foreign existing endpoints and preser
   assert.equal(((await r.json()) as any).configured, true);
   assert.equal(posts.length, 0);
 });
-test("Live catalog maps the seven real packages and 21 verified prices without inventing the missing Update addon", () => {
-  assert.equal(Object.keys(livePrices).length, 21);
+test("Live catalog maps the seven real packages and 22 verified prices including the authorized $150 Update addon", () => {
+  assert.equal(Object.keys(livePrices).length, 22);
   for (const p of packages) {
     assert.ok(livePrices[p.sku]);
     assert.ok(
@@ -181,6 +181,9 @@ test("Live catalog maps the seven real packages and 21 verified prices without i
       }).total > 0,
     );
   }
-  assert.equal(livePrices["EXTRA-50-UPDATE-R"], undefined);
-  assert.equal(new Set(Object.values(livePrices).map((x) => x.price)).size, 21);
+  assert.deepEqual(livePrices["EXTRA-50-UPDATE-R"], {
+    product: "prod_VXbTMNDddMX6Zp",
+    price: "price_1UWWGOBzdKYgwVw67E2P15jO",
+  });
+  assert.equal(new Set(Object.values(livePrices).map((x) => x.price)).size, 22);
 });

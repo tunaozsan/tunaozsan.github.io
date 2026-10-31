@@ -40,6 +40,11 @@ export async function applications(
     return Response.json({
       applications: rows.results,
       checkoutEnabled: false,
+      approvals: (
+        await e.DB.prepare(
+          "SELECT id,application_id,order_id,approved_at,expires_at,redeemed_at,revoked_at,invalid_reason,basis_reference,basis_sha256 FROM application_approvals",
+        ).all()
+      ).results,
     });
   }
   if (req.method !== "POST") throw new Problem(405, "method_not_allowed");
@@ -194,7 +199,7 @@ export async function applicationCleanup(e: ApplicationEnv, d: Deps) {
   // Application validity: 30 days. Minimize 90 days AFTER expiry; documented holds prevent deletion.
   // Never delete orders/financial or accepted payment records here.
   await e.DB.prepare(
-    "DELETE FROM service_applications WHERE expires_at+7776000<=? AND status IN ('TAX_REVIEW_REQUIRED','PAYMENT_SETUP_PENDING') AND hold_reason IS NULL",
+    "DELETE FROM service_applications WHERE expires_at+7776000<=? AND status IN ('TAX_REVIEW_REQUIRED','PAYMENT_SETUP_PENDING') AND hold_reason IS NULL AND NOT EXISTS(SELECT 1 FROM application_approvals a WHERE a.application_id=service_applications.id)",
   )
     .bind(d.now())
     .run();

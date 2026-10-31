@@ -88,6 +88,16 @@ function setupDriveAdmin(origin, parent) {
   );
   section.append(
     button(
+      "Verify refresh and private root",
+      async () => {
+        const r = await api(origin, "/api/v1/admin/drive/verify", {});
+        message.textContent = `OAuth: ${r.oauth}. Refresh: verified. Private ${r.rootEnvironment} root: verified.`;
+      },
+      message
+    )
+  );
+  section.append(
+    button(
       "Connect personal Drive",
       async () => {
         const r = await api(origin, "/api/v1/admin/drive/oauth/start", {});
@@ -144,7 +154,7 @@ async function showDeliveryAdmin(origin, order, parent) {
     box.remove();
     await showDeliveryAdmin(origin, order, parent);
   };
-  status2.textContent = `PAYMENT VERIFIED \xB7 ${data.delivery?.status || "WORK IN PROGRESS"}${data.hold ? " \xB7 HOLD: " + data.hold : ""}. Invoice: ${data.order.stripe_invoice_id || "No invoice recorded \u2014 review required"}`;
+  status2.textContent = `PAYMENT VERIFIED \xB7 ${data.delivery?.status || "WORK IN PROGRESS"}${data.hold ? " \xB7 HOLD: " + data.hold : ""}. Invoice: ${data.order.portal_invoice_number || data.order.stripe_invoice_id || "No invoice recorded \u2014 review required"}`;
   const date = (value) => value ? new Date(value * 1e3).toLocaleString() : "Not scheduled";
   const summary = el("dl", "");
   for (const [label, value] of [
@@ -607,6 +617,7 @@ var serverQuote = null;
 var activeXHR = null;
 var enabled = false;
 var applicationMode = false;
+var unavailableSkus = [];
 var challenge = "";
 var offset = 0;
 try {
@@ -673,7 +684,7 @@ function preview() {
         return n;
       })
     );
-    $("scope-warning").textContent = q.scopeReview.join(" ");
+    $("scope-warning").textContent = q.scopeReview.join(" ") + (q.lines.some((l) => unavailableSkus.includes(l.sku)) ? " This add-on is currently unavailable for payment; other packages remain available for review." : "");
     $("create-order").disabled = !enabled || !applicationMode && q.scopeReview.length > 0 || !challenge || applicationMode && !$("application-consent").checked;
     $("package-info").textContent = `${q.days} business days after complete usable inputs and scope confirmation. Required: ${q.required.join(", ")}.`;
     return q;
@@ -759,6 +770,35 @@ async function workspace() {
   $("required-documents").textContent = "Required categories: " + (session.required || []).join(", ");
   await files();
 }
+function invoiceButton(path, admin = false) {
+  const b = el2("button", "Download PDF invoice");
+  b.className = "button";
+  b.onclick = async () => {
+    b.disabled = true;
+    try {
+      const headers = admin ? {} : { Authorization: "Bearer " + session.token };
+      const r = await fetch(API_ORIGIN + path, {
+        headers,
+        credentials: admin ? "include" : "omit",
+        cache: "no-store"
+      });
+      if (!r.ok || !r.headers.get("Content-Type")?.includes("application/pdf"))
+        throw Error(
+          "Invoice unavailable; contact support with your order reference."
+        );
+      const u = URL.createObjectURL(await r.blob()), a = document.createElement("a");
+      a.href = u;
+      a.download = "Bluefin-Tuna-invoice.pdf";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(u), 1e3);
+    } catch (e) {
+      notice(e.message);
+    } finally {
+      b.disabled = false;
+    }
+  };
+  return b;
+}
 async function status() {
   if (!session) {
     notice(
@@ -774,6 +814,12 @@ async function status() {
     `${s.paid ? "Payment verified. " + (s.paidTotal == null ? "" : money(s.paidTotal) + " paid including " + money(s.paidTax ?? 0) + " tax. ") : "Payment not yet verified. "}${s.status.replaceAll("_", " ")} \xB7 ${s.orderId}`
   );
   $("request-reupload").hidden = !s.canRequestReupload;
+  document.getElementById("customer-invoice")?.remove();
+  if (s.portalInvoice && s.serverTime < s.expiresAt) {
+    const b = invoiceButton(route("invoice"));
+    b.id = "customer-invoice";
+    $("request-reupload").parentElement?.append(b);
+  }
   tick();
 }
 async function start() {
@@ -1011,6 +1057,15 @@ async function start() {
             `Server subtotal: ${money(serverQuote.total)} USD before applicable tax. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`
           )
         );
+        if (serverQuote.scopeApproved) {
+          const c = serverQuote.reviewedBilling;
+          $("server-summary").append(
+            el2(
+              "p",
+              `Approved billing address: ${c.billingAddress}, ${c.billingCity}, ${c.billingState} ${c.billingPostal}, ${c.billingCountry}. Use this exact address at Checkout. A change requires a new review; any temporary card authorization is released without collection.`
+            )
+          );
+        }
         $("checkout").hidden = !!session.paid;
         $("consent").closest("label").hidden = !!session.paid;
         if (session.paid && !serverQuote.missing.length) {
@@ -1071,6 +1126,17 @@ async function start() {
     try {
       const health = await api2("/health");
       applicationMode = health.applicationsEnabled === true;
+      unavailableSkus = health.unavailableSkus || [];
+      const invite = new URLSearchParams(location.hash.slice(1)).get(
+        "approved"
+      );
+      if (invite && $("configure-form")) {
+        history.replaceState(null, "", location.pathname + location.search);
+        const r = await api2("/api/v1/approved-orders/redeem", "POST", {
+          invitation: invite
+        });
+        save({ ...r, required: r.quote.required });
+      }
       enabled = health.enabled || applicationMode;
       if (applicationMode && $("configure-form")) {
         $("application-fields").hidden = false;
@@ -1081,7 +1147,7 @@ async function start() {
             '[name="businessName"]'
           ).required = $("business-use").checked;
         });
-        $("resume-form").closest("details").hidden = true;
+        $("resume-form").closest("details").hidden = !health.reviewedOrdersEnabled;
         const steps = document.querySelector(".portal-steps");
         if (steps)
           steps.replaceChildren(
@@ -1118,7 +1184,8 @@ async function start() {
         };
         document.head.append(script);
       }
-      if (session && !applicationMode && $("configure-form")) await workspace();
+      if (session && (!applicationMode || session.approvedApplication) && $("configure-form"))
+        await workspace();
     } catch (e) {
       notice(
         "Secure service unavailable. No payment or upload has been started. " + e.message
@@ -1193,7 +1260,7 @@ function adminUI() {
       ),
       el2(
         "p",
-        o.invoiceId ? "Stripe invoice reference: " + o.invoiceId : "No verified invoice reference recorded. Check Stripe before promising a PDF invoice."
+        o.portalInvoice ? "Verified portal PDF invoice available. Original financial evidence is immutable." : o.invoiceId ? "Stripe invoice reference: " + o.invoiceId : "No verified invoice reference recorded. Check Stripe before promising a PDF invoice."
       ),
       el2(
         "p",
@@ -1204,6 +1271,8 @@ function adminUI() {
         "Files inaccessible after " + new Date(o.expiresAt * 1e3).toISOString()
       )
     );
+    if (o.portalInvoice)
+      panel.append(invoiceButton(`/api/v1/admin/orders/${id}/invoice`, true));
     for (const f of o.files) {
       const b = el2("button", `Download ${f.name}`);
       b.className = "button";

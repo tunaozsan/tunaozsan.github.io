@@ -1919,3 +1919,69 @@ for (const tax_behavior of ["exclusive", "inferred_by_currency"])
       assert.equal(stripeCalls.length, 1);
     },
   );
+
+test("failed Checkout recovery preserves the original acceptance timestamp and fulfillment binding", async () => {
+  const o = await create();
+  await file(o);
+  let q: any = await (
+    await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+  ).json();
+  d.fetch = async (u: any, opt: any) =>
+    String(u).endsWith("/checkout/sessions")
+      ? new Response("synthetic provider failure", { status: 503 })
+      : fakeFetch(u, opt);
+  assert.equal(
+    (
+      await api(
+        `/api/v1/orders/${o.orderId}/checkout`,
+        "POST",
+        { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+        o.token,
+      )
+    ).status,
+    502,
+  );
+  const original = await e.DB.prepare(
+    "SELECT portal_accepted_at FROM agreement_acceptances WHERE order_id=?",
+  )
+    .bind(o.orderId)
+    .first();
+  // Exercise the controlled recovery path; no accepted scope is edited.
+  await e.DB.prepare("UPDATE orders SET status='DRAFT' WHERE id=?")
+    .bind(o.orderId)
+    .run();
+  clock += 60;
+  d.fetch = fakeFetch;
+  q = await (
+    await api(`/api/v1/orders/${o.orderId}/quote`, "POST", {}, o.token)
+  ).json();
+  assert.equal(
+    (
+      await api(
+        `/api/v1/orders/${o.orderId}/checkout`,
+        "POST",
+        { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
+        o.token,
+      )
+    ).status,
+    200,
+  );
+  const s = sessions["cs_test_" + o.orderId];
+  s.status = "complete";
+  s.payment_status = "paid";
+  s.consent = { terms_of_service: "accepted" };
+  assert.equal(
+    (
+      await signed({
+        id: "evt_retry_verified",
+        type: "checkout.session.completed",
+        livemode: false,
+        data: { object: s },
+      })
+    ).status,
+    200,
+  );
+  const { requireFulfillmentConsent } = await import("../src/consent");
+  const bound: any = await requireFulfillmentConsent(e, o.orderId);
+  assert.equal(bound.portal_accepted_at, original.portal_accepted_at);
+});

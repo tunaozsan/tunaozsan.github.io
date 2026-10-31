@@ -26,6 +26,7 @@ let session: any = null,
   activeXHR: XMLHttpRequest | null = null,
   enabled = false,
   applicationMode = false,
+  unavailableSkus: string[] = [],
   challenge = "",
   offset = 0;
 try {
@@ -100,7 +101,11 @@ function preview() {
         return n;
       }),
     );
-    $("scope-warning").textContent = q.scopeReview.join(" ");
+    $("scope-warning").textContent =
+      q.scopeReview.join(" ") +
+      (q.lines.some((l) => unavailableSkus.includes(l.sku))
+        ? " This add-on is currently unavailable for payment; other packages remain available for review."
+        : "");
     $("create-order").disabled =
       !enabled ||
       (!applicationMode && q.scopeReview.length > 0) ||
@@ -194,6 +199,38 @@ async function workspace() {
     "Required categories: " + (session.required || []).join(", ");
   await files();
 }
+function invoiceButton(path: string, admin = false) {
+  const b = el("button", "Download PDF invoice");
+  b.className = "button";
+  b.onclick = async () => {
+    b.disabled = true;
+    try {
+      const headers: Record<string, string> = admin
+        ? {}
+        : { Authorization: "Bearer " + session.token };
+      const r = await fetch(API_ORIGIN + path, {
+        headers,
+        credentials: admin ? "include" : "omit",
+        cache: "no-store",
+      });
+      if (!r.ok || !r.headers.get("Content-Type")?.includes("application/pdf"))
+        throw Error(
+          "Invoice unavailable; contact support with your order reference.",
+        );
+      const u = URL.createObjectURL(await r.blob()),
+        a = document.createElement("a");
+      a.href = u;
+      a.download = "Bluefin-Tuna-invoice.pdf";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(u), 1000);
+    } catch (e) {
+      notice((e as Error).message);
+    } finally {
+      b.disabled = false;
+    }
+  };
+  return b;
+}
 async function status() {
   if (!session) {
     notice(
@@ -209,6 +246,12 @@ async function status() {
     `${s.paid ? "Payment verified. " + (s.paidTotal == null ? "" : money(s.paidTotal) + " paid including " + money(s.paidTax ?? 0) + " tax. ") : "Payment not yet verified. "}${s.status.replaceAll("_", " ")} · ${s.orderId}`,
   );
   $("request-reupload").hidden = !s.canRequestReupload;
+  document.getElementById("customer-invoice")?.remove();
+  if (s.portalInvoice && s.serverTime < s.expiresAt) {
+    const b = invoiceButton(route("invoice"));
+    b.id = "customer-invoice";
+    $("request-reupload").parentElement?.append(b);
+  }
   tick();
 }
 async function start() {
@@ -454,6 +497,15 @@ async function start() {
             `Server subtotal: ${money(serverQuote.total)} USD before applicable tax. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`,
           ),
         );
+        if (serverQuote.scopeApproved) {
+          const c = serverQuote.reviewedBilling;
+          $("server-summary").append(
+            el(
+              "p",
+              `Approved billing address: ${c.billingAddress}, ${c.billingCity}, ${c.billingState} ${c.billingPostal}, ${c.billingCountry}. Use this exact address at Checkout. A change requires a new review; any temporary card authorization is released without collection.`,
+            ),
+          );
+        }
         $("checkout").hidden = !!session.paid;
         $("consent").closest("label").hidden = !!session.paid;
         if (session.paid && !serverQuote.missing.length) {
@@ -515,6 +567,17 @@ async function start() {
     try {
       const health = await api("/health");
       applicationMode = health.applicationsEnabled === true;
+      unavailableSkus = health.unavailableSkus || [];
+      const invite = new URLSearchParams(location.hash.slice(1)).get(
+        "approved",
+      );
+      if (invite && $("configure-form")) {
+        history.replaceState(null, "", location.pathname + location.search);
+        const r = await api("/api/v1/approved-orders/redeem", "POST", {
+          invitation: invite,
+        });
+        save({ ...r, required: r.quote.required });
+      }
       enabled = health.enabled || applicationMode;
       if (applicationMode && $("configure-form")) {
         $("application-fields").hidden = false;
@@ -525,7 +588,8 @@ async function start() {
             '[name="businessName"]',
           ).required = $("business-use").checked;
         });
-        $("resume-form").closest("details").hidden = true;
+        $("resume-form").closest("details").hidden =
+          !health.reviewedOrdersEnabled;
         const steps = document.querySelector(".portal-steps");
         if (steps)
           steps.replaceChildren(
@@ -571,7 +635,12 @@ async function start() {
         };
         document.head.append(script);
       }
-      if (session && !applicationMode && $("configure-form")) await workspace();
+      if (
+        session &&
+        (!applicationMode || session.approvedApplication) &&
+        $("configure-form")
+      )
+        await workspace();
     } catch (e) {
       notice(
         "Secure service unavailable. No payment or upload has been started. " +
@@ -661,9 +730,11 @@ function adminUI() {
       ),
       el(
         "p",
-        o.invoiceId
-          ? "Stripe invoice reference: " + o.invoiceId
-          : "No verified invoice reference recorded. Check Stripe before promising a PDF invoice.",
+        o.portalInvoice
+          ? "Verified portal PDF invoice available. Original financial evidence is immutable."
+          : o.invoiceId
+            ? "Stripe invoice reference: " + o.invoiceId
+            : "No verified invoice reference recorded. Check Stripe before promising a PDF invoice.",
       ),
       el(
         "p",
@@ -678,6 +749,8 @@ function adminUI() {
           new Date(o.expiresAt * 1000).toISOString(),
       ),
     );
+    if (o.portalInvoice)
+      panel.append(invoiceButton(`/api/v1/admin/orders/${id}/invoice`, true));
     for (const f of o.files) {
       const b = el("button", `Download ${f.name}`);
       b.className = "button";

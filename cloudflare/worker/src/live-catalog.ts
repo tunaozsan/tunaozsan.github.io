@@ -1,6 +1,10 @@
 // Verified against the merchant Live API on 2026-10-31. No guessed IDs.
 export const LIVE_ACCOUNT_ID = "acct_1UV444BzdKYgwVw6";
 export const livePrices: Record<string, { product: string; price: string }> = {
+  "EXTRA-50-UPDATE-R": {
+    product: "prod_VXbTMNDddMX6Zp",
+    price: "price_1UWWGOBzdKYgwVw67E2P15jO",
+  },
   p6_audit: {
     product: "prod_VW9ACK31oDmdvm",
     price: "price_1UV6sIBzdKYgwVw6fUIJaSf2",

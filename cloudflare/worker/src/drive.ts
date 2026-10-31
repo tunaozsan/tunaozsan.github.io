@@ -370,6 +370,33 @@ export async function node(
   if (parent) await metadata(t, parent, d);
   return row.drive_id as string;
 }
+export async function verifyWorkingRoot(e: DriveEnv, d: Deps = defaults) {
+  driveConfig(e);
+  const t = await access(e, d); // Actual refresh grant; never return the token.
+  const production = e.APP_ENV === "production";
+  const root = await node(
+    e,
+    t,
+    production ? "production-root" : "staging-root",
+    production
+      ? "Bluefin Tuna Client Projects"
+      : "Bluefin Tuna Staging Client Projects",
+    null,
+    "application/vnd.google-apps.folder",
+    d,
+  );
+  const m = await metadata(t, root, d);
+  if (m.mimeType !== "application/vnd.google-apps.folder")
+    throw new Problem(409, "drive_root_invalid");
+  return {
+    mode: e.APP_ENV,
+    oauth: "CONNECTED",
+    refreshVerified: true,
+    privateRootVerified: true,
+    rootEnvironment: production ? "production" : "staging",
+    checkedAt: d.now(),
+  };
+}
 export async function project(
   e: DriveEnv,
   t: string,

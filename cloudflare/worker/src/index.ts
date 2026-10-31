@@ -1,3 +1,4 @@
+import { invoiceResponse } from "./invoice";
 import {
   Problem,
   quote,
@@ -167,6 +168,15 @@ async function route(
   if (path === "/api/v1/stripe/webhook" && req.method === "POST")
     return json(await webhook(req, e, d));
   if (path.startsWith("/api/v1/admin/")) return adminRoute(req, e, d, url);
+  const invoicePath = path.match(
+    /^\/api\/v1\/orders\/([a-f0-9-]{36})\/invoice$/,
+  );
+  if (invoicePath && req.method === "GET") {
+    const o = await owner(req, e, invoicePath[1]);
+    alive(o, now);
+    await rate(e, "invoice:" + o.id, 30, now);
+    return invoiceResponse(e, o.id);
+  }
   enabled(e);
   await rate(
     e,
@@ -258,6 +268,11 @@ async function route(
       paid: !!o.paid_at,
       paidTotal: o.paid_total,
       paidTax: o.paid_tax,
+      portalInvoice: await e.DB.prepare(
+        "SELECT sequence,issued_at FROM order_invoices WHERE order_id=?",
+      )
+        .bind(o.id)
+        .first(),
       required: now < o.expires_at ? quote(JSON.parse(o.cart)).required : [],
       expiresAt: o.expires_at,
       serverTime: now,
@@ -324,6 +339,11 @@ async function route(
 }
 async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
   const actor = await admin(req, e, d);
+  const invoicePath = url.pathname.match(
+    /^\/api\/v1\/admin\/orders\/([a-f0-9-]{36})\/invoice$/,
+  );
+  if (invoicePath && req.method === "GET")
+    return invoiceResponse(e, invoicePath[1]);
   const agreementPath = url.pathname.match(
     /^\/api\/v1\/admin\/orders\/([a-f0-9-]{36})\/agreement$/,
   );
@@ -428,6 +448,11 @@ async function adminRoute(req: Request, e: Env, d: Deps, url: URL) {
       subtotal: o.subtotal,
       paidTotal: o.paid_total,
       paidTax: o.paid_tax,
+      portalInvoice: await e.DB.prepare(
+        "SELECT sequence,issued_at FROM order_invoices WHERE order_id=?",
+      )
+        .bind(o.id)
+        .first(),
       invoiceId: o.stripe_invoice_id,
       taxEvidence: await e.DB.prepare(
         "SELECT stripe_session_id,verified_at,currency,subtotal,tax,total,tax_status,tax_code,tax_behavior,billing_country,billing_state,breakdown_json FROM payment_tax_evidence WHERE order_id=?",

@@ -1,3 +1,6 @@
+import { approvalRoute } from "./order-approval";
+import { quote } from "./catalog";
+import { AGREEMENT_HASH, AGREEMENT_VERSION } from "./agreement";
 import { admin, defaults, digest, token, type Env } from "./security";
 import { checkout, quoteOrder, stripe } from "./payments";
 import { CONSULTING_TAX_CODE, STRIPE_REST_VERSION } from "./tax";
@@ -14,9 +17,9 @@ const page = `<!doctype html><meta charset="utf-8"><title>Bluefin Sandbox Tax Ve
 <h1>Stripe Tax · isolated Sandbox</h1><p>Synthetic fixtures only. No live payments. Customer intake stays closed.</p>
 <button data-action="inspect">Inspect tax setup</button><button data-action="setup">Configure synthetic SD tax registration</button>
 <button data-action="catalog">Set existing Sandbox catalog tax codes</button>
-<hr><label>Scenario <input id="scenario" value="taxed" pattern="taxed|zero|missing|cancel"></label>
+<hr><label>Scenario <input id="scenario" value="taxed" pattern="taxed|zero|missing|cancel|reviewed|address-change"></label>
 <label><input type="checkbox" id="consent"> Accept current service terms for this synthetic test order</label>
-<button data-action="create">Create synthetic Checkout</button><a id="checkout" hidden>Open Sandbox Checkout</a>
+<button data-action="create">Create synthetic Checkout</button><button data-action="retry-reviewed">Retry incomplete reviewed fixture</button><a id="checkout" hidden>Open Sandbox Checkout</a>
 <label>Order <input id="order" size="40"></label><button data-action="evidence">Read verified evidence</button><button data-action="refund">Refund synthetic payment</button><button data-action="expire">Expire unpaid synthetic session</button>
 <pre id="result" aria-live="polite"></pre><script>
 for(const button of document.querySelectorAll('button')) button.onclick=async()=>{
@@ -214,7 +217,14 @@ export async function stagingTaxTools(
       result = { existingPrices: changed, noProductsOrPricesCreated: true };
     } else if (action === "create") {
       if (
-        !["taxed", "zero", "missing", "cancel"].includes(b.scenario) ||
+        ![
+          "taxed",
+          "zero",
+          "missing",
+          "cancel",
+          "reviewed",
+          "address-change",
+        ].includes(b.scenario) ||
         b.consent !== true
       )
         throw new Problem(400, "synthetic_consent_required");
@@ -226,8 +236,8 @@ export async function stagingTaxTools(
         .bind(MARKER, defaults.now() - 86400)
         .first();
       if (count.n >= 8) throw new Problem(409, "fixture_limit");
-      const id = crypto.randomUUID(),
-        now = defaults.now(),
+      let id = crypto.randomUUID();
+      const now = defaults.now(),
         cart = {
           sku: "p6_audit",
           activities: 150,
@@ -235,25 +245,101 @@ export async function stagingTaxTools(
           materials: [],
           existingResources: false,
         };
-      await e.DB.prepare(
-        "INSERT INTO orders(id,token_hash,sku,cart,customer,subtotal,created_at,expires_at,updated_at) VALUES (?,?,?,?,?,19900,?,?,?)",
-      )
-        .bind(
-          id,
-          await digest(token()),
-          "p6_audit",
-          JSON.stringify(cart),
-          JSON.stringify({
-            name: "Synthetic Tax " + b.scenario,
-            email: "staging-tests@example.com",
-            project: MARKER,
-            dataDate: "2026-10-31",
-          }),
-          now,
-          now + TTL,
-          now,
+      const reviewed = ["reviewed", "address-change"].includes(b.scenario);
+      const controlled = {
+        ...e,
+        APPROVED_ORDERS_ENABLED: "true",
+        PORTAL_ENABLED: "false",
+        LEGAL_APPROVED: "true",
+        TAX_MODE: "automatic",
+        INVOICE_CREATION: "true",
+        REVIEWED_INVOICE_MODE: "portal_pdf",
+      };
+      if (reviewed) {
+        const customer = {
+          name: "Synthetic Review",
+          email: "staging-tests@example.com",
+          project: MARKER,
+          dataDate: "2026-10-31",
+          businessUse: true,
+          businessName: "Synthetic Ltd",
+          billingCountry: "US",
+          billingState: "SD",
+          billingAddress: "224 W 9th St",
+          billingCity: "Sioux Falls",
+          billingPostal: "57104",
+          projectCountry: "US",
+        };
+        const scope = JSON.stringify(quote(cart));
+        await e.DB.prepare(
+          "INSERT INTO service_applications(id,customer_json,scope_json,quote_sha256,terms_version,terms_sha256,accepted_at,created_at,expires_at,status,review_reasons_json) VALUES (?,?,?,?,?,?,?,?,?,'SYNTHETIC_REVIEW','[]')",
         )
-        .run();
+          .bind(
+            id,
+            JSON.stringify(customer),
+            scope,
+            await digest(scope),
+            AGREEMENT_VERSION,
+            AGREEMENT_HASH,
+            now,
+            now,
+            now + 86400,
+          )
+          .run();
+        const rreq = (path: string, body: any) =>
+          new Request(ORIGIN + path, {
+            method: "POST",
+            headers: req.headers,
+            body: JSON.stringify(body),
+          });
+        const approved: any = await (
+          await approvalRoute(
+            rreq("/api/v1/admin/applications/" + id + "/approve", {
+              basisReference:
+                "Sandbox SD synthetic registration; not a Live legal basis",
+              basisHash: await digest("Synthetic Sandbox SD 20261031"),
+              kind: "registered",
+              registrationId: "taxreg_1UWVNHBxU4PsnoX0BVIXe9TF",
+              reasonCodes: ["standard_rated"],
+              scopeReviewed: true,
+            }),
+            controlled,
+            defaults,
+          )
+        ).json();
+        const redeemed: any = await (
+          await approvalRoute(
+            rreq("/api/v1/approved-orders/redeem", {
+              invitation: new URL(approved.invitationUrl).hash.slice(
+                "#approved=".length,
+              ),
+            }),
+            controlled,
+            defaults,
+          )
+        ).json();
+        id = redeemed.orderId;
+      } else {
+        await e.DB.prepare(
+          "INSERT INTO orders(id,token_hash,sku,cart,customer,subtotal,created_at,expires_at,updated_at) VALUES (?,?,?,?,?,19900,?,?,?)",
+        )
+          .bind(
+            id,
+            await digest(token()),
+            "p6_audit",
+            JSON.stringify(cart),
+            JSON.stringify({
+              name: "Synthetic Tax " + b.scenario,
+              email: "staging-tests@example.com",
+              project: MARKER,
+              dataDate: "2026-10-31",
+            }),
+            now,
+            now + TTL,
+            now,
+          )
+          .run();
+      }
       let o: any = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
         .bind(id)
         .first();
@@ -271,17 +357,60 @@ export async function stagingTaxTools(
         o,
         defaults,
       );
-      const q = await quoteOrder(e, defaults, o);
+      const q = await quoteOrder(reviewed ? controlled : e, defaults, o);
       o = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
         .bind(id)
         .first();
       const session = await checkout(
-        { ...e, TAX_MODE: "automatic", INVOICE_CREATION: "true" },
+        reviewed
+          ? controlled
+          : { ...e, TAX_MODE: "automatic", INVOICE_CREATION: "true" },
         defaults,
         o,
         { consent: true, termsVersion: TERMS, quoteHash: q.quoteHash },
       );
       result = { orderId: id, scenario: b.scenario, ...session };
+    } else if (action === "retry-reviewed") {
+      if (b.consent !== true || !/^[a-f0-9-]{36}$/.test(b.order || ""))
+        throw new Problem(400, "synthetic_consent_required");
+      let o: any = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
+        .bind(b.order)
+        .first();
+      if (
+        !o ||
+        JSON.parse(o.customer).project !== MARKER ||
+        o.stripe_session_id ||
+        o.paid_at
+      )
+        throw new Problem(409, "incomplete_fixture_required");
+      const controlled = {
+        ...e,
+        APPROVED_ORDERS_ENABLED: "true",
+        LEGAL_APPROVED: "true",
+        TAX_MODE: "automatic",
+        INVOICE_CREATION: "true",
+        REVIEWED_INVOICE_MODE: "portal_pdf",
+      };
+      await e.DB.prepare(
+        "UPDATE orders SET status='DRAFT' WHERE id=? AND stripe_session_id IS NULL AND paid_at IS NULL",
+      )
+        .bind(o.id)
+        .run();
+      o = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
+        .bind(o.id)
+        .first();
+      const q = await quoteOrder(controlled, defaults, o);
+      o = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
+        .bind(o.id)
+        .first();
+      result = {
+        orderId: o.id,
+        ...(await checkout(controlled, defaults, o, {
+          consent: true,
+          termsVersion: TERMS,
+          quoteHash: q.quoteHash,
+        })),
+      };
     } else {
       if (!/^[a-f0-9-]{36}$/.test(b.order || ""))
         throw new Problem(400, "invalid_order");
@@ -322,7 +451,25 @@ export async function stagingTaxTools(
               );
         result = { session: r.id, status: r.status };
       } else if (action === "evidence") {
+        const approval = await e.DB.prepare(
+          "SELECT id,application_id,revoked_at,invalid_reason,redeemed_at FROM application_approvals WHERE order_id=?",
+        )
+          .bind(o.id)
+          .first();
+        const pi = s.payment_intent
+          ? await api("payment_intents/" + s.payment_intent)
+          : null;
         result = {
+          approval,
+          authorization: pi
+            ? {
+                status: pi.status,
+                captureMethod: pi.capture_method,
+                amount: pi.amount,
+                received: pi.amount_received,
+                capturable: pi.amount_capturable,
+              }
+            : null,
           order: {
             id: o.id,
             status: o.status,
@@ -354,6 +501,11 @@ export async function stagingTaxTools(
               .bind(o.id)
               .all()
           ).results,
+          portalInvoice: await e.DB.prepare(
+            "SELECT sequence,order_id,stripe_session_id,issued_at,snapshot_sha256 FROM order_invoices WHERE order_id=?",
+          )
+            .bind(o.id)
+            .first(),
           refund: await e.DB.prepare(
             "SELECT * FROM payment_refund_holds WHERE order_id=?",
           )

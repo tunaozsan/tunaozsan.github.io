@@ -1,3 +1,5 @@
+import { invoiceNumber } from "./invoice";
+import { verifyWorkingRoot } from "./drive";
 import { checkRefund, reconcileRefunds } from "./refunds";
 import { requireFulfillmentConsent } from "./consent";
 import { stripe } from "./payments";
@@ -53,6 +55,12 @@ async function snapshot(e: DriveEnv, order: string, d: Deps) {
     .bind(order)
     .first<any>();
   if (!o?.paid_at) fail("verified_payment_required", 403);
+  const invoice = await e.DB.prepare(
+    "SELECT sequence,issued_at FROM order_invoices WHERE order_id=?",
+  )
+    .bind(order)
+    .first();
+  o.portal_invoice_number = invoice ? invoiceNumber(invoice, e.APP_ENV) : null;
   const p = await e.DB.prepare("SELECT * FROM drive_projects WHERE order_id=?")
     .bind(order)
     .first<any>();
@@ -217,6 +225,10 @@ export async function deliveryRoute(
           !!e.GOOGLE_CLIENT_SECRET &&
           !!e.DRIVE_TOKEN_KEY,
       });
+    } else if (path === "/api/v1/admin/drive/verify" && req.method === "POST") {
+      await admin(req, e, d);
+      sameOrigin(req, e);
+      response = Response.json(await verifyWorkingRoot(e, d));
     } else if (path === "/api/v1/admin/drive/retry" && req.method === "POST") {
       const actor = await admin(req, e, d);
       sameOrigin(req, e);

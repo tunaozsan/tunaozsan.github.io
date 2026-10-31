@@ -84,6 +84,16 @@ export function setupDriveAdmin(origin: string, parent: HTMLElement) {
   );
   section.append(
     button(
+      "Verify refresh and private root",
+      async () => {
+        const r = await api(origin, "/api/v1/admin/drive/verify", {});
+        message.textContent = `OAuth: ${r.oauth}. Refresh: verified. Private ${r.rootEnvironment} root: verified.`;
+      },
+      message,
+    ),
+  );
+  section.append(
+    button(
       "Connect personal Drive",
       async () => {
         const r = await api(origin, "/api/v1/admin/drive/oauth/start", {});
@@ -147,7 +157,7 @@ export async function showDeliveryAdmin(
     box.remove();
     await showDeliveryAdmin(origin, order, parent);
   };
-  status.textContent = `PAYMENT VERIFIED · ${data.delivery?.status || "WORK IN PROGRESS"}${data.hold ? " · HOLD: " + data.hold : ""}. Invoice: ${data.order.stripe_invoice_id || "No invoice recorded — review required"}`;
+  status.textContent = `PAYMENT VERIFIED · ${data.delivery?.status || "WORK IN PROGRESS"}${data.hold ? " · HOLD: " + data.hold : ""}. Invoice: ${data.order.portal_invoice_number || data.order.stripe_invoice_id || "No invoice recorded — review required"}`;
   const date = (value: number | null) =>
     value ? new Date(value * 1000).toLocaleString() : "Not scheduled";
   const summary = el("dl", "");

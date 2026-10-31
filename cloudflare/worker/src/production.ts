@@ -1,3 +1,10 @@
+import {
+  approvalRoute,
+  approvalForOrder,
+  approvedIntakeReady,
+  type ApprovalEnv,
+} from "./order-approval";
+import { digest, equal } from "./security";
 import { app } from "./index";
 import { deliveryRoute, deliveryMaintenance } from "./delivery";
 import { type DriveEnv } from "./drive";
@@ -13,7 +20,8 @@ import { AGREEMENT_HASH, AGREEMENT_VERSION } from "./agreement";
 import { liveReadiness } from "./live-readiness";
 import { setupLiveWebhook, type LiveSetupEnv } from "./live-webhook-setup";
 import { liveMaintenance } from "./live-maintenance";
-type ProductionEnv = ApplicationEnv &
+type ProductionEnv = ApprovalEnv &
+  ApplicationEnv &
   LiveSetupEnv &
   DriveEnv & { ASSETS: Fetcher };
 // Deliberately no staging tooling or synthetic-payment overrides in this build.
@@ -42,6 +50,10 @@ export function production(d: Deps = defaults) {
             applicationsEnabled: applicationsReady(e),
             checkoutEnabled: false,
             filesEnabled: false,
+            reviewedOrdersEnabled: approvedIntakeReady(e),
+            unavailableSkus: (e.UNAVAILABLE_SKUS || "")
+              .split(",")
+              .filter(Boolean),
             termsVersion: AGREEMENT_VERSION,
             termsHash: AGREEMENT_HASH,
           });
@@ -56,7 +68,30 @@ export function production(d: Deps = defaults) {
           path === "/api/v1/admin/applications"
         )
           response = await applications(req, e, d);
-        else if (path.includes("/staging-") || path.includes("/sandbox-"))
+        else if (
+          path === "/api/v1/approved-orders/redeem" ||
+          /^\/api\/v1\/admin\/applications\/[a-f0-9-]{36}\/(approve|revoke)$/.test(
+            path,
+          )
+        )
+          response = await approvalRoute(req, e, d);
+        else if (/^\/api\/v1\/orders\/[a-f0-9-]{36}\//.test(path)) {
+          if (!["GET", "HEAD"].includes(req.method) && !approvedIntakeReady(e))
+            throw new Problem(503, "approved_intake_closed");
+          const oid = path.split("/")[4];
+          const cap = req.headers
+            .get("authorization")
+            ?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
+          if (!cap) throw new Problem(401, "order_access_required");
+          const o = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
+            .bind(oid)
+            .first<any>();
+          if (!o || !equal(o.token_hash, await digest(cap)))
+            throw new Problem(404, "order_not_found");
+          if (!["GET", "HEAD"].includes(req.method))
+            await approvalForOrder(e, d, o);
+          response = await portal.fetch(req, { ...e, PORTAL_ENABLED: "true" });
+        } else if (path.includes("/staging-") || path.includes("/sandbox-"))
           throw new Problem(404, "not_found");
         else if (
           path.startsWith("/api/v1/delivery/") ||

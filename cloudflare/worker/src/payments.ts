@@ -1,3 +1,10 @@
+import { invoiceStatement } from "./invoice";
+import {
+  approvalForOrder,
+  captureReviewed,
+  ReviewRejected,
+} from "./order-approval";
+import { verifyWorkingRoot } from "./drive";
 import {
   CONSULTING_TAX_CODE,
   STRIPE_REST_VERSION,
@@ -29,7 +36,19 @@ export async function stripe(
     body,
     signal: AbortSignal.timeout(15000),
   });
-  if (!r.ok) throw new Problem(502, "payment_provider_unavailable");
+  if (!r.ok) {
+    if (e.APP_ENV === "test") {
+      const failure: any = await r.json().catch(() => ({}));
+      const msg = String(failure.error?.message || "")
+        .replace(
+          /(?:sk|rk|pk)_(?:live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|Bearer\s+\S+|https?:\/\/\S+|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,
+          "[redacted]",
+        )
+        .slice(0, 500);
+      throw new Problem(502, "payment_provider_http_" + r.status + "_" + msg);
+    }
+    throw new Problem(502, "payment_provider_unavailable");
+  }
   return (await r.json()) as any;
 }
 export async function checkout(e: Env, d: Deps, o: any, body: any) {
@@ -38,6 +57,8 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   if (e.APP_ENV === "production" && e.TAX_MODE !== "automatic")
     throw new Problem(503, "automatic_tax_required");
   if (o.paid_at) throw new Problem(409, "already_paid");
+  const approval = await approvalForOrder(e, d, o);
+  if (approval) await verifyWorkingRoot(e, d);
   if (o.expires_at - d.now() < 1860)
     throw new Problem(409, "too_late_for_checkout");
   if (body.consent !== true || body.termsVersion !== TERMS)
@@ -88,6 +109,10 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   )
     throw new Problem(409, "quote_expired");
   const q = quote(JSON.parse(o.cart));
+  if (
+    q.lines.some((l) => (e.UNAVAILABLE_SKUS || "").split(",").includes(l.sku))
+  )
+    throw new Problem(503, "selected_addon_unavailable");
   const currentHash = await digest(
     JSON.stringify({
       cart: q.cart,
@@ -98,7 +123,8 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
   );
   if (q.total !== o.subtotal || currentHash !== o.quote_hash)
     throw new Problem(409, "quote_changed_review_again");
-  if (q.scopeReview.length) throw new Problem(409, "scope_review_required");
+  if (q.scopeReview.length && !approval)
+    throw new Problem(409, "scope_review_required");
   const files = await e.DB.prepare(
     "SELECT category FROM order_files WHERE order_id=? AND state='READY' AND expires_at>?",
   )
@@ -134,7 +160,7 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     )
     .join(" AND ");
   const frozen = await e.DB.prepare(
-    "UPDATE orders SET status='AWAITING_PAYMENT',consent_version=?,consent_at=?,updated_at=? WHERE id=? AND status='DRAFT' AND expires_at>? AND quote_hash=? AND NOT EXISTS(SELECT 1 FROM order_files WHERE order_id=orders.id AND state='UPLOADING') AND " +
+    "UPDATE orders SET status='AWAITING_PAYMENT',consent_version=?,consent_at=COALESCE(consent_at,?),updated_at=? WHERE id=? AND status='DRAFT' AND expires_at>? AND quote_hash=? AND NOT EXISTS(SELECT 1 FROM order_files WHERE order_id=orders.id AND state='UPLOADING') AND " +
       requiredSQL,
   )
     .bind(
@@ -221,17 +247,43 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     customer_email: JSON.parse(o.customer).email,
     billing_address_collection: "required",
     "automatic_tax[enabled]": String(e.TAX_MODE === "automatic"),
-    "invoice_creation[enabled]": String(e.INVOICE_CREATION === "true"),
+    "invoice_creation[enabled]": String(
+      e.INVOICE_CREATION === "true" && !approval,
+    ),
     "consent_collection[terms_of_service]": "required",
   });
+  if (approval) {
+    if (e.REVIEWED_INVOICE_MODE !== "portal_pdf")
+      throw new Problem(503, "reviewed_invoice_not_configured");
+    b.delete("invoice_creation[enabled]");
+    b.set("metadata[invoice_mode]", "portal_pdf");
+    b.set("customer_creation", "always");
+    b.set("payment_intent_data[capture_method]", "manual");
+    b.set("payment_intent_data[metadata][order_id]", o.id);
+    b.set("metadata[approval_id]", approval.id);
+    b.set("metadata[customer_sha256]", approval.customer_sha256);
+  }
   if (e.TAX_MODE === "automatic") {
     b.set("tax_id_collection[enabled]", "true");
     b.set("tax_id_collection[required]", "never");
     b.set("metadata[tax_mode]", "automatic");
     b.set("metadata[tax_code]", CONSULTING_TAX_CODE);
   }
-  if (e.INVOICE_CREATION === "true") {
+  if (e.INVOICE_CREATION === "true" && !approval) {
     b.set("customer_creation", "always");
+    b.set(
+      "invoice_creation[invoice_data][custom_fields][0][name]",
+      "Order reference",
+    );
+    b.set("invoice_creation[invoice_data][custom_fields][0][value]", o.id);
+    b.set(
+      "invoice_creation[invoice_data][custom_fields][1][name]",
+      "Project reference",
+    );
+    b.set(
+      "invoice_creation[invoice_data][custom_fields][1][value]",
+      JSON.parse(o.customer).project.slice(0, 140),
+    );
     b.set("invoice_creation[invoice_data][metadata][order_id]", o.id);
     b.set(
       "invoice_creation[invoice_data][description]",
@@ -297,7 +349,7 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     d,
     "checkout/sessions",
     b,
-    `checkout-${o.id}-${o.quote_hash}`,
+    `checkout-${approval ? "reviewed-pdf-v2-" : ""}${o.id}-${o.quote_hash}`,
   );
   if (
     session.consent_collection?.terms_of_service !== "required" ||
@@ -389,7 +441,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
   )
     .bind(o.id)
     .first<any>();
-  const s = await stripe(
+  let s = await stripe(
     e,
     d,
     "checkout/sessions/" +
@@ -420,7 +472,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     s.total_details?.amount_shipping
   )
     throw new Problem(400, "payment_mismatch");
-  const paid = s.payment_status === "paid" && s.status === "complete";
+  let paid = s.payment_status === "paid" && s.status === "complete";
   const acceptance = await e.DB.prepare(
     "SELECT * FROM agreement_acceptances WHERE order_id=?",
   )
@@ -437,11 +489,46 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
       (paid && s.consent?.terms_of_service !== "accepted"))
   )
     throw new Problem(409, "stripe_consent_not_verified");
+  if (s.status === "complete") {
+    const approval = await e.DB.prepare(
+      "SELECT a.*,p.customer_json FROM application_approvals a JOIN service_applications p ON p.id=a.application_id WHERE a.order_id=?",
+    )
+      .bind(o.id)
+      .first<any>();
+    if (s.metadata?.approval_id && !approval)
+      throw new Problem(409, "approved_application_required");
+    if (approval && !o.paid_at) {
+      if (
+        s.metadata?.approval_id !== approval.id ||
+        s.metadata?.customer_sha256 !== approval.customer_sha256
+      )
+        throw new Problem(409, "checkout_review_not_bound");
+      try {
+        s = await captureReviewed(e, d, o, s, approval);
+      } catch (error) {
+        if (!(error instanceof ReviewRejected)) throw error;
+        await e.DB.batch([
+          e.DB.prepare(
+            "INSERT OR IGNORE INTO payment_events(id,event_type,order_id,created_at,status) VALUES (?,?,?,?,'REVIEW_REQUIRED')",
+          ).bind(event.id, event.type, o.id, d.now()),
+          e.DB.prepare(
+            "INSERT INTO audit_events(order_id,actor,action,created_at) VALUES (?,'stripe-webhook',?,?)",
+          ).bind(o.id, "authorization_released:" + error.code, d.now()),
+        ]);
+        return { received: true, reviewRequired: true, charged: false };
+      }
+      paid = s.payment_status === "paid" && s.status === "complete";
+    }
+  }
   if (!paid && event.type === "checkout.session.async_payment_succeeded")
     throw new Problem(400, "payment_not_paid");
   // Validation happens before any PAID/consent/fulfillment mutation; intent survives intake closure.
   const taxRecord =
     paid && taxRequirement ? taxStatement(e, d, s, o, event) : null;
+  const invoiceRecord =
+    paid && s.metadata?.invoice_mode === "portal_pdf"
+      ? await invoiceStatement(e, d, o, s, acceptance, event)
+      : null;
   const state = paid
     ? d.now() >= o.expires_at
       ? "PAID_FILES_EXPIRED"
@@ -453,6 +540,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
         : "PAYMENT_PROCESSING";
   await e.DB.batch([
     ...(taxRecord ? [taxRecord] : []),
+    ...(invoiceRecord ? [invoiceRecord] : []),
     ...(acceptance && paid
       ? [
           e.DB.prepare(
@@ -490,6 +578,7 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
   return { received: true };
 }
 export async function quoteOrder(e: Env, d: Deps, o: any) {
+  const approval = await approvalForOrder(e, d, o);
   const q = quote(JSON.parse(o.cart));
   const files = await e.DB.prepare(
     "SELECT category FROM order_files WHERE order_id=? AND state='READY' AND expires_at>?",
@@ -526,5 +615,7 @@ export async function quoteOrder(e: Env, d: Deps, o: any) {
     termsVersion: TERMS,
     agreementHash: AGREEMENT_HASH,
     agreementStatus: AGREEMENT_STATUS,
+    scopeApproved: !!approval,
+    reviewedBilling: approval ? JSON.parse(approval.customer_json) : undefined,
   };
 }
