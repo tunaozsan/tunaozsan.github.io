@@ -1,4 +1,5 @@
 import { invoiceStatement } from "./invoice";
+import { DIRECT_CHECKOUT_POLICY, isDirectOrder } from "./direct-checkout";
 import {
   approvalForOrder,
   captureReviewed,
@@ -58,7 +59,9 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     throw new Problem(503, "automatic_tax_required");
   if (o.paid_at) throw new Problem(409, "already_paid");
   const approval = await approvalForOrder(e, d, o);
-  if (approval) await verifyWorkingRoot(e, d);
+  const direct = isDirectOrder(o),
+    portalInvoice = !!approval || direct;
+  if (portalInvoice) await verifyWorkingRoot(e, d);
   if (o.expires_at - d.now() < 1860)
     throw new Problem(409, "too_late_for_checkout");
   if (body.consent !== true || body.termsVersion !== TERMS)
@@ -207,6 +210,12 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
         total: q.total,
         currency: "usd",
         required: q.required,
+        ...(direct
+          ? {
+              checkoutPolicy: DIRECT_CHECKOUT_POLICY,
+              customerSha256: await digest(o.customer),
+            }
+          : {}),
       }),
       o.quote_hash,
       acceptedOrder.consent_at,
@@ -248,18 +257,27 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     billing_address_collection: "required",
     "automatic_tax[enabled]": String(e.TAX_MODE === "automatic"),
     "invoice_creation[enabled]": String(
-      e.INVOICE_CREATION === "true" && !approval,
+      e.INVOICE_CREATION === "true" && !portalInvoice,
     ),
     "consent_collection[terms_of_service]": "required",
   });
-  if (approval) {
+  if (portalInvoice) {
     if (e.REVIEWED_INVOICE_MODE !== "portal_pdf")
       throw new Problem(503, "reviewed_invoice_not_configured");
     b.delete("invoice_creation[enabled]");
     b.set("metadata[invoice_mode]", "portal_pdf");
     b.set("customer_creation", "always");
-    b.set("payment_intent_data[capture_method]", "manual");
+    b.set(
+      "payment_intent_data[capture_method]",
+      approval ? "manual" : "automatic",
+    );
     b.set("payment_intent_data[metadata][order_id]", o.id);
+  }
+  if (direct) {
+    b.set("metadata[checkout_policy]", DIRECT_CHECKOUT_POLICY);
+    b.set("metadata[customer_sha256]", await digest(o.customer));
+  }
+  if (approval) {
     b.set("metadata[approval_id]", approval.id);
     b.set("metadata[customer_sha256]", approval.customer_sha256);
   }
@@ -269,7 +287,7 @@ export async function checkout(e: Env, d: Deps, o: any, body: any) {
     b.set("metadata[tax_mode]", "automatic");
     b.set("metadata[tax_code]", CONSULTING_TAX_CODE);
   }
-  if (e.INVOICE_CREATION === "true" && !approval) {
+  if (e.INVOICE_CREATION === "true" && !portalInvoice) {
     b.set("customer_creation", "always");
     b.set(
       "invoice_creation[invoice_data][custom_fields][0][name]",
@@ -479,6 +497,40 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
     .bind(o.id)
     .first<any>();
   if (!acceptance) throw new Problem(409, "consent_record_missing");
+  if (isDirectOrder(o)) {
+    const scope = JSON.parse(acceptance.scope_json);
+    if (
+      s.metadata?.checkout_policy !== DIRECT_CHECKOUT_POLICY ||
+      scope.checkoutPolicy !== DIRECT_CHECKOUT_POLICY ||
+      scope.customerSha256 !== (await digest(o.customer)) ||
+      s.metadata?.customer_sha256 !== scope.customerSha256
+    )
+      throw new Problem(409, "direct_checkout_not_bound");
+    if (paid) {
+      const piId =
+        typeof s.payment_intent === "string"
+          ? s.payment_intent
+          : s.payment_intent?.id;
+      if (!/^pi_/.test(piId || ""))
+        throw new Problem(409, "payment_intent_missing");
+      const pi = await stripe(
+        e,
+        d,
+        "payment_intents/" + encodeURIComponent(piId),
+      );
+      if (
+        pi.id !== piId ||
+        pi.status !== "succeeded" ||
+        pi.capture_method !== "automatic" ||
+        pi.livemode !== s.livemode ||
+        pi.currency !== "usd" ||
+        pi.metadata?.order_id !== o.id ||
+        pi.amount !== s.amount_total ||
+        pi.amount_received !== s.amount_total
+      )
+        throw new Problem(409, "capture_not_verified");
+    }
+  }
   if (
     acceptance &&
     (acceptance.stripe_session_id !== s.id ||

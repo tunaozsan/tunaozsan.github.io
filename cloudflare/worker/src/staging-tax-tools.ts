@@ -1,3 +1,4 @@
+import { DIRECT_CHECKOUT_POLICY } from "./direct-checkout";
 import { approvalRoute } from "./order-approval";
 import { quote } from "./catalog";
 import { AGREEMENT_HASH, AGREEMENT_VERSION } from "./agreement";
@@ -17,7 +18,7 @@ const page = `<!doctype html><meta charset="utf-8"><title>Bluefin Sandbox Tax Ve
 <h1>Stripe Tax · isolated Sandbox</h1><p>Synthetic fixtures only. No live payments. Customer intake stays closed.</p>
 <button data-action="inspect">Inspect tax setup</button><button data-action="setup">Configure synthetic SD tax registration</button>
 <button data-action="catalog">Set existing Sandbox catalog tax codes</button>
-<hr><label>Scenario <input id="scenario" value="taxed" pattern="taxed|zero|missing|cancel|reviewed|address-change"></label>
+<hr><label>Scenario <input id="scenario" value="taxed" pattern="taxed|zero|missing|cancel|reviewed|address-change|direct-taxed|direct-zero"></label>
 <label><input type="checkbox" id="consent"> Accept current service terms for this synthetic test order</label>
 <button data-action="create">Create synthetic Checkout</button><button data-action="retry-reviewed">Retry incomplete reviewed fixture</button><a id="checkout" hidden>Open Sandbox Checkout</a>
 <label>Order <input id="order" size="40"></label><button data-action="evidence">Read verified evidence</button><button data-action="refund">Refund synthetic payment</button><button data-action="expire">Expire unpaid synthetic session</button>
@@ -224,6 +225,8 @@ export async function stagingTaxTools(
           "cancel",
           "reviewed",
           "address-change",
+          "direct-taxed",
+          "direct-zero",
         ].includes(b.scenario) ||
         b.consent !== true
       )
@@ -245,9 +248,12 @@ export async function stagingTaxTools(
           materials: [],
           existingResources: false,
         };
+      const direct = b.scenario.startsWith("direct-");
       const reviewed = ["reviewed", "address-change"].includes(b.scenario);
       const controlled = {
         ...e,
+        DIRECT_CHECKOUT_ENABLED: direct ? "true" : "false",
+        DIRECT_CHECKOUT_POLICY,
         APPROVED_ORDERS_ENABLED: "true",
         PORTAL_ENABLED: "false",
         LEGAL_APPROVED: "true",
@@ -341,6 +347,25 @@ export async function stagingTaxTools(
               email: "staging-tests@example.com",
               project: MARKER,
               dataDate: "2026-10-31",
+              ...(direct
+                ? {
+                    checkoutPolicy: DIRECT_CHECKOUT_POLICY,
+                    businessUse: true,
+                    businessName: "Synthetic Ltd",
+                    billingCountry: "US",
+                    billingState: b.scenario === "direct-taxed" ? "SD" : "OR",
+                    billingAddress: "Synthetic fixture",
+                    billingCity: "Synthetic",
+                    billingPostal:
+                      b.scenario === "direct-taxed" ? "57104" : "97205",
+                    projectCountry: "US",
+                    projectState: b.scenario === "direct-taxed" ? "SD" : "OR",
+                    serviceNature: "Synthetic P6 consulting",
+                    firstUseCountry: "US",
+                    firstUseState: b.scenario === "direct-taxed" ? "SD" : "OR",
+                    firstUseLocation: "Synthetic office",
+                  }
+                : {}),
             }),
             now,
             now + TTL,
@@ -365,12 +390,16 @@ export async function stagingTaxTools(
         o,
         defaults,
       );
-      const q = await quoteOrder(reviewed ? controlled : e, defaults, o);
+      const q = await quoteOrder(
+        reviewed || direct ? controlled : e,
+        defaults,
+        o,
+      );
       o = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
         .bind(id)
         .first();
       const session = await checkout(
-        reviewed
+        reviewed || direct
           ? controlled
           : { ...e, TAX_MODE: "automatic", INVOICE_CREATION: "true" },
         defaults,

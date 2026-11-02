@@ -3,6 +3,8 @@ import { Problem } from "./catalog";
 export interface Env {
   ASSETS?: Fetcher;
   REVIEWED_INVOICE_MODE?: string;
+  DIRECT_CHECKOUT_ENABLED?: string;
+  DIRECT_CHECKOUT_POLICY?: string;
   DB: D1Database;
   UPLOADS: R2Bucket;
   APP_ENV: string;

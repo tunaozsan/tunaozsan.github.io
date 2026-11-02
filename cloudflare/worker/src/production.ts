@@ -5,6 +5,7 @@ import {
   type ApprovalEnv,
 } from "./order-approval";
 import { digest, equal } from "./security";
+import { directIntakeReady } from "./direct-checkout";
 import { app } from "./index";
 import { deliveryRoute, deliveryMaintenance } from "./delivery";
 import { type DriveEnv } from "./drive";
@@ -25,7 +26,8 @@ type ProductionEnv = ApprovalEnv &
   LiveSetupEnv &
   DriveEnv & { ASSETS: Fetcher };
 // Deliberately no staging tooling or synthetic-payment overrides in this build.
-// General intake stays closed. Individual documented reviews authorize the scoped route.
+// Direct checkout follows the owner's configured Stripe Tax policy. Historical
+// individually reviewed orders retain their original approval/capture controls.
 export function production(d: Deps = defaults) {
   const portal = app(d);
   return {
@@ -35,6 +37,7 @@ export function production(d: Deps = defaults) {
           status: 503,
         });
       const path = new URL(req.url).pathname;
+      const direct = directIntakeReady(e);
       let response: Response;
       try {
         if (
@@ -46,12 +49,15 @@ export function production(d: Deps = defaults) {
           response = Response.json({
             service: "bluefin-project-portal",
             mode: "production",
-            enabled: false,
+            enabled: direct,
             applicationsEnabled: applicationsReady(e),
-            checkoutEnabled: false,
-            filesEnabled: false,
+            checkoutEnabled: direct,
+            filesEnabled: direct,
+            directCheckoutEnabled: direct,
             reviewedOrdersEnabled: approvedIntakeReady(e),
-            checkoutPolicy: "documented_order_review_required",
+            checkoutPolicy: direct
+              ? "stripe_tax_direct"
+              : "documented_order_review_required",
             unavailableSkus: (e.UNAVAILABLE_SKUS || "")
               .split(",")
               .filter(Boolean),
@@ -77,7 +83,11 @@ export function production(d: Deps = defaults) {
         )
           response = await approvalRoute(req, e, d);
         else if (/^\/api\/v1\/orders\/[a-f0-9-]{36}\//.test(path)) {
-          if (!["GET", "HEAD"].includes(req.method) && !approvedIntakeReady(e))
+          if (
+            !["GET", "HEAD"].includes(req.method) &&
+            !direct &&
+            !approvedIntakeReady(e)
+          )
             throw new Problem(503, "approved_intake_closed");
           const oid = path.split("/")[4];
           const cap = req.headers
@@ -108,7 +118,10 @@ export function production(d: Deps = defaults) {
             302,
           );
         else if (path.startsWith("/api/"))
-          response = await portal.fetch(req, { ...e, PORTAL_ENABLED: "false" });
+          response = await portal.fetch(req, {
+            ...e,
+            PORTAL_ENABLED: direct ? "true" : "false",
+          });
         else if (path === "/")
           response = Response.redirect(
             e.PUBLIC_SITE_ORIGIN + "/project-portal/",

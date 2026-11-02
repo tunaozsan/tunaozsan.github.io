@@ -3,6 +3,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { Problem } from "./catalog";
 import { digest, type Env, type Deps } from "./security";
 import { taxEvidence } from "./tax";
+import { DIRECT_CHECKOUT_POLICY, isDirectOrder } from "./direct-checkout";
 
 export async function invoiceStatement(
   e: Env,
@@ -16,7 +17,11 @@ export async function invoiceStatement(
     s.payment_status !== "paid" ||
     s.status !== "complete" ||
     s.metadata?.invoice_mode !== "portal_pdf" ||
-    !s.metadata?.approval_id
+    (!s.metadata?.approval_id &&
+      !(
+        isDirectOrder(o) &&
+        s.metadata?.checkout_policy === DIRECT_CHECKOUT_POLICY
+      ))
   )
     throw new Problem(409, "invoice_payment_not_verified");
   const scope = JSON.parse(acceptance.scope_json);

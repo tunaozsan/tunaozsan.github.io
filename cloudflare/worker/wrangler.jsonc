@@ -47,7 +47,9 @@
     "DELIVERY_POLICY_APPROVED": "true",
     "APPROVED_ORDERS_ENABLED": "true",
     "UNAVAILABLE_SKUS": "",
-    "REVIEWED_INVOICE_MODE": "portal_pdf"
+    "REVIEWED_INVOICE_MODE": "portal_pdf",
+    "DIRECT_CHECKOUT_ENABLED": "true",
+    "DIRECT_CHECKOUT_POLICY": "owner-stripe-tax-direct-2026-11-02"
   },
   "observability": {
     "enabled": false

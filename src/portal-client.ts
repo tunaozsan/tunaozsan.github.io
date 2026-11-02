@@ -26,6 +26,7 @@ let session: any = null,
   activeXHR: XMLHttpRequest | null = null,
   enabled = false,
   applicationMode = false,
+  directMode = false,
   unavailableSkus: string[] = [],
   challenge = "",
   offset = 0;
@@ -104,7 +105,7 @@ function preview() {
     $("scope-warning").textContent =
       q.scopeReview.join(" ") +
       (q.lines.some((l) => unavailableSkus.includes(l.sku))
-        ? " This add-on is currently unavailable for payment; other packages remain available for review."
+        ? " This add-on is currently unavailable for payment; other packages remain available."
         : "");
     $("create-order").disabled =
       !enabled ||
@@ -317,6 +318,28 @@ async function start() {
       $("create-order").disabled = true;
       try {
         const form = new FormData($("configure-form"));
+        const customer: any = {};
+        for (const key of [
+          "name",
+          "email",
+          "project",
+          "dataDate",
+          "businessName",
+          "billingCountry",
+          "billingState",
+          "billingAddress",
+          "billingCity",
+          "billingPostal",
+          "projectCountry",
+          "projectState",
+          "serviceNature",
+          "firstUseCountry",
+          "firstUseState",
+          "firstUseLocation",
+        ])
+          customer[key] = String(form.get(key) || "");
+        customer.businessUse = $("business-use").checked;
+
         if (applicationMode) {
           const q = quote(cart());
           const quoteHash = Array.from(
@@ -328,27 +351,6 @@ async function start() {
             ),
             (n) => n.toString(16).padStart(2, "0"),
           ).join("");
-          const customer: any = {};
-          for (const key of [
-            "name",
-            "email",
-            "project",
-            "dataDate",
-            "businessName",
-            "billingCountry",
-            "billingState",
-            "billingAddress",
-            "billingCity",
-            "billingPostal",
-            "projectCountry",
-            "projectState",
-            "serviceNature",
-            "firstUseCountry",
-            "firstUseState",
-            "firstUseLocation",
-          ])
-            customer[key] = String(form.get(key) || "");
-          customer.businessUse = $("business-use").checked;
           const r = await api("/api/v1/applications", "POST", {
             cart: cart(),
             customer,
@@ -372,12 +374,14 @@ async function start() {
         }
         const r = await api("/api/v1/orders", "POST", {
           cart: cart(),
-          customer: {
-            name: form.get("name"),
-            email: form.get("email"),
-            project: form.get("project"),
-            dataDate: form.get("dataDate") || "",
-          },
+          customer: directMode
+            ? customer
+            : {
+                name: form.get("name"),
+                email: form.get("email"),
+                project: form.get("project"),
+                dataDate: form.get("dataDate") || "",
+              },
           turnstileToken: challenge,
         });
         save({ ...r, required: r.quote.required });
@@ -499,7 +503,7 @@ async function start() {
           lineItems,
           el(
             "p",
-            `Server subtotal: ${money(serverQuote.total)} USD before applicable tax. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received; usability and scope still require review."}`,
+            `Server subtotal: ${money(serverQuote.total)} USD before applicable tax. ${serverQuote.missing.length ? "Missing: " + serverQuote.missing.join(", ") : "Required document categories received. Review your order below and continue to payment; delivery starts after input acceptance."}`,
           ),
         );
         if (serverQuote.scopeApproved) {
@@ -571,7 +575,8 @@ async function start() {
   if (API_ORIGIN) {
     try {
       const health = await api("/health");
-      applicationMode = health.applicationsEnabled === true;
+      directMode = health.directCheckoutEnabled === true;
+      applicationMode = health.applicationsEnabled === true && !directMode;
       unavailableSkus = health.unavailableSkus || [];
       const invite = new URLSearchParams(location.hash.slice(1)).get(
         "approved",
@@ -584,7 +589,7 @@ async function start() {
         save({ ...r, required: r.quote.required });
       }
       enabled = health.enabled || applicationMode;
-      if (applicationMode && $("configure-form")) {
+      if ((applicationMode || directMode) && $("configure-form")) {
         $("application-fields").hidden = false;
         $("application-fields").disabled = false;
         for (const prefix of ["billing", "project", "firstUse"]) {
@@ -602,38 +607,49 @@ async function start() {
           country.addEventListener("change", updateState);
           updateState();
         }
-        $("create-order").textContent = "Save request — no payment ↗";
+        $("create-order").textContent = directMode
+          ? "Continue to secure upload ↗"
+          : "Save request — no payment ↗";
+        $("application-consent").closest("label").hidden = directMode;
+        $("application-consent").required = !directMode;
+        $("application-consent").disabled = directMode;
+        $("business-use").required = directMode;
+        if (directMode)
+          $("application-review-note").textContent =
+            "Create your private workspace, upload the required project documents, then accept the order terms and continue to Stripe Checkout. Your final total, including tax calculated by Stripe, is shown before payment.";
         $("business-use").addEventListener("change", () => {
           $("application-fields").querySelector(
             '[name="businessName"]',
           ).required = $("business-use").checked;
         });
         $("resume-form").closest("details").hidden =
-          !health.reviewedOrdersEnabled;
+          !directMode && !health.reviewedOrdersEnabled;
         const steps = document.querySelector(".portal-steps");
-        if (steps)
+        if (steps && applicationMode)
           steps.replaceChildren(
             el("li", "01 · Select scope"),
             el("li", "02 · Billing & project facts"),
             el("li", "03 · Save request"),
           );
       }
-      if (applicationMode && $("load-admin")) {
+      if ((applicationMode || directMode) && $("load-admin")) {
         const button = el("a", "Open protected application inbox ↗");
         button.href = API_ORIGIN + "/admin/applications/";
         button.className = "button";
         $("load-admin").before(button);
       }
       notice(
-        applicationMode && $("load-admin")
-          ? "Project requests are open. Only orders with a documented Admin approval can upload files and continue to Checkout. Review pending applications in the protected inbox."
-          : applicationMode
-            ? "Submit your scope and location details for review. Once approved, your private invitation opens file upload and Stripe Checkout. This application does not take payment."
-            : enabled
-              ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
-              : $("load-admin")
-                ? "Customer orders and payments are closed. Authorized administrators can connect Drive below."
-                : "The secure portal is not enabled. Uploads and payments remain unavailable.",
+        directMode
+          ? "Choose your package, complete your project details and upload the required files. You can then continue directly to Stripe Checkout; no Admin invitation is needed for standard business orders."
+          : applicationMode && $("load-admin")
+            ? "Project requests are open. Only orders with a documented Admin approval can upload files and continue to Checkout. Review pending applications in the protected inbox."
+            : applicationMode
+              ? "Submit your scope and location details for review. Once approved, your private invitation opens file upload and Stripe Checkout. This application does not take payment."
+              : enabled
+                ? `${health.mode === "test" ? "TEST MODE · synthetic data only. " : "Portal available. "}Files are private and time-limited.`
+                : $("load-admin")
+                  ? "Customer orders and payments are closed. Authorized administrators can connect Drive below."
+                  : "The secure portal is not enabled. Uploads and payments remain unavailable.",
       );
       if (enabled && $("configure-form") && TURNSTILE_SITE_KEY) {
         const script = document.createElement("script");

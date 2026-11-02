@@ -6,6 +6,12 @@ import { app } from "../src/index";
 import { quote, packages, TTL, TERMS, MAX_FILE } from "../src/catalog";
 import { signature, digest, ready } from "../src/security";
 import { cleanup, notify } from "../src/cleanup";
+import {
+  DIRECT_CHECKOUT_POLICY,
+  directIntakeReady,
+} from "../src/direct-checkout";
+import { seal } from "../src/drive";
+import { production } from "../src/production";
 let mf: any,
   e: any,
   clock = 1800000000,
@@ -22,6 +28,37 @@ const cart = (sku = "p6_audit", activities = 150, extras = {}) => ({
   ...extras,
 });
 const fakeFetch = async (url: any, opt: any = {}) => {
+  if (String(url).includes("oauth2.googleapis"))
+    return Response.json({ access_token: "fixture", expires_in: 3600 });
+  if (String(url).includes("generateIds"))
+    return Response.json({ ids: ["private-fixture"] });
+  if (String(url).includes("googleapis.com/drive/"))
+    return Response.json({
+      id: "private-fixture",
+      ownedByMe: true,
+      shared: false,
+      trashed: false,
+      mimeType: "application/vnd.google-apps.folder",
+    });
+  if (String(url).includes("/payment_intents/")) {
+    const s: any = Object.values(sessions).find((x: any) =>
+      String(url).endsWith("/" + x.payment_intent),
+    );
+    return Response.json(
+      s
+        ? {
+            id: s.payment_intent,
+            status: "succeeded",
+            capture_method: "automatic",
+            livemode: false,
+            currency: "usd",
+            metadata: { order_id: s.client_reference_id },
+            amount: s.amount_total,
+            amount_received: s.amount_total,
+          }
+        : {},
+    );
+  }
   if (String(url).includes("siteverify"))
     return Response.json({
       success: true,
@@ -95,6 +132,9 @@ const fakeFetch = async (url: any, opt: any = {}) => {
         quote_hash: b.get("metadata[quote_hash]"),
         agreement_version: b.get("metadata[agreement_version]"),
         agreement_sha256: b.get("metadata[agreement_sha256]"),
+        checkout_policy: b.get("metadata[checkout_policy]"),
+        customer_sha256: b.get("metadata[customer_sha256]"),
+        invoice_mode: b.get("metadata[invoice_mode]"),
       },
       consent_collection: {
         terms_of_service: b.get("consent_collection[terms_of_service]"),
@@ -268,6 +308,9 @@ beforeEach(async () => {
   stripeCalls = [];
   telegramCalls = 0;
   for (const table of [
+    "order_invoices",
+    "drive_nodes",
+    "drive_credentials",
     "payment_tax_evidence",
     "checkout_tax_requirements",
     "notifications",
@@ -282,6 +325,10 @@ beforeEach(async () => {
     await e.DB.prepare(`DELETE FROM ${table}`).run();
   const list = await e.UPLOADS.list();
   for (const o of list.objects) await e.UPLOADS.delete(o.key);
+  delete e.DIRECT_CHECKOUT_ENABLED;
+  delete e.DIRECT_CHECKOUT_POLICY;
+  delete e.REVIEWED_INVOICE_MODE;
+  delete e.DRIVE_ENABLED;
   e.INVOICE_CREATION = "false";
   e.TAX_MODE = "owner_reviewed_manual";
   d.fetch = fakeFetch;
@@ -1985,3 +2032,227 @@ test("failed Checkout recovery preserves the original acceptance timestamp and f
   const bound: any = await requireFulfillmentConsent(e, o.orderId);
   assert.equal(bound.portal_accepted_at, original.portal_accepted_at);
 });
+
+const directCustomer = {
+  name: "Synthetic Buyer",
+  email: "direct@example.invalid",
+  project: "Synthetic direct",
+  dataDate: "",
+  businessUse: true,
+  businessName: "Synthetic Ltd",
+  billingCountry: "US",
+  billingState: "OR",
+  billingAddress: "Synthetic street",
+  billingCity: "Portland",
+  billingPostal: "97205",
+  projectCountry: "US",
+  projectState: "OR",
+  serviceNature: "P6 schedule consulting",
+  firstUseCountry: "US",
+  firstUseState: "OR",
+  firstUseLocation: "Synthetic project office",
+};
+async function directSetup() {
+  Object.assign(e, {
+    DIRECT_CHECKOUT_ENABLED: "true",
+    DIRECT_CHECKOUT_POLICY,
+    REVIEWED_INVOICE_MODE: "portal_pdf",
+    TAX_MODE: "automatic",
+    INVOICE_CREATION: "true",
+    DRIVE_ENABLED: "true",
+    GOOGLE_CLIENT_ID: "fixture",
+    GOOGLE_CLIENT_SECRET: "fixture",
+    DRIVE_TOKEN_KEY: btoa("a".repeat(32)),
+  });
+  await e.DB.prepare(
+    "INSERT INTO drive_credentials(id,refresh_cipher,status,updated_at) VALUES (1,?,'CONNECTED',?)",
+  )
+    .bind(await seal(e, "synthetic-refresh", "drive-refresh"), clock)
+    .run();
+}
+async function directCreate(customer: any = directCustomer, c = cart()) {
+  return api("/api/v1/orders", "POST", {
+    cart: c,
+    customer,
+    turnstileToken: "test",
+  });
+}
+test("production direct policy gate is explicit and does not require an Admin invitation", async () => {
+  await directSetup();
+  const prod = {
+    ...e,
+    APP_ENV: "production",
+    PORTAL_ENABLED: "false",
+    STRIPE_SECRET_KEY: "rk_live_SYNTHETIC123",
+    APPLICATIONS_ENABLED: "true",
+  };
+  assert.equal(directIntakeReady(prod), true);
+  const h: any = await (
+    await production(d).fetch(new Request(site + "/health"), prod)
+  ).json();
+  const productionOrder = await production(d).fetch(
+    new Request(site + "/api/v1/orders", {
+      method: "POST",
+      headers: { Origin: site, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cart: cart(),
+        customer: directCustomer,
+        turnstileToken: "test",
+      }),
+    }),
+    prod,
+  );
+  assert.equal(
+    productionOrder.status,
+    201,
+    await productionOrder.clone().text(),
+  );
+  assert.equal(h.directCheckoutEnabled, true);
+  assert.equal(h.checkoutPolicy, "stripe_tax_direct");
+  assert.equal(
+    directIntakeReady({ ...prod, DIRECT_CHECKOUT_POLICY: "unapproved" }),
+    false,
+  );
+  assert.equal(
+    directIntakeReady({ ...prod, TAX_MODE: "owner_reviewed_manual" }),
+    false,
+  );
+  const r = await directCreate();
+  assert.equal(r.status, 201, await r.clone().text());
+  const o: any = await r.json();
+  const row: any = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
+    .bind(o.orderId)
+    .first();
+  assert.equal(JSON.parse(row.customer).checkoutPolicy, DIRECT_CHECKOUT_POLICY);
+  assert.equal(row.expires_at - row.created_at, 43200);
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT COUNT(*) n FROM application_approvals WHERE order_id=?",
+      )
+        .bind(o.orderId)
+        .first()
+    ).n,
+    0,
+  );
+});
+test("direct intake rejects incomplete location, caller policy spoofing and nonstandard scope before order creation", async () => {
+  await directSetup();
+  for (const customer of [
+    { ...directCustomer, billingCountry: "" },
+    { ...directCustomer, checkoutPolicy: DIRECT_CHECKOUT_POLICY },
+    { ...directCustomer, businessUse: false },
+  ])
+    assert.notEqual((await directCreate(customer)).status, 201);
+  assert.equal(
+    (await directCreate(directCustomer, cart("p6_audit", 151))).status,
+    409,
+  );
+  assert.equal(
+    (await e.DB.prepare("SELECT COUNT(*) n FROM orders").first()).n,
+    0,
+  );
+});
+for (const reason of ["standard_rated", "not_collecting"])
+  test(
+    "direct automatic capture, consent, tax and portal PDF without approval: " +
+      reason,
+    async () => {
+      await directSetup();
+      const o: any = await (await directCreate()).json(),
+        s = await pay(o),
+        params = stripeCalls[0];
+      assert.equal(
+        params.get("payment_intent_data[capture_method]"),
+        "automatic",
+      );
+      assert.equal(
+        params.get("consent_collection[terms_of_service]"),
+        "required",
+      );
+      assert.equal(params.get("automatic_tax[enabled]"), "true");
+      assert.equal(params.get("billing_address_collection"), "required");
+      assert.equal(params.get("tax_id_collection[required]"), "never");
+      assert.equal(params.get("metadata[approval_id]"), null);
+      assert.equal(params.get("invoice_creation[enabled]"), null);
+      assert.equal(params.get("metadata[invoice_mode]"), "portal_pdf");
+      const ev = paidAutomatic(
+        s,
+        reason === "standard_rated" ? 1234 : 0,
+        reason,
+      );
+      s.payment_intent = "pi_direct";
+      e.DIRECT_CHECKOUT_ENABLED = "false"; // Pending verified payment survives intake closure.
+      assert.equal((await signed(ev)).status, 200);
+      assert.equal((await signed(ev)).status, 200);
+      const row: any = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first();
+      assert.equal(row.status, "PAID");
+      assert.equal(row.paid_total, s.amount_total);
+      const tax: any = await e.DB.prepare(
+        "SELECT * FROM payment_tax_evidence WHERE order_id=?",
+      )
+        .bind(o.orderId)
+        .first();
+      assert.equal(JSON.parse(tax.breakdown_json)[0].taxability_reason, reason);
+      const inv: any = await e.DB.prepare(
+        "SELECT * FROM order_invoices WHERE order_id=?",
+      )
+        .bind(o.orderId)
+        .first();
+      assert.equal(JSON.parse(inv.snapshot_json).total, s.amount_total);
+      const acceptance: any = await e.DB.prepare(
+        "SELECT * FROM agreement_acceptances WHERE order_id=?",
+      )
+        .bind(o.orderId)
+        .first();
+      assert.equal(acceptance.stripe_terms_status, "ACCEPTED");
+      assert.equal(
+        JSON.parse(acceptance.scope_json).customerSha256,
+        await digest(row.customer),
+      );
+      assert.equal(
+        (
+          await e.DB.prepare(
+            "SELECT COUNT(*) n FROM order_invoices WHERE order_id=?",
+          )
+            .bind(o.orderId)
+            .first()
+        ).n,
+        1,
+      );
+    },
+  );
+for (const failure of ["capture", "customer", "tax", "consent"])
+  test(
+    "direct webhook rejects unverified " + failure + " without marking PAID",
+    async () => {
+      await directSetup();
+      const o: any = await (await directCreate()).json(),
+        s = await pay(o),
+        ev = paidAutomatic(s, 0, "not_collecting");
+      s.payment_intent = "pi_direct";
+      if (failure === "capture")
+        d.fetch = async (u: any, opt: any) =>
+          String(u).includes("/payment_intents/")
+            ? Response.json({ id: "pi_direct", status: "requires_capture" })
+            : fakeFetch(u, opt);
+      if (failure === "customer") s.metadata.customer_sha256 = "f".repeat(64);
+      if (failure === "tax") s.automatic_tax.status = "failed";
+      if (failure === "consent") s.consent = { terms_of_service: "none" };
+      assert.notEqual((await signed(ev)).status, 200);
+      assert.equal(
+        (
+          await e.DB.prepare("SELECT paid_at FROM orders WHERE id=?")
+            .bind(o.orderId)
+            .first()
+        ).paid_at,
+        null,
+      );
+      assert.equal(
+        (await e.DB.prepare("SELECT COUNT(*) n FROM order_invoices").first()).n,
+        0,
+      );
+    },
+  );

@@ -1,4 +1,6 @@
 import { invoiceResponse } from "./invoice";
+import { directIntakeReady, DIRECT_CHECKOUT_POLICY } from "./direct-checkout";
+import { projectCustomer } from "./customer";
 import {
   Problem,
   quote,
@@ -193,8 +195,18 @@ async function route(
     );
     const b = object(await jsonBody(req));
     keys(b, ["cart", "customer", "turnstileToken"]);
+    const direct = directIntakeReady(e);
     const q = quote(b.cart),
-      customer = metadata(b.customer);
+      customer: Record<string, string | boolean> = direct
+        ? {
+            ...projectCustomer(b.customer, q.cart.sku),
+            checkoutPolicy: DIRECT_CHECKOUT_POLICY,
+          }
+        : metadata(b.customer);
+    if (direct && customer.businessUse !== true)
+      throw new Problem(409, "consumer_terms_review_required");
+    if (direct && q.scopeReview.length)
+      throw new Problem(409, "scope_review_required");
     if (q.cart.sku.startsWith("update") && !customer.dataDate)
       throw new Problem(400, "data_date_required");
     if (typeof b.turnstileToken !== "string" || b.turnstileToken.length > 2048)

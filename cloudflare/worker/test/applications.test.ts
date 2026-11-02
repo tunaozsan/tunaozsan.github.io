@@ -65,6 +65,7 @@ before(async () => {
     ...JSON.parse(
       readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
     ).vars,
+    DIRECT_CHECKOUT_ENABLED: "false",
     APPLICATIONS_ENABLED: "true",
     APPROVED_ORDERS_ENABLED: "false",
     DB,

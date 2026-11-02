@@ -15,6 +15,7 @@ import { verifyWorkingRoot, type DriveEnv } from "./drive";
 import { stripe } from "./payments";
 import { taxEvidence } from "./tax";
 import { transactionFacts, documentedDecision } from "./transaction-review";
+import { directIntakeReady, isDirectOrder } from "./direct-checkout";
 export type ApprovalEnv = DriveEnv & { APPROVED_ORDERS_ENABLED?: string };
 export function approvedIntakeReady(e: ApprovalEnv) {
   return (
@@ -82,6 +83,11 @@ export async function approvalForOrder(
     .bind(o.id)
     .first<any>();
   if (!a) {
+    if (isDirectOrder(o)) {
+      if (!allowClosed && !directIntakeReady(e))
+        throw new Problem(503, "direct_checkout_closed");
+      return null;
+    }
     if (e.APP_ENV === "production")
       throw new Problem(409, "approved_application_required");
     return null;

@@ -1,3 +1,4 @@
+import { directIntakeReady } from "./direct-checkout";
 import { admin, type Deps, type Env } from "./security";
 import { Problem } from "./catalog";
 
@@ -167,7 +168,7 @@ export async function liveReadiness(req: Request, e: Env, d: Deps) {
         : null,
     },
     webhookSecretConfigured: !!e.STRIPE_WEBHOOK_SECRET,
-    checkoutEnabled: false,
+    checkoutEnabled: directIntakeReady(e),
     products,
     prices,
     registrations,
