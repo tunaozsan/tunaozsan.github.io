@@ -1,3 +1,14 @@
+# Form sadeleştirmesi — 2 Kasım 2026
+
+- **PASS — production:** `Project reference` → `Project name`. Doğrudan satın alma formundan hizmet amacı/proje türü, proje ülkesi/eyaleti ve çıktının ilk kullanım yeri alanları kaldırıldı. Fatura ülkesi açılır liste; adres, şehir, eyalet/il ve posta kodu manuel. Masaüstünde kompakt iki sütun, mobilde tek sütun.
+- **PASS — veri doğrulama:** Yeni direct siparişler yalnız müşteri/proje adı ve fatura bilgileriyle oluşur. Kaldırılan alanlar gönderilmez ve yeni D1 müşteri JSON'una eklenmez; fatura adresinden proje/ilk kullanım bilgisi türetilmez. Eski tarayıcı payload'ları kabul edilip bu ek alanlar atılır. Geçmiş başvuru/order/consent snapshot'ları değiştirilmez; eski belgeli review yolu kendi doğrulamasını korur. Ticari kullanım ve Update reporting date gereklilikleri korunur.
+- **PASS — testler:** 145 Worker testi, typecheck ve 1115 site assertion. Minimal direct müşteri ile vergi/consent/capture/PDF yolları; eksik adres reddi, manuel eyalet adı, legacy payload uyumluluğu. Yerel doldurulmuş formda gizli required alan engeli yok. Production Chrome masaüstü ve 390 px mobilde yalnız billing country görünür; kaldırılan alanlar disabled, taşma yok. İlk yeniden kullanılan test sekmesinde `Failed to fetch` görüldü; temiz Chrome sekmesinde gerçek API yüklemesi ve form doğrulandı. API/erişim güvenliği değiştirilmedi.
+- **PASS — yayın:** Kod/main `546665a`; Worker `c8487b6d-1fdd-46a8-846e-7242623bf4fd`; [GitHub Pages](https://github.com/tunaozsan/tunaozsan.github.io/actions/runs/41386774681) success. Public health `directCheckoutEnabled=true`, `checkoutEnabled=true`; v2 sözleşme/hash aynı. Public vars, secrets isimleri, D1/R2 binding ve Cron birebir korundu. Migration, geçmiş veri veya Stripe ayarı değişikliği yok; Apple URL/metinleri korundu.
+- **NOT RUN:** Bu form güncellemesinde yeni gerçek Sandbox/Live ödeme yapılmadı; önceki gerçek Sandbox kanıtları korunur. Sahte Live sipariş/self-payment üretilmedi.
+- **Geri dönüş:** Worker `c1b08103-31db-44ee-85e6-5b24093c5922`, kaynak `c7b083c`; doğrudan Checkout politika işareti değişmedi. Bu değişiklik için kalan kullanıcı işlemi yok. Yerel kanıtlar `.qa/simple-form-20261102/` (Git dışı).
+
+---
+
 # Arayüz güncellemesi — 2 Kasım 2026: kompakt ilave hizmetler
 
 - **PASS:** Malzeme satırları masaüstünde 103.5 → 73 px (yaklaşık %30 daha kısa); seçili satır vurgusu, birim bilgisi, hizalı ek fiyat ve kompakt BOQ kontrolü. Revizyon seçimi tek satırlık kartta.
