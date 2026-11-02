@@ -1,3 +1,12 @@
+# Arayüz güncellemesi — 2 Kasım 2026: kompakt ilave hizmetler
+
+- **PASS:** Malzeme satırları masaüstünde 103.5 → 73 px (yaklaşık %30 daha kısa); seçili satır vurgusu, birim bilgisi, hizalı ek fiyat ve kompakt BOQ kontrolü. Revizyon seçimi tek satırlık kartta.
+- **PASS:** Typecheck, 1115 site assertion; masaüstü, 390 px ve 320 px tarayıcı kontrolünde taşma yok. Baseline iki kategori + bir revizyon $1,396; Update tek kategori $768; paket değiştirme seçimleri sıfırlar. Production'da doğrulandı; test siparişi/ödeme oluşturulmadı.
+- Kod `3d9e71f`; Worker `c1b08103-31db-44ee-85e6-5b24093c5922`; [GitHub Pages deployment](https://github.com/tunaozsan/tunaozsan.github.io/actions/runs/41386131804) success. Worker public ayarları, secret-name envanteri, D1/R2 binding ve Cron birebir aynı. Doğrudan tahsilat açık kalır.
+- Backend, fiyatlandırma, sözleşme ve Apple yolları değişmedi; önceki 144 Worker testi tekrar çalıştırılmadı. Migration yok. Arayüz geri dönüş noktası: `df047214-bc2d-42fc-90d7-1b882e149c59`.
+
+---
+
 # Güncel yayın — 2 Kasım 2026: doğrudan Stripe Checkout
 
 Bu bölüm aşağıdaki eski “Admin ön onayı zorunlu / genel tahsilat kapalı” kayıtlarının yerine geçen **yeni sipariş politikasını** açıklar. Owner'ın açık talimatı: **“Admin ön onayını kaldır; mevcut Stripe Tax ayarlarıyla doğrudan tahsil et.”** Bu ticari/teknik tercih vergi muafiyeti, BTIN kaydı veya bağımsız CPA/hukuk görüşü değildir.
