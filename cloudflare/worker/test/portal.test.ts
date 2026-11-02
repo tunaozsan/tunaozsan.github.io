@@ -2045,12 +2045,6 @@ const directCustomer = {
   billingAddress: "Synthetic street",
   billingCity: "Portland",
   billingPostal: "97205",
-  projectCountry: "US",
-  projectState: "OR",
-  serviceNature: "P6 schedule consulting",
-  firstUseCountry: "US",
-  firstUseState: "OR",
-  firstUseLocation: "Synthetic project office",
 };
 async function directSetup() {
   Object.assign(e, {
@@ -2124,6 +2118,9 @@ test("production direct policy gate is explicit and does not require an Admin in
     .bind(o.orderId)
     .first();
   assert.equal(JSON.parse(row.customer).checkoutPolicy, DIRECT_CHECKOUT_POLICY);
+  for (const key of ["projectCountry", "projectState", "serviceNature",
+    "firstUseCountry", "firstUseState", "firstUseLocation"])
+    assert.equal(key in JSON.parse(row.customer), false);
   assert.equal(row.expires_at - row.created_at, 43200);
   assert.equal(
     (
@@ -2136,7 +2133,7 @@ test("production direct policy gate is explicit and does not require an Admin in
     0,
   );
 });
-test("direct intake rejects incomplete location, caller policy spoofing and nonstandard scope before order creation", async () => {
+test("direct intake rejects incomplete billing, caller policy spoofing and nonstandard scope before order creation", async () => {
   await directSetup();
   for (const customer of [
     { ...directCustomer, billingCountry: "" },
@@ -2152,6 +2149,18 @@ test("direct intake rejects incomplete location, caller policy spoofing and nons
     (await e.DB.prepare("SELECT COUNT(*) n FROM orders").first()).n,
     0,
   );
+});
+test("direct customer accepts a manually typed state and discards retired fields from cached forms", async () => {
+  const { directCustomer: normalize } = await import("../src/customer");
+  const minimal = { ...directCustomer, billingState: "Oregon" };
+  const customer = normalize(minimal, "p6_audit");
+  assert.equal(customer.billingState, "Oregon");
+  assert.deepEqual(normalize({ ...minimal, projectCountry: "US",
+    projectState: "OR", serviceNature: "P6 consulting", firstUseCountry: "US",
+    firstUseState: "OR", firstUseLocation: "Old browser value" }, "p6_audit"), customer);
+  for (const key of ["billingAddress", "billingCity", "billingPostal", "billingState"])
+    assert.throws(() => normalize({ ...minimal, [key]: "" }, "p6_audit"));
+  assert.throws(() => normalize(minimal, "update_basic"));
 });
 for (const reason of ["standard_rated", "not_collecting"])
   test(

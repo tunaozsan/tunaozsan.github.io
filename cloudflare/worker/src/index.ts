@@ -1,6 +1,6 @@
 import { invoiceResponse } from "./invoice";
 import { directIntakeReady, DIRECT_CHECKOUT_POLICY } from "./direct-checkout";
-import { projectCustomer } from "./customer";
+import { directCustomer } from "./customer";
 import {
   Problem,
   quote,
@@ -199,7 +199,7 @@ async function route(
     const q = quote(b.cart),
       customer: Record<string, string | boolean> = direct
         ? {
-            ...projectCustomer(b.customer, q.cart.sku),
+            ...directCustomer(b.customer, q.cart.sku),
             checkoutPolicy: DIRECT_CHECKOUT_POLICY,
           }
         : metadata(b.customer);

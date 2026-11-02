@@ -355,12 +355,10 @@ async function start() {
           "billingAddress",
           "billingCity",
           "billingPostal",
-          "projectCountry",
-          "projectState",
-          "serviceNature",
-          "firstUseCountry",
-          "firstUseState",
-          "firstUseLocation",
+          ...(applicationMode ? [
+            "projectCountry", "projectState", "serviceNature",
+            "firstUseCountry", "firstUseState", "firstUseLocation",
+          ] : []),
         ])
           customer[key] = String(form.get(key) || "");
         customer.businessUse = $("business-use").checked;
@@ -617,7 +615,10 @@ async function start() {
       if ((applicationMode || directMode) && $("configure-form")) {
         $("application-fields").hidden = false;
         $("application-fields").disabled = false;
-        for (const prefix of ["billing", "project", "firstUse"]) {
+        $("review-location-fields").hidden = directMode;
+        $("review-location-fields").disabled = directMode;
+        $("consumer-enquiry-note").hidden = directMode;
+        for (const prefix of (directMode ? ["billing"] : ["billing", "project", "firstUse"])) {
           const country = $("application-fields").querySelector(
             `[name="${prefix}Country"]`,
           ) as HTMLSelectElement;
@@ -627,7 +628,7 @@ async function start() {
           const updateState = () => {
             const us = country.value.trim().toUpperCase() === "US";
             state.required = us;
-            state.pattern = us ? "[A-Za-z]{2}" : ".*";
+            state.pattern = us && !directMode ? "[A-Za-z]{2}" : ".*";
           };
           country.addEventListener("change", updateState);
           updateState();
@@ -641,7 +642,7 @@ async function start() {
         $("business-use").required = directMode;
         if (directMode)
           $("application-review-note").textContent =
-            "Create your private workspace, upload the required project documents, then accept the order terms and continue to Stripe Checkout. Your final total, including tax calculated by Stripe, is shown before payment.";
+            "Next: upload your files, review your order and pay securely with Stripe.";
         $("business-use").addEventListener("change", () => {
           $("application-fields").querySelector(
             '[name="businessName"]',
@@ -665,7 +666,7 @@ async function start() {
       }
       notice(
         directMode
-          ? "Choose your package, complete your project details and upload the required files. You can then continue directly to Stripe Checkout; no Admin invitation is needed for standard business orders."
+          ? "Choose a service, enter your billing details and upload your files. Review the final total before paying securely with Stripe."
           : applicationMode && $("load-admin")
             ? "Project requests are open. Only orders with a documented Admin approval can upload files and continue to Checkout. Review pending applications in the protected inbox."
             : applicationMode
