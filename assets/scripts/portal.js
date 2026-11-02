@@ -707,7 +707,11 @@ function packageChanged() {
   $("date-label").querySelector("input").required = update;
   $("revision-label").hidden = p.sku === "p6_audit";
   $("revisions").value = "0";
-  for (const m of materials) $("material-" + m).checked = false;
+  for (const m of materials) {
+    $("material-" + m).checked = false;
+    $("rows-" + m).disabled = true;
+    $("price-" + m).textContent = "+" + money(update ? 11900 : 24900);
+  }
   preview();
 }
 function tick() {
@@ -847,20 +851,41 @@ async function start() {
       ...materials.map((m) => {
         const row = el2("div", "");
         row.className = "material-row";
-        const label = el2("label", m.replaceAll("_", " "));
+        const details = {
+          concrete: ["Concrete", "m\xB3"],
+          rebar: ["Reinforcement steel", "Metric tons"],
+          formwork: ["Formwork", "m\xB2"],
+          structural_steel: ["Structural steel", "Metric tons"],
+          piping: ["Piping", "m or metric tons"]
+        };
+        const [name, unit] = details[m];
+        const label = el2("label", "");
+        label.className = "material-choice";
+        const copy = el2("span", "");
+        copy.className = "material-copy";
+        copy.append(el2("span", name), el2("small", unit));
         const input2 = document.createElement("input");
         input2.type = "checkbox";
         input2.id = "material-" + m;
-        label.prepend(input2);
+        label.append(input2, copy);
+        const price = el2("span", "+$249.00");
+        price.className = "material-price";
+        price.id = "price-" + m;
         const rows = el2("label", "BOQ rows");
+        rows.className = "material-quantity";
         const count = document.createElement("input");
         count.type = "number";
         count.min = "1";
         count.max = "10000";
         count.value = "1";
         count.id = "rows-" + m;
+        count.setAttribute("aria-label", name + " BOQ rows");
+        count.disabled = true;
+        input2.addEventListener("change", () => {
+          count.disabled = !input2.checked;
+        });
         rows.append(count);
-        row.append(label, rows);
+        row.append(label, price, rows);
         return row;
       })
     );
