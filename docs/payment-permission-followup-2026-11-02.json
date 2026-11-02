@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-02",
+  "checkedAt": "2026-11-02T02:48:41.686824+00:00",
+  "readOnly": true,
+  "realPaymentCreated": false,
+  "checks": {
+    "production": {
+      "status": "PASS",
+      "health": {
+        "service": "bluefin-project-portal",
+        "mode": "production",
+        "enabled": false,
+        "applicationsEnabled": true,
+        "checkoutEnabled": false,
+        "filesEnabled": false,
+        "reviewedOrdersEnabled": false,
+        "unavailableSkus": [],
+        "termsVersion": "service-terms-2026-10-30-v2",
+        "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+      }
+    },
+    "staging": {
+      "status": "PASS",
+      "health": {
+        "service": "bluefin-project-portal",
+        "version": "0.1.0",
+        "mode": "test",
+        "enabled": false
+      },
+      "scope": "Staging public health enabled=false; production-only expanded health fields are not part of this endpoint schema.",
+      "individualGateFields": "NOT RUN via public health — not exposed by staging response"
+    }
+  },
+  "validationNote": "Initial follow-up checker expected production-only fields in staging. Corrected after checking src/index.ts health response schema; no application code or remote setting changed.",
+  "stripePermissionEvidence": {
+    "source": "docs/live-payment-permissions-2026-10-31.json",
+    "verifiedAt": "2026-10-31T08:18:06.930264+00:00",
+    "status": "PASS",
+    "changedPermission": "Payment Intents: Read -> Write",
+    "otherPermissionsUnchanged": 49,
+    "freshDashboardRecheck": "NOT RUN on 2026-11-02; persisted save was already reopened and verified on 2026-10-31"
+  },
+  "workerDeploymentPerformed": false
+}

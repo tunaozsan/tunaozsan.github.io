@@ -1,8 +1,10 @@
+> 2 Kasım 2026 takip: Payment Intents Write kaydı 31 Ekim'de doğrulandı; teknik izin engeli giderildi. Bugünkü production sağlık kontrolünde başvurular açık, tahsilat/dosya kabulü kapalı. [Takip kanıtı](payment-permission-followup-2026-11-02.json). Yeni Worker yayını veya gerçek ödeme yok.
+
 # C — Teknik production yayın PASS; canlı tahsilat henüz açık değil
 
 31 Ekim 2026: Worker 6a2c82f4-ed4d-489a-a3ca-d4fa1e7dd13b; kod 9351dd4; migrations 0008/0009/0010 uygulanmış, ledger 0001–0010. Google refresh/private production root PASS; 22 Live Product/Price, public legal URL'ler ve v2 owner adoption doğrulandı. 128 Worker testi, 1111 site assertion; gerçek reviewed Sandbox capture/address-rejection/PDF/refund PASS. [Tam güncel rapor](production-tax-release-2026-10-31.md).
 
-Kalan teknik izin: Live anahtar Payment Intents Read; capture/cancel için Write gereklidir, değişiklik özel onay bekliyor. Secret değiştirilmedi.
+Live teknik izin PASS: özel owner onayıyla yalnız Payment Intents Read → Write kaydedildi ve form yeniden açılarak doğrulandı; diğer 49 izin aynı. Secret değiştirilmedi. Tahsilat kapıları kapalı, gerçek Live capture NOT RUN.
 
 Kalan ticari dayanak: formation sağlayıcısından NM BTIN/kayıt durumunun teyidi ve ilk müşteri/proje konumuna uygulanabilir belgeli işlem-vergi değerlendirmesi. Owner beyanı uzman görüşü/muafiyet değildir. Hiçbir doğrulanmış kapsam yok; PORTAL_ENABLED=false, APPROVED_ORDERS_ENABLED=false. Eski Draft/onay bekliyor ifadeleri owner v2 için tarihseldir; bağımsız hukuk/vergi onayı hâlâ NOT_PERFORMED.
 

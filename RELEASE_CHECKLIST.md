@@ -1,6 +1,15 @@
+# Güncelleme — 2 Kasım 2026: Stripe izin engeli giderildi
+
+- **PASS — kaydedilmiş izin:** 31 Ekim'de özel owner onayı ve Stripe passkey doğrulaması sonrası yalnız Payment Intents Read → Write kaydedildi. Form yeniden açılarak karşılaştırıldı: diğer 49 izin aynı. Secret değeri okunmadı/gösterilmedi/değiştirilmedi. [İzin kanıtı](docs/live-payment-permissions-2026-10-31.json).
+- **PASS — bugün salt okunur sağlık kontrolü:** production applications=true; checkout/files/reviewedOrders/enabled=false. Staging public health enabled=false; genişletilmiş production alanları staging şemasında bulunmadığından ayrı ayrı yeniden doğrulanmış sayılmadı. [2 Kasım kontrolü](docs/payment-permission-followup-2026-11-02.json).
+- **NOT RUN — gerçek Live tahsilat:** uygun gerçek müşteri/sipariş ve uygulanabilir işlem-vergi dayanağı henüz yok. Canlı ödeme, yeni Worker deploy/migration veya vergi kaydı oluşturulmadı. Önceki başarılı testler korunuyor; yalnız belge/kanıt düzeltildiği için aynı test paketi tekrar çalıştırılmadı.
+- **Kalan insan bilgisi:** NM kayıt/BTIN durumunun veya kayıt gerekmeme dayanağının belgeyle teyidi; ilk müşteri fatura ülke/eyaleti ve proje/çıktı kullanım yeri. İşletme sahibi beyanı muafiyet veya bağımsız uzman görüşü sayılmıyor. Google veya Stripe secret/izin görevi kalmadı.
+
+---
+
 # Güncel sonuç — 31 Ekim 2026: production teknik yayın tamam; tahsilat kapsamı henüz yok
 
-Bu bölüm aşağıdaki tarihsel raporlardan önceliklidir. Önceki production yayın yetkisi kullanıldı. **Başvurular açık; hiçbir ürün/müşteri kapsamı henüz canlı tahsilata açık değil.** Eksikler: teyit edilmemiş uygulanabilir işlem-vergi dayanağı, kesinleşmemiş ilk müşteri/proje konumu ve son Dashboard kontrolünde Read olduğu görülen Live anahtarın Payment Intents Write iznidir. Secret değeri eksik değildir. Genel sıfır vergi veya yalnız ABD'de vergi kuralı oluşturulmadı.
+Bu bölüm aşağıdaki tarihsel raporlardan önceliklidir. Önceki production yayın yetkisi kullanıldı. **Başvurular açık; hiçbir ürün/müşteri kapsamı henüz canlı tahsilata açık değil.** Eksikler: teyit edilmemiş uygulanabilir işlem-vergi dayanağı ve kesinleşmemiş ilk müşteri/proje konumudur. Live Payment Intents Write izni özel owner onayı ve Stripe ek kimlik doğrulaması sonrası kaydedildi; teknik izin eksikliği giderildi. Secret değeri eksik değildir. Genel sıfır vergi veya yalnız ABD'de vergi kuralı oluşturulmadı.
 
 - Production portal: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/project-portal/
 - Admin: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/admin/ — production Drive CONNECTED, gerçek refresh ve private production root PASS.
@@ -31,7 +40,7 @@ Bu bölüm aşağıdaki tarihsel raporlardan önceliklidir. Önceki production y
 
 ## Son izin ve operasyon kontrolü
 
-**FAIL — Live yetki önkoşulu:** mevcut “Secret Key For Claudfare” anahtarının Payment Intents izni Read. Onaylı manual capture ve uyumsuz provizyon cancel için Write gerekiyor. Checkout Sessions ve Customers Write mevcut. Yalnız Payment Intents genişletmesi için özel onay istendi; izin değiştirilmedi. Gerçek Live capture **NOT RUN**; sahte ödeme oluşturulmadı. Kanıt: [Live izinler](docs/live-payment-permissions-2026-10-31.json).
+**PASS — Live izin yapılandırması:** “Secret Key For Claudfare” anahtarında yalnız Payment Intents Read → Write değiştirildi. İşletme sahibinin özel onayı alındı; Stripe ek passkey/güvenlik anahtarı doğrulamasından sonra form yeniden açıldı ve kaydedilmiş Write doğrulandı. 50 izin karşılaştırmasında yalnız bu satır değişti; diğer 49 izin aynı. Secret okunmadı, gösterilmedi veya yenilenmedi. Yeni Worker deployment/migration ya da gerçek ödeme yapılmadı. Gerçek Live capture **NOT RUN**; uygun gerçek sipariş yok. Değişiklik sonrası production health PASS: applications=true; enabled/checkout/files/reviewedOrders=false. Kanıt: [Live izinler](docs/live-payment-permissions-2026-10-31.json).
 
 Production operations son yetkili kontrolde alerts=[]; cleanup delete/orphan/session failures=0. İade sonrası PDF için ek gerçek indirme girişiminde tarayıcı zaman aşımı: bu ek kontrol **NOT RUN**; önceki gerçek PDF ve son yerel refund-status testi PASS olarak korunur.
 
@@ -49,7 +58,7 @@ Python public HTTP istemcisi Cloudflare 1010 reddi aldı; standart curl ve yetki
 
 [İşletme sahibi beyanı](docs/owner-nm-facts-2026-10-31.md): NM adresi yalnız posta/registered-agent; NM ofis/çalışan/hizmet ifası yok; 2025 NM kaynaklı satış $0; kuruluş sağlayıcısının kayıt yapıp yapmadığı bilinmiyor; yazılı kayıt gerekmeme değerlendirmesi ve kesin ilk müşteri/proje konumu yok. **Muafiyet veya bağımsız uzman görüşü değildir.**
 
-Tek toplu eksik listesi: (1) Live anahtarda yalnız Payment Intents → Write yetkisi; (2) kuruluş sağlayıcısından NM vergi kaydı/BTIN durumunun belgeyle teyidi; ilk hedef müşteri fatura ülke/eyaleti ve proje/çıktı kullanım yeri; bu hizmet ve konuma uygulanacak kayıt/tahsil veya tahsil etmeme dayanağı. Stripe registrations=[] muafiyet sayılmaz; Sandbox SD Live'a kopyalanmadı. Şirket gelir vergisi, işlem vergisi yerine kullanılmadı. Mevcut owner yayın onayı tekrar istenmez. Google veya Stripe secret ekleme görevi kalmadı. Bağımsız avukat/mali müşavir onayı verilmiş gibi kaydedilmedi.
+Tek toplu eksik listesi: kuruluş sağlayıcısından NM vergi kaydı/BTIN durumunun belgeyle teyidi; ilk hedef müşteri fatura ülke/eyaleti ve proje/çıktı kullanım yeri; bu hizmet ve konuma uygulanacak kayıt/tahsil veya tahsil etmeme dayanağı. Stripe registrations=[] muafiyet sayılmaz; Sandbox SD Live'a kopyalanmadı. Şirket gelir vergisi, işlem vergisi yerine kullanılmadı. Mevcut owner yayın onayı tekrar istenmez. Google veya Stripe secret ekleme görevi kalmadı. Bağımsız avukat/mali müşavir onayı verilmiş gibi kaydedilmedi.
 
 ## Geri dönüş
 

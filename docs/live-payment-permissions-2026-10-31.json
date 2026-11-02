@@ -4,7 +4,7 @@
   "source": "Authenticated Stripe Live Dashboard API key permissions summary; no secret read or reveal",
   "keyName": "Secret Key For Claudfare",
   "permissions": {
-    "Payment Intents": "Read",
+    "Payment Intents": "Write",
     "Checkout Sessions": "Write",
     "Customers": "Write",
     "Charges and Refunds": "Read",
@@ -13,10 +13,35 @@
     "Prices": "Read",
     "Webhook Endpoints, Event Destinations": "Write"
   },
-  "requiredChange": {
-    "Payment Intents": "Write"
+  "changeStatus": "PASS — saved after account-owner Stripe verification; reopened existing key and verified persisted permissions",
+  "liveCaptureTest": "NOT RUN — no eligible genuine order; no live test payment created",
+  "intakeEnabled": false,
+  "ownerApproval": "RECEIVED — only Payment Intents Read -> Write",
+  "preparedPermissionDiff": [
+    {
+      "permission": "Payment Intents",
+      "before": "Read",
+      "after": "Write"
+    }
+  ],
+  "otherPermissionsUnchanged": 49,
+  "verificationAt": "2026-10-31T08:18:06.930264+00:00",
+  "secretReadRevealedOrRotated": false,
+  "livePaymentCreated": false,
+  "workerDeploymentPerformed": false,
+  "healthAfterPermissionSaved": {
+    "service": "bluefin-project-portal",
+    "mode": "production",
+    "enabled": false,
+    "applicationsEnabled": true,
+    "checkoutEnabled": false,
+    "filesEnabled": false,
+    "reviewedOrdersEnabled": false,
+    "unavailableSkus": [],
+    "termsVersion": "service-terms-2026-10-30-v2",
+    "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
   },
-  "changeStatus": "NOT RUN \u2014 explicit permission expansion approval requested; no change made",
-  "liveCaptureTest": "NOT RUN \u2014 no eligible genuine order; no live test payment created",
-  "intakeEnabled": false
+  "completedChange": {
+    "Payment Intents": "Write"
+  }
 }
