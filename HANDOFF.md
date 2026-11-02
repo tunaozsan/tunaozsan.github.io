@@ -1,3 +1,12 @@
+# Arayüz güncellemesi — 2 Kasım 2026: ülke adı seçimi
+
+- **PASS:** Fatura, proje ve çıktının ilk kullanım ülkesi artık 249 ülke/bölge içeren alfabetik dropdown. İlk seçenek boş/zorunlu; kullanıcı ülke kodu yazmıyor.
+- **PASS:** Typecheck ve 1115 site assertion. Production tarayıcısında Türkiye, United States ve Uzbekistan seçimi doğrulandı; başvuru gönderilmedi veya ödeme oluşturulmadı.
+- Kod **63c2ca6**; production Worker **61a729c8-5291-4870-80cd-872cc541f23d**. Yalnız arayüz dosyaları değişti; mevcut public ayarlar ve D1/R2 binding karşılaştırması aynı. API/vergi/onay/ödeme kuralları, secrets, Cron, sözleşme ve Apple yolları değişmedi. Backend değişmediği için 136 Worker testi bu tur tekrar çalıştırılmadı; önceki PASS kanıtı korunur.
+- Geri dönüş noktası: Worker **0cd57a9a-c881-4290-85a0-8acdf35166e9**. Migration veya veri değişikliği yok.
+
+---
+
 # Uygulanan sonuç — 2 Kasım 2026: belgeli siparişe özel Checkout yolu production'da
 
 Bu bölüm önceki kapanış/izin raporlarından önceliklidir. **Teknik onaylı-sipariş yolu açık; henüz tahsilata izin verilmiş bir ülke/eyalet/hizmet veya gerçek sipariş yok.** Production'da 4 başvuru, 0 approval, 0 order, 0 PAID. Admin belgeli karar vermeden hiçbir başvuru Checkout'a dönüştürülmedi. BTIN, muafiyet veya CPA görüşü üretilmedi.
