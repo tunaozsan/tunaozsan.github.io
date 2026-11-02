@@ -433,6 +433,70 @@ test("production approved-only route works with generic intake closed; other ord
     null,
   );
 });
+test("a paid historical order cannot be silently revoked or rewritten by the prepayment review action", async () => {
+  const { o } = await redeemed();
+  // Local fixture only; no Stripe request or real payment is performed.
+  await e.DB.prepare("UPDATE orders SET paid_at=?,status='PAID' WHERE id=?")
+    .bind(now, o.id)
+    .run();
+  await assert.rejects(
+    approvalRoute(
+      req("/api/v1/admin/applications/" + appId + "/revoke", {}),
+      e,
+      d,
+    ),
+    /paid_order_use_delivery_or_refund_controls/,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT revoked_at FROM application_approvals",
+      ).first<any>()
+    ).revoked_at,
+    null,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+        .bind(o.id)
+        .first<any>()
+    ).status,
+    "PAID",
+  );
+});
+for (const change of ["serviceNature", "firstUseCountry", "cart"])
+  test("changed " + change + " invalidates the unpaid review", async () => {
+    const { o } = await redeemed();
+    const changed =
+      change === "cart"
+        ? { ...o, cart: JSON.stringify({ ...cart, activities: 151 }) }
+        : {
+            ...o,
+            customer: JSON.stringify({
+              ...customer,
+              [change]:
+                change === "firstUseCountry"
+                  ? "GB"
+                  : "A different service purpose",
+            }),
+          };
+    await assert.rejects(approvalForOrder(e, d, changed));
+    assert.equal(
+      (
+        await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+          .bind(o.id)
+          .first<any>()
+      ).status,
+      "TAX_REVIEW_REQUIRED",
+    );
+    assert.ok(
+      (
+        await e.DB.prepare(
+          "SELECT revoked_at FROM application_approvals",
+        ).first<any>()
+      ).revoked_at,
+    );
+  });
 for (const scenario of [
   "match",
   "address",

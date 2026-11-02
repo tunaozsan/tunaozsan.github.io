@@ -213,7 +213,16 @@ export async function approvalRoute(req: Request, e: ApprovalEnv, d: Deps) {
       "SELECT * FROM application_approvals WHERE application_id=?",
     )
       .bind(m[1])
-      .first();
+      .first<any>();
+    if (
+      a &&
+      (await e.DB.prepare(
+        "SELECT 1 FROM orders WHERE id=? AND paid_at IS NOT NULL",
+      )
+        .bind(a.order_id)
+        .first())
+    )
+      throw new Problem(409, "paid_order_use_delivery_or_refund_controls");
     if (a) await invalidateReview(e, d, a, "operator_revoked");
     return Response.json({ revoked: true });
   }
@@ -298,32 +307,31 @@ export async function approvalRoute(req: Request, e: ApprovalEnv, d: Deps) {
     approval = id(),
     now = d.now(),
     order = id();
-  await e.DB.prepare(
+  const record = e.DB.prepare(
     "INSERT INTO application_approvals(id,application_id,order_id,invite_hash,scope_sha256,quote_sha256,customer_sha256,terms_version,terms_sha256,basis_reference,basis_sha256,decision_json,approved_by,approved_at,expires_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-  )
-    .bind(
-      approval,
-      s.id,
-      order,
-      await digest(invitation),
-      s.quote_sha256,
-      await orderQuoteHash(q.cart),
-      await digest(JSON.stringify(c)),
-      AGREEMENT_VERSION,
-      AGREEMENT_HASH,
-      b.basisReference.trim(),
-      b.basisHash,
-      JSON.stringify(decision),
-      actor,
-      now,
-      Math.min(s.expires_at, now + 7 * 86400),
-    )
-    .run();
-  await e.DB.prepare(
-    "UPDATE service_applications SET status='APPROVED' WHERE id=?",
-  )
-    .bind(s.id)
-    .run();
+  ).bind(
+    approval,
+    s.id,
+    order,
+    await digest(invitation),
+    s.quote_sha256,
+    await orderQuoteHash(q.cart),
+    await digest(JSON.stringify(c)),
+    AGREEMENT_VERSION,
+    AGREEMENT_HASH,
+    b.basisReference.trim(),
+    b.basisHash,
+    JSON.stringify(decision),
+    actor,
+    now,
+    Math.min(s.expires_at, now + 7 * 86400),
+  );
+  await e.DB.batch([
+    record,
+    e.DB.prepare(
+      "UPDATE service_applications SET status='APPROVED' WHERE id=?",
+    ).bind(s.id),
+  ]);
   return Response.json({
     approved: true,
     approvalId: approval,
