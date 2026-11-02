@@ -1,3 +1,4 @@
+export {};
 const box = document.getElementById("inbox")!,
   status = document.getElementById("inbox-status")!;
 const el = (tag: string, text = "") => {
@@ -43,7 +44,10 @@ document.getElementById("load-applications")!.onclick = async () => {
         c.project,
         `${c.name} · ${c.email}`,
         c.businessName,
+        `Status: ${a.status} · Business purchase: ${c.businessUse === true ? "Yes" : "No"}`,
         `${c.billingAddress}, ${c.billingCity}, ${c.billingState} ${c.billingPostal}, ${c.billingCountry} · Project: ${c.projectCountry}`,
+        `Project state: ${c.projectState || "Not supplied"} · Service: ${c.serviceNature || "Not supplied"}`,
+        `First use: ${c.firstUseLocation || "Not supplied"}, ${c.firstUseState || ""}, ${c.firstUseCountry || "Not supplied"}`,
         JSON.stringify(q.lines),
         `USD ${(q.total / 100).toFixed(2)} before tax`,
         a.terms_version,
@@ -65,6 +69,20 @@ document.getElementById("load-applications")!.onclick = async () => {
           }
         };
         section.append(revoke);
+        section.append(
+          el(
+            "p",
+            JSON.parse(existing.decision_json).decisionSummary ||
+              "Historical review; no new facts inferred.",
+          ),
+        );
+      } else if (
+        !c.serviceNature ||
+        !c.firstUseCountry ||
+        !c.firstUseLocation
+      ) {
+        result.textContent =
+          "This earlier application is missing service / first-use facts. Ask the customer to submit a complete new application. The original acceptance will not be changed.";
       } else {
         const form = document.createElement("form");
         form.append(
@@ -79,6 +97,25 @@ document.getElementById("load-applications")!.onclick = async () => {
           ),
           hash = field(form, "SHA-256 of that decision document");
         hash.pattern = "[a-f0-9]{64}";
+        const summary = field(
+          form,
+          "Documented decision: applicable jurisdictions, service classification, collection / no-collection conclusion and its legal basis",
+        );
+        summary.minLength = 30;
+        summary.maxLength = 2000;
+        const jurisdictions = field(
+          form,
+          "I verified the documented decision covers the billing, project and first-use locations and the actual service",
+        );
+        jurisdictions.type = "checkbox";
+        jurisdictions.checked = false;
+        const noCollection = field(
+          form,
+          "For a no-collection decision: the document establishes no seller collection obligation for this transaction; Stripe not_collecting alone is not evidence of exemption",
+        );
+        noCollection.type = "checkbox";
+        noCollection.required = false;
+        noCollection.checked = false;
         const kind = document.createElement("select");
         for (const [value, text] of [
           ["", "Select documented basis"],
@@ -95,6 +132,10 @@ document.getElementById("load-applications")!.onclick = async () => {
           "Stripe registration ID (required for registered basis)",
         );
         registration.required = false;
+        kind.onchange = () => {
+          registration.required = kind.value === "registered";
+          noCollection.required = kind.value === "documented_no_collection";
+        };
         const reasons = field(
             form,
             "Approved Stripe taxability reasons (comma separated)",
@@ -126,6 +167,9 @@ document.getElementById("load-applications")!.onclick = async () => {
               {
                 basisReference: basis.value,
                 basisHash: hash.value,
+                decisionSummary: summary.value,
+                jurisdictionsReviewed: jurisdictions.checked,
+                noCollectionObligation: noCollection.checked,
                 kind: kind.value,
                 registrationId: registration.value,
                 reasonCodes: reasons.value.split(",").map((s) => s.trim()),

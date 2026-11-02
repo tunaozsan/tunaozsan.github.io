@@ -37,6 +37,11 @@ const customer = {
   billingCity: "Example",
   billingPostal: "00000",
   projectCountry: "US",
+  projectState: "SD",
+  serviceNature: "Synthetic P6 construction schedule consulting",
+  firstUseCountry: "US",
+  firstUseState: "SD",
+  firstUseLocation: "Synthetic Sioux Falls project office",
 };
 before(async () => {
   mf = new Miniflare({
@@ -61,6 +66,7 @@ before(async () => {
       readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
     ).vars,
     APPLICATIONS_ENABLED: "true",
+    APPROVED_ORDERS_ENABLED: "false",
     DB,
     UPLOADS: await mf.getR2Bucket("UPLOADS"),
     RATE_LIMIT_SALT: "a".repeat(48),
@@ -102,14 +108,11 @@ test("application persists immutable scope and separate acceptance, never PAID o
   assert.equal(r.status, 201);
   const result: any = await r.json();
   assert.equal(result.charged, false);
-  assert.equal(result.status, "PAYMENT_SETUP_PENDING");
+  assert.equal(result.status, "TAX_REVIEW_REQUIRED");
   assert.equal(result.filesEnabled, false);
-  assert.doesNotMatch(
-    JSON.stringify(result.reviewReasons),
-    /transaction-tax|tax review/i,
-  );
+  assert.match(JSON.stringify(result.reviewReasons), /transaction-tax/);
   const row = await e.DB.prepare("SELECT * FROM service_applications").first();
-  assert.equal(row.status, "PAYMENT_SETUP_PENDING");
+  assert.equal(row.status, "TAX_REVIEW_REQUIRED");
   assert.equal(row.terms_sha256, AGREEMENT_HASH);
   assert.equal(row.accepted_at, now);
   assert.equal(row.expires_at, now + 30 * 86400);
@@ -156,6 +159,39 @@ test("Turnstile hostname/action and origin reject; no customer data in response"
       )
     ).status,
     403,
+  );
+});
+test("all transaction facts are required, normalized and bound to immutable application", async () => {
+  for (const key of [
+    "serviceNature",
+    "firstUseCountry",
+    "firstUseLocation",
+    "firstUseState",
+    "projectState",
+  ]) {
+    await e.DB.exec("DELETE FROM rate_limits");
+    const b = await body();
+    (b.customer as any)[key] = "";
+    assert.ok((await app.fetch(request(b), e)).status >= 400);
+  }
+  await e.DB.exec("DELETE FROM rate_limits");
+  const b = await body();
+  b.customer.firstUseCountry = "us";
+  b.customer.firstUseState = "sd";
+  assert.equal((await app.fetch(request(b), e)).status, 201);
+  const c = JSON.parse(
+    (
+      await e.DB.prepare(
+        "SELECT customer_json FROM service_applications",
+      ).first()
+    ).customer_json,
+  );
+  assert.equal(c.firstUseCountry, "US");
+  assert.equal(c.firstUseState, "SD");
+  assert.equal(c.serviceNature, customer.serviceNature);
+  await assert.rejects(
+    e.DB.exec("UPDATE service_applications SET customer_json='{}'"),
+    /immutable/,
   );
 });
 test("consumer requests and quote-only material mapping enter review, never automatic checkout", async () => {

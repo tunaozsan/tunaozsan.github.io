@@ -908,7 +908,12 @@ async function start() {
             "billingAddress",
             "billingCity",
             "billingPostal",
-            "projectCountry"
+            "projectCountry",
+            "projectState",
+            "serviceNature",
+            "firstUseCountry",
+            "firstUseState",
+            "firstUseLocation"
           ])
             customer[key] = String(form.get(key) || "");
           customer.businessUse = $("business-use").checked;
@@ -924,7 +929,7 @@ async function start() {
             }
           });
           notice(
-            `Request ${r2.applicationId} saved. Online checkout is temporarily unavailable, so no payment has been taken. Please keep this reference. We will contact you at the supplied email.`
+            `Request ${r2.applicationId} saved. Your scope and transaction-tax review is pending. No payment has been taken. Please keep this reference. We will contact you at the supplied email.`
           );
           $("configure-form").hidden = true;
           $("portal-notice").scrollIntoView({
@@ -1141,6 +1146,21 @@ async function start() {
       if (applicationMode && $("configure-form")) {
         $("application-fields").hidden = false;
         $("application-fields").disabled = false;
+        for (const prefix of ["billing", "project", "firstUse"]) {
+          const country = $("application-fields").querySelector(
+            `[name="${prefix}Country"]`
+          );
+          const state = $("application-fields").querySelector(
+            `[name="${prefix}State"]`
+          );
+          const updateState = () => {
+            const us = country.value.trim().toUpperCase() === "US";
+            state.required = us;
+            state.pattern = us ? "[A-Za-z]{2}" : ".*";
+          };
+          country.addEventListener("input", updateState);
+          updateState();
+        }
         $("create-order").textContent = "Save request \u2014 no payment \u2197";
         $("business-use").addEventListener("change", () => {
           $("application-fields").querySelector(
@@ -1163,7 +1183,7 @@ async function start() {
         $("load-admin").before(button2);
       }
       notice(
-        applicationMode && $("load-admin") ? "Project requests are open. Customer payments and file intake are closed. Protected administration and Drive setup remain available." : applicationMode ? "Online checkout is temporarily unavailable. You can save your project request below; submitting this form will not take a payment. File uploads are also unavailable." : enabled ? `${health.mode === "test" ? "TEST MODE \xB7 synthetic data only. " : "Portal available. "}Files are private and time-limited.` : $("load-admin") ? "Customer orders and payments are closed. Authorized administrators can connect Drive below." : "The secure portal is not enabled. Uploads and payments remain unavailable."
+        applicationMode && $("load-admin") ? "Project requests are open. Only orders with a documented Admin approval can upload files and continue to Checkout. Review pending applications in the protected inbox." : applicationMode ? "Submit your scope and location details for review. Once approved, your private invitation opens file upload and Stripe Checkout. This application does not take payment." : enabled ? `${health.mode === "test" ? "TEST MODE \xB7 synthetic data only. " : "Portal available. "}Files are private and time-limited.` : $("load-admin") ? "Customer orders and payments are closed. Authorized administrators can connect Drive below." : "The secure portal is not enabled. Uploads and payments remain unavailable."
       );
       if (enabled && $("configure-form") && TURNSTILE_SITE_KEY) {
         const script = document.createElement("script");

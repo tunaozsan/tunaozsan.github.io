@@ -269,6 +269,11 @@ export async function stagingTaxTools(
           billingCity: "Sioux Falls",
           billingPostal: "57104",
           projectCountry: "US",
+          projectState: "SD",
+          serviceNature: "Synthetic P6 construction schedule consulting",
+          firstUseCountry: "US",
+          firstUseState: "SD",
+          firstUseLocation: "Synthetic Sioux Falls project office",
         };
         const scope = JSON.stringify(quote(cart));
         await e.DB.prepare(
@@ -299,6 +304,9 @@ export async function stagingTaxTools(
                 "Sandbox SD synthetic registration; not a Live legal basis",
               basisHash: await digest("Synthetic Sandbox SD 20261031"),
               kind: "registered",
+              decisionSummary:
+                "Synthetic SD registration and consulting service at the same SD billing/project/first-use location. Sandbox test only; no live tax conclusion.",
+              jurisdictionsReviewed: true,
               registrationId: "taxreg_1UWVNHBxU4PsnoX0BVIXe9TF",
               reasonCodes: ["standard_rated"],
               scopeReviewed: true,

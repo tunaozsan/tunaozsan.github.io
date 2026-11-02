@@ -14,6 +14,7 @@ import {
 import { verifyWorkingRoot, type DriveEnv } from "./drive";
 import { stripe } from "./payments";
 import { taxEvidence } from "./tax";
+import { transactionFacts, documentedDecision } from "./transaction-review";
 export type ApprovalEnv = DriveEnv & { APPROVED_ORDERS_ENABLED?: string };
 export function approvedIntakeReady(e: ApprovalEnv) {
   return (
@@ -55,6 +56,20 @@ const canonicalAddress = (a: any) =>
         .toUpperCase(),
     ),
   );
+async function invalidateReview(e: Env, d: Deps, a: any, reason: string) {
+  // Never rewrite a historical paid order, its acceptance, or its tax evidence.
+  await e.DB.batch([
+    e.DB.prepare(
+      "UPDATE application_approvals SET revoked_at=COALESCE(revoked_at,?),invalid_reason=COALESCE(invalid_reason,?) WHERE id=? AND NOT EXISTS(SELECT 1 FROM orders WHERE id=? AND paid_at IS NOT NULL)",
+    ).bind(d.now(), reason, a.id, a.order_id),
+    e.DB.prepare(
+      "UPDATE orders SET status='TAX_REVIEW_REQUIRED',updated_at=? WHERE id=? AND paid_at IS NULL",
+    ).bind(d.now(), a.order_id),
+    e.DB.prepare(
+      "UPDATE service_applications SET status='TAX_REVIEW_REQUIRED' WHERE id=? AND NOT EXISTS(SELECT 1 FROM orders WHERE id=? AND paid_at IS NOT NULL)",
+    ).bind(a.application_id, a.order_id),
+  ]);
+}
 export async function approvalForOrder(
   e: Env,
   d: Deps,
@@ -77,8 +92,24 @@ export async function approvalForOrder(
     a.application_expires <= d.now()
   )
     throw new Problem(409, "approval_expired_or_revoked");
-  const c = JSON.parse(a.customer_json),
+  const c = JSON.parse(a.customer_json);
+  let q;
+  try {
     q = quote(JSON.parse(o.cart));
+    if (!o.paid_at) {
+      const decision = JSON.parse(a.decision_json);
+      const facts = transactionFacts(c);
+      if (
+        decision.version !== 2 ||
+        JSON.stringify(decision.facts) !== JSON.stringify(facts)
+      )
+        throw new Problem(409, "transaction_review_update_required");
+      documentedDecision(decision, facts);
+    }
+  } catch (error) {
+    await invalidateReview(e, d, a, "transaction_review_update_required");
+    throw new Problem(409, "transaction_review_update_required");
+  }
   if (
     a.customer_sha256 !== (await digest(JSON.stringify(c))) ||
     (await digest(o.customer)) !== a.customer_sha256 ||
@@ -87,8 +118,10 @@ export async function approvalForOrder(
     a.terms_version !== AGREEMENT_VERSION ||
     a.terms_sha256 !== AGREEMENT_HASH ||
     (o.quote_hash && a.quote_sha256 !== o.quote_hash)
-  )
+  ) {
+    await invalidateReview(e, d, a, "approval_scope_or_address_changed");
     throw new Problem(409, "approval_scope_or_address_changed");
+  }
   if (!allowClosed && !approvedIntakeReady(e))
     throw new Problem(503, "approved_intake_closed");
   return a;
@@ -176,11 +209,12 @@ export async function approvalRoute(req: Request, e: ApprovalEnv, d: Deps) {
     );
   if (!m) throw new Problem(404, "not_found");
   if (m[2] === "revoke") {
-    await e.DB.prepare(
-      "UPDATE application_approvals SET revoked_at=COALESCE(revoked_at,?),invalid_reason='operator_revoked' WHERE application_id=?",
+    const a = await e.DB.prepare(
+      "SELECT * FROM application_approvals WHERE application_id=?",
     )
-      .bind(d.now(), m[1])
-      .run();
+      .bind(m[1])
+      .first();
+    if (a) await invalidateReview(e, d, a, "operator_revoked");
     return Response.json({ revoked: true });
   }
   const b = object(await jsonBody(req));
@@ -192,6 +226,9 @@ export async function approvalRoute(req: Request, e: ApprovalEnv, d: Deps) {
     "reasonCodes",
     "scopeReviewed",
     "pilotReady",
+    "decisionSummary",
+    "jurisdictionsReviewed",
+    "noCollectionObligation",
   ]);
   if (
     typeof b.basisReference !== "string" ||
@@ -228,6 +265,7 @@ export async function approvalRoute(req: Request, e: ApprovalEnv, d: Deps) {
     throw new Problem(404, "application_unavailable");
   const c = JSON.parse(s.customer_json),
     q = quote(JSON.parse(s.scope_json).cart);
+  const decision = documentedDecision(b, transactionFacts(c));
   if (
     s.terms_version !== AGREEMENT_VERSION ||
     s.terms_sha256 !== AGREEMENT_HASH ||
@@ -275,17 +313,16 @@ export async function approvalRoute(req: Request, e: ApprovalEnv, d: Deps) {
       AGREEMENT_HASH,
       b.basisReference.trim(),
       b.basisHash,
-      JSON.stringify({
-        kind: b.kind,
-        registrationId: b.kind === "registered" ? b.registrationId : null,
-        reasonCodes: b.reasonCodes,
-        scopeReviewed: true,
-        pilotReady: b.pilotReady === true,
-      }),
+      JSON.stringify(decision),
       actor,
       now,
       Math.min(s.expires_at, now + 7 * 86400),
     )
+    .run();
+  await e.DB.prepare(
+    "UPDATE service_applications SET status='APPROVED' WHERE id=?",
+  )
+    .bind(s.id)
     .run();
   return Response.json({
     approved: true,

@@ -25,7 +25,7 @@ type ProductionEnv = ApprovalEnv &
   LiveSetupEnv &
   DriveEnv & { ASSETS: Fetcher };
 // Deliberately no staging tooling or synthetic-payment overrides in this build.
-// File intake and Checkout remain closed until real merchant/tax/Drive prerequisites pass.
+// General intake stays closed. Individual documented reviews authorize the scoped route.
 export function production(d: Deps = defaults) {
   const portal = app(d);
   return {
@@ -51,6 +51,7 @@ export function production(d: Deps = defaults) {
             checkoutEnabled: false,
             filesEnabled: false,
             reviewedOrdersEnabled: approvedIntakeReady(e),
+            checkoutPolicy: "documented_order_review_required",
             unavailableSkus: (e.UNAVAILABLE_SKUS || "")
               .split(",")
               .filter(Boolean),

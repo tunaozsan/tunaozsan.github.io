@@ -45,7 +45,7 @@
     "DRIVE_ENABLED": "true",
     "DELIVERY_ENABLED": "true",
     "DELIVERY_POLICY_APPROVED": "true",
-    "APPROVED_ORDERS_ENABLED": "false",
+    "APPROVED_ORDERS_ENABLED": "true",
     "UNAVAILABLE_SKUS": "",
     "REVIEWED_INVOICE_MODE": "portal_pdf"
   },

@@ -1,4 +1,5 @@
 import { Problem, object, keys, quote } from "./catalog";
+import { transactionFacts } from "./transaction-review";
 import {
   AGREEMENT_VERSION,
   AGREEMENT_HASH,
@@ -39,10 +40,10 @@ export async function applications(
     ).all();
     return Response.json({
       applications: rows.results,
-      checkoutEnabled: false,
+      checkoutPolicy: "documented_order_review_required",
       approvals: (
         await e.DB.prepare(
-          "SELECT id,application_id,order_id,approved_at,expires_at,redeemed_at,revoked_at,invalid_reason,basis_reference,basis_sha256 FROM application_approvals",
+          "SELECT id,application_id,order_id,approved_at,expires_at,redeemed_at,revoked_at,invalid_reason,basis_reference,basis_sha256,decision_json FROM application_approvals",
         ).all()
       ).results,
     });
@@ -82,6 +83,11 @@ export async function applications(
     "billingCity",
     "billingPostal",
     "projectCountry",
+    "projectState",
+    "serviceNature",
+    "firstUseCountry",
+    "firstUseState",
+    "firstUseLocation",
   ]);
   if (typeof c.businessUse !== "boolean")
     throw new Problem(400, "business_use_required");
@@ -100,11 +106,17 @@ export async function applications(
     billingCity: 100,
     billingPostal: 32,
     projectCountry: 2,
+    projectState: 100,
+    serviceNature: 500,
+    firstUseCountry: 2,
+    firstUseState: 100,
+    firstUseLocation: 240,
   })) {
     const value = c[key];
     const optional =
       (key === "dataDate" && !q.cart.sku.startsWith("update")) ||
-      (key === "businessName" && !c.businessUse);
+      (key === "businessName" && !c.businessUse) ||
+      ["billingState", "projectState", "firstUseState"].includes(key);
     if (
       typeof value !== "string" ||
       value.length > max ||
@@ -116,11 +128,17 @@ export async function applications(
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(customer.email)))
     throw new Problem(400, "invalid_email");
-  for (const key of ["billingCountry", "projectCountry"]) {
+  for (const key of ["billingCountry", "projectCountry", "firstUseCountry"]) {
     if (!/^[A-Za-z]{2}$/.test(String(customer[key])))
       throw new Problem(400, "invalid_country");
     customer[key] = String(customer[key]).toUpperCase();
   }
+  for (const prefix of ["billing", "project", "firstUse"])
+    if (customer[prefix + "Country"] === "US")
+      customer[prefix + "State"] = String(
+        customer[prefix + "State"],
+      ).toUpperCase();
+  transactionFacts(customer);
   if (
     customer.dataDate &&
     !/^\d{4}-\d{2}-\d{2}$/.test(String(customer.dataDate))
@@ -151,10 +169,10 @@ export async function applications(
     challenge.action !== "create-order"
   )
     throw new Problem(403, "challenge_failed");
-  // This endpoint only records enquiries. It has not evaluated a transaction's
-  // tax treatment and must not label every enquiry as an individual tax hold.
+  // Each new application awaits its own documented decision. Other approved
+  // orders may proceed; this is not a global payment-setup failure.
   const reasons = [
-    "Integrated online Checkout is not available; payment setup is pending.",
+    "A documented transaction-tax decision for this customer's locations and service is required before Checkout.",
     ...q.scopeReview,
   ];
   if (!customer.businessUse)
@@ -176,14 +194,14 @@ export async function applications(
       now,
       now,
       now + 30 * 86400,
-      "PAYMENT_SETUP_PENDING",
+      "TAX_REVIEW_REQUIRED",
       JSON.stringify(reasons),
     )
     .run();
   return Response.json(
     {
       applicationId: reference,
-      status: "PAYMENT_SETUP_PENDING",
+      status: "TAX_REVIEW_REQUIRED",
       quote: q,
       termsVersion: AGREEMENT_VERSION,
       termsHash: AGREEMENT_HASH,

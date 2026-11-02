@@ -14,6 +14,7 @@ import { digest } from "../src/security";
 import { seal } from "../src/drive";
 import { quote } from "../src/catalog";
 import { AGREEMENT_VERSION, AGREEMENT_HASH } from "../src/agreement";
+import { production } from "../src/production";
 let mf: any,
   e: any,
   d: any,
@@ -41,11 +42,20 @@ const customer = {
   billingCity: "Sioux Falls",
   billingPostal: "57104",
   projectCountry: "US",
+  projectState: "SD",
+  serviceNature: "Synthetic P6 construction schedule consulting",
+  firstUseCountry: "US",
+  firstUseState: "SD",
+  firstUseLocation: "Synthetic Sioux Falls project office",
 };
 const body = {
   basisReference: "synthetic tax basis only",
   basisHash: "a".repeat(64),
-  kind: "documented_no_collection",
+  kind: "registered",
+  registrationId: "taxreg_fixture",
+  decisionSummary:
+    "Synthetic SD registration basis for this exact consulting service and all stated locations; test only.",
+  jurisdictionsReviewed: true,
   reasonCodes: ["standard_rated"],
   scopeReviewed: true,
 };
@@ -114,6 +124,13 @@ before(async () => {
     now: () => now,
     adminKeys: createLocalJWKSet({ keys: [jwk] }),
     fetch: async (u: string) => {
+      if (u.includes("tax/registrations/"))
+        return Response.json({
+          status: "active",
+          livemode: true,
+          country: "US",
+          country_options: { us: { state: "SD" } },
+        });
       if (u.includes("oauth2.googleapis"))
         return Response.json({
           access_token: "fixture-never-output",
@@ -249,6 +266,24 @@ test("scope, billing facts and agreement approval are immutable and cannot migra
     }),
     /approval_scope_or_address_changed/,
   );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT status FROM orders WHERE id=?")
+        .bind(o.id)
+        .first<any>()
+    ).status,
+    "TAX_REVIEW_REQUIRED",
+  );
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT invalid_reason FROM application_approvals WHERE order_id=?",
+      )
+        .bind(o.id)
+        .first<any>()
+    ).invalid_reason,
+    "approval_scope_or_address_changed",
+  );
   await assert.rejects(
     approvalForOrder(e, d, {
       ...o,
@@ -262,6 +297,140 @@ test("scope, billing facts and agreement approval are immutable and cannot migra
   await assert.rejects(
     e.DB.exec("UPDATE application_approvals SET basis_reference='changed'"),
     /immutable_application_approval/,
+  );
+});
+test("not_collecting is rejected without a separate documented no-collection decision", async () => {
+  for (const b of [
+    { ...body, reasonCodes: ["not_collecting"] },
+    {
+      ...body,
+      kind: "documented_no_collection",
+      reasonCodes: ["not_collecting"],
+    },
+    { ...body, kind: "documented_no_collection", noCollectionObligation: true },
+    { ...body, jurisdictionsReviewed: false },
+    { ...body, decisionSummary: "" },
+  ])
+    await assert.rejects(
+      approvalRoute(
+        req("/api/v1/admin/applications/" + appId + "/approve", b),
+        e,
+        d,
+      ),
+    );
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT count(*) n FROM application_approvals",
+      ).first<any>()
+    ).n,
+    0,
+  );
+  const r = await approvalRoute(
+    req("/api/v1/admin/applications/" + appId + "/approve", {
+      ...body,
+      kind: "documented_no_collection",
+      noCollectionObligation: true,
+      reasonCodes: ["not_collecting"],
+      decisionSummary:
+        "Synthetic documented no-collection decision for all stated locations; NOT a real legal conclusion or an exemption inferred from Stripe.",
+    }),
+    e,
+    d,
+  );
+  assert.equal(r.status, 200);
+  const a = await e.DB.prepare(
+    "SELECT decision_json FROM application_approvals",
+  ).first<any>();
+  const decision = JSON.parse(a.decision_json);
+  assert.equal(decision.version, 2);
+  assert.equal(decision.noCollectionObligation, true);
+  assert.equal(decision.facts.serviceNature, customer.serviceNature);
+  await assert.rejects(
+    e.DB.exec("UPDATE application_approvals SET decision_json='{}'"),
+    /immutable/,
+  );
+});
+test("legacy applications with missing first-use facts cannot receive a new approval", async () => {
+  await e.DB.exec("DELETE FROM service_applications");
+  const c: any = { ...customer };
+  delete c.firstUseCountry;
+  await e.DB.prepare(
+    "INSERT INTO service_applications(id,customer_json,scope_json,quote_sha256,terms_version,terms_sha256,accepted_at,created_at,expires_at,status,review_reasons_json) VALUES(?,?,?,?,?,?,?,?,?,'PAYMENT_SETUP_PENDING','[]')",
+  )
+    .bind(
+      appId,
+      JSON.stringify(c),
+      JSON.stringify(quote(cart)),
+      await digest(JSON.stringify(quote(cart))),
+      AGREEMENT_VERSION,
+      AGREEMENT_HASH,
+      now,
+      now,
+      now + 86400,
+    )
+    .run();
+  await assert.rejects(approved(), /transaction_facts_required/);
+  assert.equal(
+    (
+      await e.DB.prepare(
+        "SELECT count(*) n FROM application_approvals",
+      ).first<any>()
+    ).n,
+    0,
+  );
+});
+test("production approved-only route works with generic intake closed; other orders cannot Checkout", async () => {
+  const app = production(d);
+  const health: any = await (
+    await app.fetch(new Request(origin + "/health"), e)
+  ).json();
+  assert.equal(health.reviewedOrdersEnabled, true);
+  assert.equal(health.enabled, false);
+  assert.equal(health.checkoutPolicy, "documented_order_review_required");
+  assert.equal((await app.fetch(req("/api/v1/orders", {}), e)).status, 503);
+  const a = await approved();
+  const response = await app.fetch(
+    req("/api/v1/approved-orders/redeem", {
+      invitation: new URL(a.invitationUrl).hash.slice(10),
+    }),
+    e,
+  );
+  assert.equal(response.status, 201);
+  const r: any = await response.json();
+  const call = (method: string, route: string, cap = r.token) =>
+    new Request(origin + "/api/v1/orders/" + r.orderId + route, {
+      method,
+      headers: {
+        Origin: origin,
+        Authorization: "Bearer " + cap,
+        "Content-Type": "application/json",
+      },
+      ...(method === "POST" ? { body: "{}" } : {}),
+    });
+  assert.equal((await app.fetch(call("POST", "/quote"), e)).status, 200);
+  assert.equal(
+    (await app.fetch(call("POST", "/quote", "f".repeat(64)), e)).status,
+    404,
+  );
+  await approvalRoute(
+    req("/api/v1/admin/applications/" + appId + "/revoke", {}),
+    e,
+    d,
+  );
+  const blocked = await app.fetch(call("POST", "/checkout"), e);
+  assert.equal(blocked.status, 409);
+  assert.equal(
+    ((await blocked.json()) as any).error,
+    "approval_expired_or_revoked",
+  );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT paid_at FROM orders WHERE id=?")
+        .bind(r.orderId)
+        .first<any>()
+    ).paid_at,
+    null,
   );
 });
 for (const scenario of [
