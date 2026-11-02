@@ -1,3 +1,43 @@
+# Güncel yayın — 2 Kasım 2026: doğrudan Stripe Checkout
+
+Bu bölüm aşağıdaki eski “Admin ön onayı zorunlu / genel tahsilat kapalı” kayıtlarının yerine geçen **yeni sipariş politikasını** açıklar. Owner'ın açık talimatı: **“Admin ön onayını kaldır; mevcut Stripe Tax ayarlarıyla doğrudan tahsil et.”** Bu ticari/teknik tercih vergi muafiyeti, BTIN kaydı veya bağımsız CPA/hukuk görüşü değildir.
+
+- **PASS — production:** Mevcut Worker `df047214-bc2d-42fc-90d7-1b882e149c59`, kod `b099907`. `DIRECT_CHECKOUT_ENABLED=true`, `DIRECT_CHECKOUT_POLICY=owner-stripe-tax-direct-2026-11-02`. Public health ve yetkili Live tanılama `checkoutEnabled=true`; mevcut Live merchant eşleşiyor, `chargesEnabled=true`, Tax settings active. Yedi standart ticari P6 paketi ve uyumlu eklentiler Admin daveti olmadan satın alınabilir. Ülke için uydurulmuş muafiyet/otomatik sıfır vergi tablosu yok; Stripe'ın desteklediği işlem/adres ve mevcut hesap ayarları geçerli.
+- Akış: paket/eklentiler → müşteri/proje/fatura bilgileri → özel R2 upload → server quote ve boş başlayan zorunlu sözleşme checkbox'ı → Stripe Checkout native required consent + automatic tax + automatic capture → fresh Stripe Session/PaymentIntent doğrulaması → D1 vergi/ödeme/kabul/PDF → mevcut Drive ve teslim süreci. Başarılı dönüş sayfası tek başına PAID yapmaz. Final billing address ve actual tax reason Stripe sonucundan alınır; veri/hash/capture/vergi hatası fulfillment'ı engeller. Vergi hesaplama hatası sıfır vergiye çevrilmez.
+- D1 yeni order'a sunucu üretimi politika işareti ekler; acceptance scope snapshot müşteri SHA-256, quote hash, terms hash ve Session'a bağlanır. Bu işaret client payload'ından kabul edilmez. Geçmiş başvuru/ödeme/kabul kayıtları değiştirilmedi. Eski belgeli-approval siparişleri özgün manual capture ve adres/kapsam iptal kurallarını korur.
+- **Kapsam istisnaları:** v2 metni değiştirilmedi. Tüketici talepleri, limit dışı/özel kapsam, inceleme gerektiren Update material mapping ve hazır olmayan pilot mevcut ticari kapsam kontrolünde kalır. Bu, standart siparişlere genel vergi/Admin ön onayı uygulandığı anlamına gelmez.
+- Sözleşme: `service-terms-2026-10-30-v2`; SHA-256 `85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c`. Apple Privacy/Support/Contact yolları ve gizlilik metinleri, USD fiyatlar, Mercury payout, DNS, şirket sınıflandırması değişmedi.
+- Live Tax registrations halen **0**. Bu durum muafiyet diye işaretlenmedi. Stripe'ın `not_collecting` sonucunu mevcut owner talimatıyla kabul eden yol ayrı bir neden kaydı olarak saklar. [Stripe API açıklaması](https://docs.stripe.com/api/invoices/object?api-version=2024-10-28.acacia) bu nedeni tahsil edilmeyen vergi olarak tanımlar; kayıt gerekmeme kararı yerine geçmez. NM BTIN/kayıt durumunun belgelendirilmesi ve 5472/1120 muhasebe kanıtı ayrı takip işleridir; yeni owner politikası bunları genel Checkout onayı yapmaz.
+
+| Kontrol | Sonuç | Kanıt / sınır |
+|---|---|---|
+| Worker regresyonu | PASS | 144 test; Admin durum düzeltmesinden sonra ilgili 4 tanılama testi ayrıca PASS |
+| Typecheck / site | PASS | 1115 assertion; 249 ülke + boş required seçenek; fiyatlar/Apple uyumluluğu |
+| Yeni production order route / explicit direct policy | PASS — yerel | Production wrapper gerçek handler, Admin daveti gerekmiyor; sahte policy alanı/eksik bilgiler reddi |
+| Vergili doğrudan gerçek Sandbox Checkout | PASS | `3e8d0357-4f21-4820-994b-8efb66702ddc`: $199 + $12.34 = $211.34, automatic capture succeeded, approval null, webhook/D1 PAID; reason `standard_rated` |
+| Sıfır vergili doğrudan gerçek Sandbox Checkout | PASS | `3bc7b7e7-c728-4ccc-aafe-6f1d983466a9`: $199, $0 tax, automatic capture succeeded; Oregon reason `not_subject_to_tax` (not_collecting diye yeniden etiketlenmedi) |
+| not_collecting kabulü ve gerçek nedenin saklanması | PASS — yerel | Yeni direct path testinde $0 actual reason korunur; bu tur provider üzerinde ayrı not_collecting ödeme senaryosu NOT RUN |
+| PDF üretimi ve gerçek indirme | PASS — Sandbox | TEST-BT-2026-00000003.pdf, 12,268 byte; SHA-256 `b5ac2d882c85cd1290fecf10d184ff11ad9f12c19a220125fc56b93470d12342` |
+| Gerçek Sandbox refund | PASS | $211.34 refund succeeded; D1 refund hold kaydı oluştu, geçmiş PAID/vergi/fatura snapshot'ı değiştirilmedi. Yayınlanmış teslim iptali önceki başarılı testlerle korunur |
+| Ödenmemiş direkt Checkout iptali | PASS — gerçek Sandbox | `a7713d18-5e18-4bc2-8af8-632adfb4f136`: Session expired, webhook→EXPIRED_UNPAID, paid_at/invoice null |
+| Duplicate, yanlış capture/hash, eksik consent/vergi | PASS — yerel | Tek fatura/ödeme; hatalı doğrulama PAID yaratmaz. Intake kapatıldıktan sonra bekleyen webhook işler |
+| Production public/UI smoke | PASS | health true; boş order HTTP400 invalid_object; gerçek sipariş/Live ödeme yaratılmadı. Tarayıcı doğrudan upload düğmesini ve davetsiz akış açıklamasını gösteriyor; ödeme checkbox'ı boş/required |
+| Yedek / migration / kayıt koruması | PASS | Private D1 yedeği integrity=ok; SHA-256 `353edf1f60518027ae48e34b5919e5774bedc0e348191b0fd5e022689b9f908a`. 0001–0010 ledger/schema aynı; migration uygulanmadı. Production 4 application, 0 order/PAID/kabul/fatura |
+| Secrets / R2 / Cron | PASS | Aynı binding'ler ve secret-name envanteri; secret değerleri görüntülenmedi; Cron */15, TTL43200 korunuyor |
+| Staging kapanışı | PASS | `0f8ec44e-d3ba-485b-95a7-6c59b0db5859`; public intake kapalı, test window 0; webhook/Cron açık |
+| Gerçek Live ödeme / production PAID→PDF→Drive | NOT RUN | Sahte gerçek kart/self-payment yapılmadı; ilk gerçek müşteri ödemesi doğal doğrulama olacak |
+| Yeni 12 saat / 30 / 90 gün gerçek bekleme | NOT RUN — tekrar gerekmedi | Retention kodu/süreleri değişmedi; önceki başarılı gerçek TTL ve simülasyon kanıtları korunur |
+
+**Eski linkler:** Önceki sekiz linklik geçiş grubuna dokunulmadı; güncel Live envanterindeki 9 linkin tamamı inactive (önceden pasif olan ek kayıt dahil). 22 Product/Price korunuyor; yeni Product, Price veya Payment Link oluşturulmadı.
+
+**Geri dönüş:** Önce yeni kodu koruyup `DIRECT_CHECKOUT_ENABLED=false` ile yeni intake'ı kapatın; webhook/refund/Cron ve bekleyen ödeme/faturaları işlemeye devam etsin. `.qa/direct-checkout-20261102/production-close-intake.jsonc` bu amaçla hazırdır. Eski Worker `61a729c8-5291-4870-80cd-872cc541f23d` yalnız doğrudan Session/order bulunmadığı veya tüm bekleyen işler mutabık kaldığı doğrulanırsa kullanılmalı; eski kod doğrudan sipariş faturası bağını tanımaz. Yeni ödemeler varken D1 yedeğini geri yüklemeyin veya ödeme geçmişini silmeyin.
+
+**Gerçekten kalan insan işi:** Standart siparişte Admin/ayrı yayın onayı gerekmez. Müşteri gerçek bilgilerini/dosyalarını ve zorunlu kabulünü verir, kendi kartıyla Stripe'da öder. İşletme sahibi vergi tescil/BTIN yükümlülüklerini ayrıca belgelendirir; mevcut politikanın kabulü uzman görüşü değildir. Teknik olarak etkin tahsilat ile henüz hiç gerçek ödeme alınmamış olması ayrı durumlardır.
+
+Yerel özel kanıtlar: `.qa/direct-checkout-20261102/` (Git dışı; backup, hassas yetki/capability veya secret değeri yayımlanmaz). Ana site GitHub Pages yayın kontrolü aşağıdaki ek kayıtla tamamlanır.
+
+---
+
 # Arayüz güncellemesi — 2 Kasım 2026: ülke adı seçimi
 
 - **PASS:** Fatura, proje ve çıktının ilk kullanım ülkesi artık 249 ülke/bölge içeren alfabetik dropdown. İlk seçenek boş/zorunlu; kullanıcı ülke kodu yazmıyor.

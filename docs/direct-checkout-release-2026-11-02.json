@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-02",
+  "policy": "owner-stripe-tax-direct-2026-11-02",
+  "codeCommit": "b099907",
+  "productionVersion": "df047214-bc2d-42fc-90d7-1b882e149c59",
+  "stagingClosedVersion": "0f8ec44e-d3ba-485b-95a7-6c59b0db5859",
+  "tests": {
+    "worker": 144,
+    "siteAssertions": 1115,
+    "typecheck": "PASS",
+    "sandboxTaxed": "PASS",
+    "sandboxZero": "PASS",
+    "sandboxRefund": "PASS",
+    "sandboxCancel": "PASS",
+    "livePayment": "NOT RUN"
+  },
+  "productionCheckoutEnabled": true,
+  "liveTaxRegistrations": 0,
+  "activeLegacyLinks": 0,
+  "catalogPrices": 22,
+  "newMigrations": [],
+  "backupSha256": "353edf1f60518027ae48e34b5919e5774bedc0e348191b0fd5e022689b9f908a",
+  "rollback": "Close direct intake while keeping current webhook/refund/invoice/Cron code; do not restore D1 payment history."
+}
