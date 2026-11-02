@@ -1158,7 +1158,7 @@ async function start() {
             state.required = us;
             state.pattern = us ? "[A-Za-z]{2}" : ".*";
           };
-          country.addEventListener("input", updateState);
+          country.addEventListener("change", updateState);
           updateState();
         }
         $("create-order").textContent = "Save request \u2014 no payment \u2197";

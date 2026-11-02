@@ -590,7 +590,7 @@ async function start() {
         for (const prefix of ["billing", "project", "firstUse"]) {
           const country = $("application-fields").querySelector(
             `[name="${prefix}Country"]`,
-          ) as HTMLInputElement;
+          ) as HTMLSelectElement;
           const state = $("application-fields").querySelector(
             `[name="${prefix}State"]`,
           ) as HTMLInputElement;
@@ -599,7 +599,7 @@ async function start() {
             state.required = us;
             state.pattern = us ? "[A-Za-z]{2}" : ".*";
           };
-          country.addEventListener("input", updateState);
+          country.addEventListener("change", updateState);
           updateState();
         }
         $("create-order").textContent = "Save request — no payment ↗";

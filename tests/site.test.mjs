@@ -23,7 +23,7 @@ for(const p of ['service-terms.html','refund-policy.html']){check(read(p).includ
 check(new Set(Object.values(links)).size===7,'Seven historical payment references retained');
 check(!pages.some(p=>read(p).includes('https://buy.stripe.com/')),'No live static checkout bypass in release candidate');
 check(read('assets/scripts/portal-config.js').includes('https://bluefin-project-portal-api.bluefintuna-llc.workers.dev'),'Frontend uses production application origin');
-for(const name of ['serviceNature','firstUseCountry','firstUseLocation']) check(new RegExp(`<input[^>]*name="${name}"[^>]*required`).test(read('project-portal/index.html')),`${name}: customer facts required before application`);
+for(const name of ['serviceNature','firstUseCountry','firstUseLocation']) check(new RegExp(`<(?:input|select)[^>]*name="${name}"[^>]*required`).test(read('project-portal/index.html')),`${name}: customer facts required before application`);
 check(!/<input[^>]*id="application-consent"[^>]*checked/.test(read('project-portal/index.html')),'Application consent starts unchecked');
 for(const p of pages) for(const m of read(p).matchAll(/href="(https:\/\/buy\.stripe\.com\/[^"]+)"/g)) check(Object.values(links).includes(m[1]),'Only configured checkout links');
 check(read('assets/styles/site.css').includes('prefers-reduced-motion'),'Reduced motion support');
