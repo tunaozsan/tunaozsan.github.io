@@ -1,0 +1,152 @@
+{
+  "checkedAt": "2026-11-02T03:26:35.828977+00:00",
+  "sourceCommit": "a335c5731095eaedbaac39ae6433c003315f5e00",
+  "productionVersion": "0cd57a9a-c881-4290-85a0-8acdf35166e9",
+  "stagingVersion": "e59592e1-0bb4-49e7-b3a6-158d03275074",
+  "rollbackVersion": "6a2c82f4-ed4d-489a-a3ca-d4fa1e7dd13b",
+  "productionCounts": {
+    "orders": 0,
+    "paidOrders": 0,
+    "acceptances": 0,
+    "applications": 4,
+    "invoices": 0,
+    "approvals": 0,
+    "unexpiredApprovals": 0
+  },
+  "onlyPublicConfigChange": {
+    "APPROVED_ORDERS_ENABLED": [
+      "false",
+      "true"
+    ]
+  },
+  "ledgerAndSchemaUnchanged": "PASS",
+  "countsUnchanged": "PASS",
+  "secretNamesAndSchedulesUnchanged": "PASS",
+  "backup": {
+    "integrity": "ok",
+    "sha256": "ecc5335217f9de4d4e766324023b5ee5f6bc7f6e8a1e620f59f6973c4dd0068f",
+    "bytes": 19216,
+    "ledgerCount": 10
+  },
+  "workerTests": {
+    "pass": 136,
+    "fail": 0
+  },
+  "siteAssertions": 1115,
+  "typecheck": "PASS",
+  "formatCheck": "PASS",
+  "productionSmoke": {
+    "checkedAt": "2026-11-02T03:26:40.736446+00:00",
+    "environment": "production",
+    "checks": [
+      {
+        "check": "health / approved-only policy",
+        "status": "PASS",
+        "health": {
+          "service": "bluefin-project-portal",
+          "mode": "production",
+          "enabled": false,
+          "applicationsEnabled": true,
+          "checkoutEnabled": false,
+          "filesEnabled": false,
+          "reviewedOrdersEnabled": true,
+          "checkoutPolicy": "documented_order_review_required",
+          "unavailableSkus": [],
+          "termsVersion": "service-terms-2026-10-30-v2",
+          "termsHash": "85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c"
+        }
+      },
+      {
+        "check": "deployed application facts fields",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "check": "generic order creation blocked",
+        "status": "PASS",
+        "http": 503
+      },
+      {
+        "check": "anonymous admin rejected; not an authenticated admin test",
+        "status": "PASS",
+        "http": 302
+      },
+      {
+        "check": "approved route enabled, nonexistent invitation rejected",
+        "status": "PASS",
+        "http": 410
+      },
+      {
+        "check": "unapproved anonymous Checkout blocked",
+        "status": "PASS",
+        "http": 401
+      },
+      {
+        "check": "missing application consent rejected before persistence",
+        "status": "PASS",
+        "http": 400
+      },
+      {
+        "check": "/privacy.html",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "check": "/support/",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "check": "/contact/",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "check": "/service-terms.html",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "check": "/refund-policy.html",
+        "status": "PASS",
+        "http": 200
+      }
+    ],
+    "realLiveCheckoutSession": "NOT RUN — no eligible actual order; no self-payment or synthetic Live transaction"
+  },
+  "stagingSmoke": {
+    "checkedAt": "2026-11-02T03:25:45.934742+00:00",
+    "environment": "staging",
+    "checks": [
+      {
+        "check": "staging closed",
+        "status": "PASS",
+        "health": {
+          "service": "bluefin-project-portal",
+          "version": "0.1.0",
+          "mode": "test",
+          "enabled": false
+        }
+      },
+      {
+        "check": "deployed application facts fields",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "check": "generic order creation blocked",
+        "status": "PASS",
+        "http": 503
+      },
+      {
+        "check": "anonymous admin rejected; not an authenticated admin test",
+        "status": "PASS",
+        "http": 302
+      }
+    ],
+    "realLiveCheckoutSession": "NOT RUN — no eligible actual order; no self-payment or synthetic Live transaction"
+  },
+  "livePayment": "NOT RUN — no eligible real order",
+  "newRemoteApprovalAndCapture": "NOT RUN — no eligible actual customer; previous real Sandbox chain retained, changed validation covered locally",
+  "eligibleCountryServiceScopes": []
+}

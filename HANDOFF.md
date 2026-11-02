@@ -1,3 +1,47 @@
+# Uygulanan sonuç — 2 Kasım 2026: belgeli siparişe özel Checkout yolu production'da
+
+Bu bölüm önceki kapanış/izin raporlarından önceliklidir. **Teknik onaylı-sipariş yolu açık; henüz tahsilata izin verilmiş bir ülke/eyalet/hizmet veya gerçek sipariş yok.** Production'da 4 başvuru, 0 approval, 0 order, 0 PAID. Admin belgeli karar vermeden hiçbir başvuru Checkout'a dönüştürülmedi. BTIN, muafiyet veya CPA görüşü üretilmedi.
+
+- Portal: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/project-portal/ — Admin: https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/admin/applications/
+- Kod: **a335c57**; production **0cd57a9a-c881-4290-85a0-8acdf35166e9**, staging **e59592e1-0bb4-49e7-b3a6-158d03275074**, her ikisi %100. Yeni migration yok; ledger/schema **0001–0010 değişmedi**. Production öncesi özel D1 yedeği integrity=ok, SHA-256 `ecc5335217f9de4d4e766324023b5ee5f6bc7f6e8a1e620f59f6973c4dd0068f`.
+- `APPLICATIONS_ENABLED=true`, `APPROVED_ORDERS_ENABLED=true`; genel doğrudan sipariş oluşturma `PORTAL_ENABLED=false` ile kapalı. Public health'teki `checkoutEnabled=false/filesEnabled=false` genel yolu ifade eder; `reviewedOrdersEnabled=true` belgeli karar + özel davetle çalışan ayrı yolu ifade eder. Bu yapılandırma kendi başına herhangi bir coğrafya için vergi kararı veya tahsilat yetkisi değildir.
+- Yeni başvuru: fatura ülke/eyaleti ve adresi, B2B statüsü, proje ülke/eyaleti, hizmetin niteliği, çıktının ilk kullanım ülke/eyalet/şehir-yer bilgileri kabul edilen kapsamla birlikte immutable D1 kaydına bağlanır. Yeni başvurunun durumu `TAX_REVIEW_REQUIRED` olur. Dört eski başvurunun eksik olguları/kabul kayıtları geriye dönük doldurulmadı; tam yeni başvuru olmadan onaylanamazlar.
+- Admin: gerçek karar belge referansı/SHA-256, karar özeti ve bütün ilgili konumların incelendiği beyanı zorunlu. Tahsil gerektiren kararda ilgili aktif Stripe registration doğrulanır; `not_collecting` için ayrı belgeli tahsil etmeme kararı zorunludur, muafiyet sayılmaz. Karar, olgular, müşteri/scope/quote/terms hash'leri, operatör ve zaman immutable tutulur. Onay ve başvuru durumu atomik kaydedilir.
+- Onay → tek kullanımlık özel davet → mevcut 12 saatlik R2 intake → native required consent + automatic tax + manual capture Checkout → doğrulanmış webhook → D1/PDF/Drive/teslim yolu korunur. Başvuru onayı ödeme kabulü yerine geçmez. Adres, ilk kullanım, hizmet niteliği veya kapsam değişirse unpaid onay iptal, sipariş `TAX_REVIEW_REQUIRED`; PAID geçmişi değiştirilmez. İade/teslim iptali ayrı mevcut kontrollerle yapılır.
+
+| Kontrol | Sonuç | Sınır / kanıt |
+|---|---|---|
+| Yeni zorunlu olgular ve immutable başvuru | PASS — yerel | Eksik alan reddi, US state code, normalize/immutable kayıt |
+| Belgeli karar / not_collecting koruması / eski eksik başvuru reddi | PASS — yerel | Belge+özet+yetkili inceleme olmadan approval yok; otomatik sıfır vergi yok |
+| Genel intake kapalıyken onaylı davet/redemption/quote | PASS — yerel | Gerçek RSA test JWT + Miniflare; başka capability ve revoked onay reddi |
+| Adres/kapsam/ilk kullanım/hizmet değişimi, geçmiş PAID koruması | PASS — yerel | Unpaid onayı iptal; PAID/consent/vergi geçmişi değişmez; eski manual capture/ret/refund testleri geçer |
+| Worker regresyon/typecheck/format | PASS | **136/136** (önceki 128 korunur); Admin inbox da artık typecheck kapsamında |
+| Site/Apple/fiyat/consent | PASS | **1115 assertions / 23 sayfa**; önceki 1111 + 4 yeni form kontrolü; v2/hash değişmedi |
+| Gerçek staging ve production HTTP | PASS | Yeni alanlar, kapalı genel intake, production reviewed path; sahte davet 410, yetkisiz Checkout 401, eksik kabul 400; hukuki URL'ler 200 |
+| Anonim Admin erişimi | PASS | Cloudflare 302 login; bu sonuç yetkili Admin işlemi veya TTL testi olarak sayılmadı |
+| Yedek, mevcut D1 ledger/schema/sayımlar, binding/secret adları/Cron | PASS | Yayın öncesi/sonrası aynı; yalnız approved-order flag değişti; migration tekrarlanmadı |
+| Yeni gerçek onaylı müşteri/Live Session/capture/fatura/paid-file transfer | NOT RUN | Uygun gerçek sipariş ve ona uygulanmış karar yok; sahte Live/self-payment oluşturulmadı |
+| Bu tur yeni ödeme içeren Sandbox E2E | NOT RUN | Önceki başarılı gerçek ödeme/adres ret/PDF/Drive/refund testleri tekrar edilmedi ve yeni test diye sunulmadı |
+| Bağımsız hukuk/vergi uzmanı görüşü | NOT RUN | Owner adoption uzman onayı değildir |
+
+## Gerçekten kalan insan işi
+
+1. Kuruluş sağlayıcısından mevcut BTIN/kayıt durumunun teyidi (varsa kayıt belgesi, vergi türü ve aktiflik; yoksa durum teyidi). Resmî NM kaynağı fiziksel varlığı olmayan satıcı için önceki yıl en az 100.000 USD NM kaynaklı vergiye tabi hasılat eşiğini doğrular. Bildirilen 2025 0 USD bu eşiğin altındadır; fiziksel varlık olgusu doğruysa ekonomik eşik sağlanmıyor. Bu, mevcut bir kaydın yokluğunu veya dünya çapında muafiyeti kanıtlamaz. [Resmî kaynaklı değerlendirme ve sınırlar](docs/nm-transaction-tax-basis-2026-11-02.md).
+2. İlk müşteri tam başvuru yaptıktan sonra o hizmet/konumlar için gerçek yazılı işlem-vergi kararını Admin'de belge/hash/özetle onaylayıp özel daveti müşteriye iletmek. Genel yayın veya yeni Stripe/Google yetkisi istenmiyor. Belirsiz başvuru incelemede kalır; başka belgeli siparişi engellemez.
+3. **Ayrı muhasebe takibi:** 2025 Form 5472 / pro forma 1120 gönderim kanıtı sağlanmadı; verilmediği varsayılmadı ve Checkout/GRT engeli yapılmadı. [Muhasebe kanıtı takibi](docs/accounting-evidence-followup-2026-11-02.md).
+
+## Korunanlar ve geri dönüş
+
+Production Drive CONNECTED/refresh/private root, Stripe Payment Intents Write, 22 Live Product/Price ve 8 eski inactive link için mevcut PASS kanıtları korundu; yeniden kurulmadı. Yeni Stripe ürün/link/kayıt/abonelik yok. Mercury payout, şirket sınıflandırması, DNS ve Apple yolları değişmedi. Sözleşme `service-terms-2026-10-30-v2`, hash `85197b0cc77544c400f826dab4a50091d13d916f326fc0ac5cea4ebfab1d7f9c` ve owner adoption korunuyor. Staging sipariş kabulü kapalı; her iki ortamda webhook/refund, Cron `*/15` ve TTL 43200 aynı.
+
+İlk geri dönüş, aynı kodda yalnız `APPROVED_ORDERS_ENABLED=false` yaparak yeni davet/intake/Checkout'u durdurmaktır; bekleyen webhook/capture/refund/Cron işlenmeye devam eder. Bu tur öncesi kapalı Worker **6a2c82f4-ed4d-489a-a3ca-d4fa1e7dd13b**, Git **bf92b73**. Yalnız açık yeni Session yoksa tam kod rollback'i düşünülür; D1 yedeği yeni kayıtların üzerine yüklenmez, tablolar düşürülmez, legacy linkler açılmaz. Özel yedek `.qa/order-review-20261102/d1-before.sql`; rapora/Git'e veri, secret veya özel davet konmadı.
+
+Operasyon notu: Wrangler export'un ürettiği bir saatlik imzalı indirme URL'si bir kontrol çıktısında göründü; yerel logdan temizlendi, Git/rapora kopyalanmadı. API key/Stripe secret/Drive token değeri görüntülenmedi. URL otomatik sona erer; bu not URL değerini içermez.
+
+[Deployment ve test kanıtları](docs/order-review-release-2026-11-02.json).
+
+---
+
 # Güncelleme — 2 Kasım 2026: Stripe izin engeli giderildi
 
 - **PASS — kaydedilmiş izin:** 31 Ekim'de özel owner onayı ve Stripe passkey doğrulaması sonrası yalnız Payment Intents Read → Write kaydedildi. Form yeniden açılarak karşılaştırıldı: diğer 49 izin aynı. Secret değeri okunmadı/gösterilmedi/değiştirilmedi. [İzin kanıtı](docs/live-payment-permissions-2026-10-31.json).
