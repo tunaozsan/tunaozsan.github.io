@@ -34,7 +34,7 @@ Bu bölüm aşağıdaki eski “Admin ön onayı zorunlu / genel tahsilat kapal�
 
 **Gerçekten kalan insan işi:** Standart siparişte Admin/ayrı yayın onayı gerekmez. Müşteri gerçek bilgilerini/dosyalarını ve zorunlu kabulünü verir, kendi kartıyla Stripe'da öder. İşletme sahibi vergi tescil/BTIN yükümlülüklerini ayrıca belgelendirir; mevcut politikanın kabulü uzman görüşü değildir. Teknik olarak etkin tahsilat ile henüz hiç gerçek ödeme alınmamış olması ayrı durumlardır.
 
-Yerel özel kanıtlar: `.qa/direct-checkout-20261102/` (Git dışı; backup, hassas yetki/capability veya secret değeri yayımlanmaz). Ana site GitHub Pages yayın kontrolü aşağıdaki ek kayıtla tamamlanır.
+Yerel özel kanıtlar: `.qa/direct-checkout-20261102/` (Git dışı; backup, hassas yetki/capability veya secret değeri yayımlanmaz). **PASS — GitHub Pages:** main `7f9f6d9`, [deployment 41385620731](https://github.com/tunaozsan/tunaozsan.github.io/actions/runs/41385620731) success. Public Services sayfasında Configure & Pay görünür; eski Checkout kapalı metni yok. Gerçek tarayıcıda ana sitedeki Audit düğmesi yeni davetsiz sipariş ekranını açtı. Sadece dokümantasyonun son kayıt commit’i bu yayın sonucunu ekler; runtime kodu `b099907` değişmedi.
 
 ---
 

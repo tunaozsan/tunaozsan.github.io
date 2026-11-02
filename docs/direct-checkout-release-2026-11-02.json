@@ -20,5 +20,12 @@
   "catalogPrices": 22,
   "newMigrations": [],
   "backupSha256": "353edf1f60518027ae48e34b5919e5774bedc0e348191b0fd5e022689b9f908a",
-  "rollback": "Close direct intake while keeping current webhook/refund/invoice/Cron code; do not restore D1 payment history."
+  "rollback": "Close direct intake while keeping current webhook/refund/invoice/Cron code; do not restore D1 payment history.",
+  "githubPages": {
+    "head": "7f9f6d9db0e9925867bd48f63d176297e97a30d1",
+    "runId": 41385620731,
+    "conclusion": "success",
+    "publicServicesCTA": "Configure & Pay",
+    "browserServicesToDirectPortal": "PASS"
+  }
 }
