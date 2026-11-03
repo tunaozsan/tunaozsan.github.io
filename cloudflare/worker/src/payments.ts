@@ -17,6 +17,7 @@ import { refundEvent } from "./refunds";
 import { sandboxPrices } from "./stripe-catalog";
 import { livePrices, LIVE_ACCOUNT_ID } from "./live-catalog";
 import { retainRejectedPayment } from "./payment-review";
+import { legacyExpiredEvent } from "./legacy-webhook";
 import { AGREEMENT_HASH, AGREEMENT_STATUS } from "./agreement";
 import { Problem, quote, TERMS } from "./catalog";
 import { type Env, type Deps, digest, signature, bounded } from "./security";
@@ -444,7 +445,11 @@ async function verifiedWebhook(req: Request, e: Env, d: Deps) {
   )
     return { received: true };
   const x = event.data?.object;
-  if (!x?.metadata?.order_id) throw new Problem(400, "unknown_order");
+  if (!x?.metadata?.order_id) {
+    if (event.type === "checkout.session.expired" && e.APP_ENV === "production")
+      return legacyExpiredEvent(e, d, event);
+    throw new Problem(400, "unknown_order");
+  }
   const o = await e.DB.prepare("SELECT * FROM orders WHERE id=?")
     .bind(x.metadata.order_id)
     .first<any>();

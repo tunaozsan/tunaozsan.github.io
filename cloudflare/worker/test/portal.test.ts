@@ -237,7 +237,7 @@ async function pay(o: any) {
   assert.equal(r.status, 200, await r.clone().text());
   return sessions["cs_test_" + o.orderId];
 }
-async function signed(event: any, t = clock) {
+async function signed(event: any, t = clock, handler = app(d)) {
   const raw = JSON.stringify(event);
   const key = await crypto.subtle.importKey(
     "raw",
@@ -253,7 +253,7 @@ async function signed(event: any, t = clock) {
       new TextEncoder().encode(t + "." + raw),
     ),
   ).toString("hex");
-  return app(d).fetch(
+  return handler.fetch(
     new Request("https://api.example/api/v1/stripe/webhook", {
       method: "POST",
       headers: { "Stripe-Signature": `t=${t},v1=${sig}` },
@@ -304,6 +304,13 @@ after(async () => {
 });
 beforeEach(async () => {
   clock = 1800000000;
+  Object.assign(e, {
+    APP_ENV: "test",
+    PORTAL_ENABLED: "true",
+    LEGAL_APPROVED: "true",
+    STRIPE_SECRET_KEY: "sk_test_FAKE00000000",
+    STRIPE_ACCOUNT_ID: "acct_test",
+  });
   sessions = {};
   stripeCalls = [];
   telegramCalls = 0;
@@ -2118,8 +2125,14 @@ test("production direct policy gate is explicit and does not require an Admin in
     .bind(o.orderId)
     .first();
   assert.equal(JSON.parse(row.customer).checkoutPolicy, DIRECT_CHECKOUT_POLICY);
-  for (const key of ["projectCountry", "projectState", "serviceNature",
-    "firstUseCountry", "firstUseState", "firstUseLocation"])
+  for (const key of [
+    "projectCountry",
+    "projectState",
+    "serviceNature",
+    "firstUseCountry",
+    "firstUseState",
+    "firstUseLocation",
+  ])
     assert.equal(key in JSON.parse(row.customer), false);
   assert.equal(row.expires_at - row.created_at, 43200);
   assert.equal(
@@ -2155,10 +2168,27 @@ test("direct customer accepts a manually typed state and discards retired fields
   const minimal = { ...directCustomer, billingState: "Oregon" };
   const customer = normalize(minimal, "p6_audit");
   assert.equal(customer.billingState, "Oregon");
-  assert.deepEqual(normalize({ ...minimal, projectCountry: "US",
-    projectState: "OR", serviceNature: "P6 consulting", firstUseCountry: "US",
-    firstUseState: "OR", firstUseLocation: "Old browser value" }, "p6_audit"), customer);
-  for (const key of ["billingAddress", "billingCity", "billingPostal", "billingState"])
+  assert.deepEqual(
+    normalize(
+      {
+        ...minimal,
+        projectCountry: "US",
+        projectState: "OR",
+        serviceNature: "P6 consulting",
+        firstUseCountry: "US",
+        firstUseState: "OR",
+        firstUseLocation: "Old browser value",
+      },
+      "p6_audit",
+    ),
+    customer,
+  );
+  for (const key of [
+    "billingAddress",
+    "billingCity",
+    "billingPostal",
+    "billingState",
+  ])
     assert.throws(() => normalize({ ...minimal, [key]: "" }, "p6_audit"));
   assert.throws(() => normalize(minimal, "update_basic"));
 });
@@ -2265,3 +2295,170 @@ for (const failure of ["capture", "customer", "tax", "consent"])
       );
     },
   );
+
+function legacyExpiryFixture() {
+  const session: any = {
+    id: "cs_live_legacyone",
+    livemode: true,
+    mode: "payment",
+    status: "expired",
+    payment_status: "unpaid",
+    payment_intent: null,
+    payment_link: "plink_1UVAElBzdKYgwVw6DvU7Biee",
+    metadata: {},
+    client_reference_id: null,
+  };
+  const event: any = {
+    id: "evt_legacyone",
+    type: "checkout.session.expired",
+    livemode: true,
+    account: "acct_1UV444BzdKYgwVw6",
+    data: { object: { ...session } },
+  };
+  Object.assign(e, {
+    APP_ENV: "production",
+    PORTAL_ENABLED: "false",
+    LEGAL_APPROVED: "false",
+    DIRECT_CHECKOUT_ENABLED: "false",
+    STRIPE_SECRET_KEY: "rk_live_SYNTHETIC123",
+    STRIPE_ACCOUNT_ID: "acct_1UV444BzdKYgwVw6",
+  });
+  d.fetch = async (url: any, opt: any = {}) => {
+    assert.equal(opt.method, "GET");
+    if (String(url).endsWith("/account"))
+      return Response.json({ id: "acct_1UV444BzdKYgwVw6" });
+    assert.ok(String(url).endsWith("/checkout/sessions/" + session.id));
+    return Response.json(session);
+  };
+  return { session, event };
+}
+
+test("production verifies and durably acknowledges retired unpaid sessions while intake is closed; concurrent retries stay single", async () => {
+  const { event } = legacyExpiryFixture();
+  const responses = await Promise.all([
+    signed(event, clock, production(d)),
+    signed(event, clock, production(d)),
+  ]);
+  for (const r of responses)
+    assert.equal(r.status, 200, await r.clone().text());
+  const bodies = (await Promise.all(responses.map((r) => r.json()))) as any[];
+  assert.deepEqual(bodies.map((x) => x.duplicate).sort(), [false, true]);
+  assert.ok(bodies.every((x) => x.classification === "legacy_expired_unpaid"));
+  const audit = await e.DB.prepare(
+    "SELECT * FROM audit_events WHERE action='stripe_legacy_expired:evt_legacyone'",
+  ).all();
+  assert.equal(audit.results.length, 1);
+  assert.equal(audit.results[0].order_id, null);
+  for (const table of [
+    "orders",
+    "agreement_acceptances",
+    "payment_events",
+    "payment_reviews",
+    "drive_jobs",
+    "order_invoices",
+  ])
+    assert.equal(
+      (await e.DB.prepare(`SELECT COUNT(*) n FROM ${table}`).first()).n,
+      0,
+    );
+});
+
+test("legacy expiry handling preserves signature, mode, account and known-link boundaries", async () => {
+  const { event } = legacyExpiryFixture();
+  assert.equal((await signed(event, clock - 301)).status, 400);
+  assert.equal((await signed({ ...event, livemode: false })).status, 400);
+  assert.equal(
+    (await signed({ ...event, account: "acct_foreign" })).status,
+    400,
+  );
+  for (const patch of [
+    { payment_link: "plink_unknown" },
+    { payment_status: "paid" },
+    { status: "complete" },
+    { client_reference_id: "claimed" },
+    { payment_intent: "pi_pending" },
+  ])
+    assert.notEqual(
+      (
+        await signed({
+          ...event,
+          data: { object: { ...event.data.object, ...patch } },
+        })
+      ).status,
+      200,
+    );
+  assert.equal(
+    (await e.DB.prepare("SELECT COUNT(*) n FROM audit_events").first()).n,
+    0,
+  );
+});
+
+for (const failure of [
+  "paid",
+  "wrong_mode",
+  "claimed_order",
+  "claimed_reference",
+  "payment_intent",
+  "wrong_link",
+  "wrong_merchant",
+  "provider_unavailable",
+  "database_unavailable",
+])
+  test(
+    "legacy expiry remains retryable without a durable verified result: " +
+      failure,
+    async () => {
+      const { session, event } = legacyExpiryFixture();
+      if (failure === "paid")
+        Object.assign(session, { status: "complete", payment_status: "paid" });
+      if (failure === "wrong_mode") session.livemode = false;
+      if (failure === "claimed_order")
+        session.metadata = { order_id: "claimed" };
+      if (failure === "claimed_reference")
+        session.client_reference_id = "claimed";
+      if (failure === "payment_intent")
+        session.payment_intent = "pi_processing";
+      if (failure === "wrong_link") session.payment_link = "plink_unrelated";
+      if (failure === "wrong_merchant")
+        d.fetch = async () => Response.json({ id: "acct_foreign" });
+      if (failure === "provider_unavailable")
+        d.fetch = async () => new Response("{}", { status: 503 });
+      const db = e.DB;
+      if (failure === "database_unavailable")
+        e.DB = {
+          prepare: () => {
+            throw Error("synthetic unavailable");
+          },
+        };
+      try {
+        assert.notEqual((await signed(event)).status, 200);
+      } finally {
+        e.DB = db;
+      }
+      assert.equal(
+        (await e.DB.prepare("SELECT COUNT(*) n FROM audit_events").first()).n,
+        0,
+      );
+    },
+  );
+
+test("a session bound to a portal order cannot be classified as an external legacy expiry", async () => {
+  const o = await create();
+  const { event, session } = legacyExpiryFixture();
+  await e.DB.prepare("UPDATE orders SET stripe_session_id=? WHERE id=?")
+    .bind(session.id, o.orderId)
+    .run();
+  assert.equal((await signed(event)).status, 409);
+  assert.equal(
+    (await e.DB.prepare("SELECT COUNT(*) n FROM audit_events").first()).n,
+    0,
+  );
+  assert.equal(
+    (
+      await e.DB.prepare("SELECT paid_at FROM orders WHERE id=?")
+        .bind(o.orderId)
+        .first()
+    ).paid_at,
+    null,
+  );
+});
