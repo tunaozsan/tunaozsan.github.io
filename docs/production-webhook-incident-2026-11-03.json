@@ -1,0 +1,299 @@
+{
+  "verifiedAt": "2026-11-03T08:44:38.580Z",
+  "endpoint": "https://bluefin-project-portal-api.bluefintuna-llc.workers.dev/api/v1/stripe/webhook",
+  "codeCommit": "7939186",
+  "productionVersion": "2de87357-01c6-4c76-ae0b-0a308df21632",
+  "rollbackVersion": "c8487b6d-1fdd-46a8-846e-7242623bf4fd",
+  "uniqueAffectedEvents": 16,
+  "failedAttemptsReportedByEmail": 95,
+  "failedAttemptsObservedBeforeRepair": 112,
+  "originalHttpStatus": 400,
+  "originalError": "unknown_order",
+  "eventType": "checkout.session.expired",
+  "recoveredEvents": [
+    {
+      "id": "evt_1UWW13BzdKYgwVw6wSPPcSWP",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false
+    },
+    {
+      "id": "evt_1UWW13BzdKYgwVw6WtAHwfYq",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:37:20.390Z"
+    },
+    {
+      "id": "evt_1UWW12BzdKYgwVw6C3uxhMa2",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:38:24.728Z"
+    },
+    {
+      "id": "evt_1UWW12BzdKYgwVw6vglyoBCv",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:39:07.585Z"
+    },
+    {
+      "id": "evt_1UWW0zBzdKYgwVw6zfcLfD1y",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:39:49.572Z"
+    },
+    {
+      "id": "evt_1UWW0zBzdKYgwVw6rDxL7Nc1",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:40:06.289Z"
+    },
+    {
+      "id": "evt_1UWVwvBzdKYgwVw6V1KRr6EY",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:40:27.105Z"
+    },
+    {
+      "id": "evt_1UWVwvBzdKYgwVw6a2WcpNQO",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:40:41.832Z"
+    },
+    {
+      "id": "evt_1UWVwtBzdKYgwVw6dNfrTQUr",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:40:58.872Z"
+    },
+    {
+      "id": "evt_1UWVwtBzdKYgwVw6Bq5RJ5ql",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:41:16.804Z"
+    },
+    {
+      "id": "evt_1UWVwsBzdKYgwVw6xtB8OHEt",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:41:37.616Z"
+    },
+    {
+      "id": "evt_1UWVwrBzdKYgwVw6xRYGXA61",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:42:07.623Z"
+    },
+    {
+      "id": "evt_1UWVwqBzdKYgwVw6RKT7l08t",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:42:37.674Z"
+    },
+    {
+      "id": "evt_1UWVwqBzdKYgwVw6DYEvLkvy",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:42:56.077Z"
+    },
+    {
+      "id": "evt_1UWVwoBzdKYgwVw6PyfNt2hN",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:43:17.666Z"
+    },
+    {
+      "id": "evt_1UWVwnBzdKYgwVw6n2j9Jdu7",
+      "beforeHttp": 400,
+      "beforeError": "unknown_order",
+      "afterHttp": 200,
+      "classification": "legacy_expired_unpaid",
+      "duplicate": false,
+      "verifiedAt": "2026-11-03T08:43:38.366Z"
+    }
+  ],
+  "duplicateReplay": {
+    "id": "evt_1UWVwnBzdKYgwVw6n2j9Jdu7",
+    "status": 200,
+    "duplicate": true,
+    "verifiedAt": "2026-11-03T08:44:06.716Z"
+  },
+  "pendingFailureCount": 0,
+  "affectedEventsPendingWebhooks": [
+    {
+      "id": "evt_1UWW13BzdKYgwVw6wSPPcSWP",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWW13BzdKYgwVw6WtAHwfYq",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWW12BzdKYgwVw6C3uxhMa2",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWW12BzdKYgwVw6vglyoBCv",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWW0zBzdKYgwVw6zfcLfD1y",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWW0zBzdKYgwVw6rDxL7Nc1",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwvBzdKYgwVw6V1KRr6EY",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwvBzdKYgwVw6a2WcpNQO",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwtBzdKYgwVw6dNfrTQUr",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwtBzdKYgwVw6Bq5RJ5ql",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwsBzdKYgwVw6xtB8OHEt",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwrBzdKYgwVw6xRYGXA61",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwqBzdKYgwVw6RKT7l08t",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwqBzdKYgwVw6DYEvLkvy",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwoBzdKYgwVw6PyfNt2hN",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    },
+    {
+      "id": "evt_1UWVwnBzdKYgwVw6n2j9Jdu7",
+      "type": "checkout.session.expired",
+      "pending_webhooks": 0,
+      "livemode": true
+    }
+  ],
+  "financialReconciliation": {
+    "liveCharges": 0,
+    "livePaymentIntents": 0,
+    "liveRefunds": 0,
+    "checkoutSessions": 37,
+    "allSessionsExpiredUnpaid": true,
+    "unprocessedFinancialEventsFound": 0,
+    "d1Counts": {
+      "orders": 1,
+      "paid_orders": 0,
+      "acceptances": 0,
+      "payment_events": 0,
+      "reviews": 0,
+      "refunds": 0,
+      "drive_jobs": 0,
+      "invoices": 0
+    }
+  },
+  "auditRows": 16,
+  "eachAuditRowCount": 1,
+  "workerTail": {
+    "statuses": {
+      "200": 17,
+      "400": 1
+    },
+    "exceptions": 0
+  },
+  "tests": {
+    "workerPassed": 157,
+    "typecheck": "PASS",
+    "realLivePayment": "NOT RUN — intentionally not created",
+    "historicalWorkerTelemetry": "NOT RUN — disabled / no stored records",
+    "unsignedLiveRequest": "PASS — HTTP400 invalid_signature; separate Python urllib request blocked by Cloudflare1010 before Worker"
+  },
+  "configurationPreserved": true,
+  "migrationApplied": false
+}

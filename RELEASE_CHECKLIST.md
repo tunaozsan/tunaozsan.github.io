@@ -1,3 +1,15 @@
+# Production webhook düzeltmesi — 3 Kasım 2026
+
+- **PASS — kök neden:** Eski Payment Link geçişinde kapatılan ödenmemiş Session'ların `checkout.session.expired` olaylarında portal `order_id` yoktu; Worker HTTP400 `unknown_order` döndürüyordu. **16 benzersiz event**; e-postada 95, inceleme anında Dashboard'da 112 başarısız deneme. Bunlar ödeme sayısı değildir.
+- **PASS — production:** Kod `7939186`; Worker `2de87357-01c6-4c76-ae0b-0a308df21632`. İmza/mode/account doğrulaması sonrası yalnız bilinen eski linklerin unpaid/expired/null-PaymentIntent Session'ları Stripe API'den yeniden doğrulanarak mevcut D1 audit tablosuna tekil kaydedilir. Portal siparişi, kabul, PAID veya fulfillment üretilmez; doğrulama/sağlayıcı/DB hatası gizlenmez.
+- **PASS — gerçek yeniden teslimat:** 16/16 Stripe Live event HTTP200 / Delivered / Recovered. Ek tekrar HTTP200 `duplicate:true`; 16 D1 audit kaydının her biri yalnız bir kez var. Stripe API başarısız teslimat listesi boş, özgün 16 event pending_webhooks=0. Canlı Worker izlemesi 17 HTTP200 ve sıfır exception; imzasız curl isteği HTTP400 invalid_signature.
+- **PASS — finansal mutabakat:** Live API 0 charge / 0 PaymentIntent / 0 refund; 37 Session tümü expired/unpaid. D1 1 eski unpaid sipariş; PAID, kabul, ödeme, refund, review, Drive işi ve fatura 0. İşlenmemiş tahsilat/iade bulunmadı; hayalî inceleme veya sözleşme kabulü kaydı oluşturulmadı.
+- **PASS — regresyon/koruma:** 157 Worker testi ve typecheck. Public vars, secret isimleri, D1/R2 binding, Cron ve ledger 0001–0010 aynı; migration yok. Checkout politikası, refund/webhook, retention, Mercury, DNS ve Apple yolları değişmedi.
+- **NOT RUN — sınırlar:** Geçmiş Worker observability kapalı olduğundan tarihsel log yok; neden Stripe teslimat yanıtlarıyla kanıtlandı. Yeni gerçek Live ödeme/self-payment veya refund oluşturulmadı. Site kodu değişmediği için 1115 site assertion tekrar edilmedi; önceki PASS korunur. Ayrı Python urllib tanılama isteği Cloudflare403/1010 ile engellendi; gerçek Stripe teslimatlarının nedeni bu değildir.
+- **Geri dönüş:** Worker `c8487b6d-1fdd-46a8-846e-7242623bf4fd`, önceki main `53a3d8e`; eski sürüm bu hatayı geri getirir. D1/ödeme/audit geçmişini geri yüklemeyin veya silmeyin. Bu incident için zorunlu kullanıcı işlemi kalmadı. [Ayrıntılı rapor](docs/production-webhook-incident-2026-11-03.md), [event bazlı sonuçlar](docs/production-webhook-incident-2026-11-03.json). Özel ham kanıtlar `.qa/webhook-incident-20261103/` (Git dışı).
+
+---
+
 # Form sadeleştirmesi — 2 Kasım 2026
 
 - **PASS — production:** `Project reference` → `Project name`. Doğrudan satın alma formundan hizmet amacı/proje türü, proje ülkesi/eyaleti ve çıktının ilk kullanım yeri alanları kaldırıldı. Fatura ülkesi açılır liste; adres, şehir, eyalet/il ve posta kodu manuel. Masaüstünde kompakt iki sütun, mobilde tek sütun.
